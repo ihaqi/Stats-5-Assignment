@@ -6,7 +6,7 @@ output: html_notebook
 ```{r setup, include=FALSE}
 
 # loading and installing packages
-list.of.packages <- c("knitr","rjags","runjags", "haven","psych","car","magicfor")
+list.of.packages <- c("knitr","rjags","runjags", "haven","psych","car","magicfor","lattice")
 new.packages <- list.of.packages[!(list.of.packages %in%installed.packages()[,"Package"])]
 if(length(new.packages)){install.packages(new.packages,repos = "http://cran.us.r-project.org")}
 lapply(list.of.packages, require, character.only = TRUE)

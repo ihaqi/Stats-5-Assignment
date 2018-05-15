@@ -18,7 +18,7 @@ mydir <- "C:/Users/Nagash.NAGASHIZAR/Desktop/School Stuff/KU Leuven/Stats V/Assi
 #setwd(mydir)
 
 # loading and installing packages
-list.of.packages <- c("knitr","rjags","runjags", "haven","psych","car","magicfor")
+list.of.packages <- c("knitr","rjags","runjags", "haven","psych","car","magicfor","lattice")
 new.packages <- list.of.packages[!(list.of.packages %in%installed.packages()[,"Package"])]
 if(length(new.packages)){install.packages(new.packages,repos = "http://cran.us.r-project.org")}
 lapply(list.of.packages, require, character.only = TRUE)
@@ -35,6 +35,7 @@ lifeSat <- early.dat$lifeSat
 age <- early.dat$age
 age0 = age-55 #for recentering, see later
 early.dat$age0<-age0
+early.dat$id<-as.numeric(early.dat$id)
 N=length(unique(early.dat$id))     
 Ntotal = length(early.dat$lifeSat) 
 
@@ -56,14 +57,16 @@ for ( i in 1:length(y) ) {
 boxplot(lifeSat~age,xlab="Age (in years)",ylab="Life Satisfaction")
 
 # create spaghetti plot
+# following is the easier way to do it all
+
+#interaction.plot(early.dat$age[1:50],early.dat$id[1:50],early.dat$lifeSat[1:50])
 # set up coordinate axes, labels, etc. 
-plot(age,lifeSat,type="n",xlim=c(55,60),ylim=c(0,10),xlab="Age (in years)",ylab="Life Satisfaction",axes=F)
+plot(age[pp==1],lifeSat[pp==1],type="n",xlim=c(55,60),ylim=c(0,10),xlab="Age (in years)",ylab="Life Satisfaction")
 box()
 # draw lines, one per participant
 for (i in 1:N){
   points(age[pp==i],lifeSat[pp==i],type="l")
 }
-
 
 
 
@@ -77,6 +80,37 @@ for (i in 1:N){ #separetely for each person
   lin.reg.pp[i,3]<-summary(lm.pp)$r.squared #store rsquare
 }
 ```
+
+```{r excluding age}
+
+early.dat
+
+```
+
+
+```{r j}
+#check linear relations of the different covariates
+LifeSatisfaction <-early.dat$lifeSat
+Age <- early.dat$age
+EmploymentStatus <- early.dat$emplStat55
+HealthStatus <- early.dat$healthSat
+LivingTogether <- early.dat$livtog
+
+xyplot(LifeSatisfaction ~ Age, type=c("smooth", "p")) #linear flat
+xyplot(LifeSatisfaction ~ EmploymentStatus, type=c("smooth", "p")) #non-linear ??
+xyplot(LifeSatisfaction ~ HealthStatus, type=c("smooth", "p")) #linear postive
+xyplot(LifeSatisfaction ~ LivingTogether, type=c("smooth", "p")) #linear negative
+
+```
+
+```{r interactions}
+
+interaction1 <- early.dat$healthSat*early.dat$emplStat55
+interaction2 <- early.dat$livtog*early.dat$emplStat55
+lm1 <- lm(early.dat$lifeSat ~ interaction1 + interaction2 + early.dat$emplStat55 + early.dat$healthSat + early.dat$livtog)
+
+```
+
 
 Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Ctrl+Alt+I*.
 
