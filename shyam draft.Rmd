@@ -1,0 +1,81 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+
+
+
+This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
+
+Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Ctrl+Shift+Enter*. 
+
+```{r}
+rm(list = ls())
+
+#setting up work directory and loading libraries
+mydir <- "C:/Users/Nagash.NAGASHIZAR/Desktop/School Stuff/KU Leuven/Stats V/Assignment"
+#setwd(mydir)
+
+# loading and installing packages
+list.of.packages <- c("knitr","rjags","runjags", "haven","psych","car","magicfor")
+new.packages <- list.of.packages[!(list.of.packages %in%installed.packages()[,"Package"])]
+if(length(new.packages)){install.packages(new.packages,repos = "http://cran.us.r-project.org")}
+lapply(list.of.packages, require, character.only = TRUE)
+
+
+# loading the csv dataset
+early.dat<-read.csv("soep_statV.csv",header=T,sep=",")
+pp <- early.dat$id
+lifeSat <- early.dat$lifeSat
+age <- early.dat$age
+age0 = age-1 #for recentering, see later
+early.dat$age0<-age0
+N=length(unique(early.dat$id))     
+Ntotal = length(early.dat$lifeSat) 
+
+#standardising the data
+x = age
+y = lifeSat
+xm <- mean(x)
+ym <- mean(y)
+xsd <- sd(x)
+ysd <- sd(y)
+zx<-NULL
+zy<-NULL
+for ( i in 1:length(y) ) {
+  zx[i] <- ( x[i] - xm ) / xsd
+  zy[i] <- ( y[i] - ym ) / ysd
+}
+
+#plotting the varibles in a boxplot
+boxplot(lifeSat~age,xlab="Age (in years)",ylab="Life Satisfaction")
+
+# create spaghetti plot
+# set up coordinate axes, labels, etc. 
+plot(age,lifeSat,type="n",xlim=c(55,60),ylim=c(0,10),xlab="Age (in years)",ylab="Life Satisfaction",axes=F)
+box()
+# draw lines, one per participant
+for (i in 1:N){
+  points(age[pp==i],lifeSat[pp==i],type="l")
+}
+
+
+
+
+# linear regression per person of lifeSat on age
+lin.reg.pp<-matrix(0,N,3) #initialize, so R knows it exists
+for (i in 1:N){ #separetely for each person
+  #do regression
+  lm.pp<-lm(lifeSat[pp==i] ~ unique(age))
+  #store the results for later access
+  lin.reg.pp[i,1:2]<-lm.pp$coef #store regression weights
+  lin.reg.pp[i,3]<-summary(lm.pp)$r.squared #store rsquare
+}
+```
+
+Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Ctrl+Alt+I*.
+
+When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Ctrl+Shift+K* to preview the HTML file).
+
+The preview shows you a rendered HTML copy of the contents of the editor. Consequently, unlike *Knit*, *Preview* does not run any R code chunks. Instead, the output of the chunk when it was last run in the editor is displayed.
