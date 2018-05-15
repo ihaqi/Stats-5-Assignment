@@ -10,7 +10,7 @@ This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute
 
 Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Ctrl+Shift+Enter*. 
 
-```{r}
+```{r setup}
 rm(list = ls())
 
 #setting up work directory and loading libraries
@@ -23,13 +23,17 @@ new.packages <- list.of.packages[!(list.of.packages %in%installed.packages()[,"P
 if(length(new.packages)){install.packages(new.packages,repos = "http://cran.us.r-project.org")}
 lapply(list.of.packages, require, character.only = TRUE)
 
+````
+
+
+```` {r load data}
 
 # loading the csv dataset
 early.dat<-read.csv("soep_statV.csv",header=T,sep=",")
 pp <- early.dat$id
 lifeSat <- early.dat$lifeSat
 age <- early.dat$age
-age0 = age-1 #for recentering, see later
+age0 = age-55 #for recentering, see later
 early.dat$age0<-age0
 N=length(unique(early.dat$id))     
 Ntotal = length(early.dat$lifeSat) 
