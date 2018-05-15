@@ -23,14 +23,15 @@ new.packages <- list.of.packages[!(list.of.packages %in%installed.packages()[,"P
 if(length(new.packages)){install.packages(new.packages,repos = "http://cran.us.r-project.org")}
 lapply(list.of.packages, require, character.only = TRUE)
 
-````
+```
 
 
-```` {r load data}
+``` {r load_data}
 
 # loading the csv dataset
 early.dat<-read.csv("soep_statV.csv",header=T,sep=",")
 pp <- early.dat$id
+ppp <- unique(pp)
 lifeSat <- early.dat$lifeSat
 age <- early.dat$age
 age0 = age-55 #for recentering, see later
@@ -53,6 +54,11 @@ for ( i in 1:length(y) ) {
   zy[i] <- ( y[i] - ym ) / ysd
 }
 
+# IDEA: replace empstat55 with two dummy variables with range of 0 & 10, then it will probably solve the issues with its current values (i.e. 1,2,3) MANUEL+SHYAM 20180515@18:30
+
+```
+
+```{r box_plots_etc}
 #plotting the varibles in a boxplot
 boxplot(lifeSat~age,xlab="Age (in years)",ylab="Life Satisfaction")
 
@@ -68,16 +74,35 @@ for (i in 1:N){
   points(age[pp==i],lifeSat[pp==i],type="l")
 }
 
+```
 
+
+```{r interactions}
+
+interaction1 <- early.dat$healthSat*early.dat$emplStat55
+interaction2 <- early.dat$livtog*early.dat$emplStat55
+
+early.dat$interaction1 <- interaction1
+early.dat$interaction2 <- interaction2
+
+
+lm1 <- lm(early.dat$lifeSat ~ interaction1 + interaction2 + early.dat$emplStat55 + early.dat$healthSat + early.dat$livtog)
+
+```
+
+```{r regressions in for loop}
 
 # linear regression per person of lifeSat on age
-lin.reg.pp<-matrix(0,N,3) #initialize, so R knows it exists
+lin.reg.pp<-matrix(0,N,7) #initialize, so R knows it exists
 for (i in 1:N){ #separetely for each person
   #do regression
-  lm.pp<-lm(lifeSat[pp==i] ~ unique(age))
+  #lm.pp<-lm(lifeSat[pp==i] ~ unique(age))
+  ii <- ppp[i]
+  lm.ppp<-lm(early.dat$lifeSat[ppp==ii] ~ interaction1[ppp==ii] + interaction2[ppp==ii] + early.dat$emplStat55[ppp==ii] + early.dat$healthSat[ppp==ii] + early.dat$livtog[ppp==ii])
+    #lm(lifeSat[ii] ~ unique(age))
   #store the results for later access
-  lin.reg.pp[i,1:2]<-lm.pp$coef #store regression weights
-  lin.reg.pp[i,3]<-summary(lm.pp)$r.squared #store rsquare
+  lin.reg.pp[i,1:6]<-lm.ppp$coef #store regression weights
+  lin.reg.pp[i,7]<-summary(lm.pp)$r.squared #store rsquare
 }
 ```
 
@@ -103,12 +128,18 @@ xyplot(LifeSatisfaction ~ LivingTogether, type=c("smooth", "p")) #linear negativ
 
 ```
 
-```{r interactions}
 
-interaction1 <- early.dat$healthSat*early.dat$emplStat55
-interaction2 <- early.dat$livtog*early.dat$emplStat55
-lm1 <- lm(early.dat$lifeSat ~ interaction1 + interaction2 + early.dat$emplStat55 + early.dat$healthSat + early.dat$livtog)
-
+```{r, non-bayesian hierarchical regression for each person  cache=TRUE,echo=FALSE,message=FALSE,warning=FALSE }
+# option 1:
+# linear regression per person of cog on age
+lin.reg.pp<-matrix(0,N,3) #initialize, so R knows it exists
+for (i in 1:N){ #separetely for each person
+#do regression
+lm.pp<-lm(early.dat$lifeSat[pp==101] ~ age0[pp==101])
+#store the results for later access
+lin.reg.pp[i,1:2]<-lm.pp$coef #store regression weights
+lin.reg.pp[i,3]<-summary(lm.pp)$r.squared #store rsquare
+}
 ```
 
 
