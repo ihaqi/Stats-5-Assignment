@@ -18,7 +18,7 @@ mydir <- "C:/Users/Nagash.NAGASHIZAR/Desktop/School Stuff/KU Leuven/Stats V/Assi
 #setwd(mydir)
 
 # loading and installing packages
-list.of.packages <- c("knitr","rjags","runjags", "haven","psych","car","magicfor","lattice")
+list.of.packages <- c("knitr","rjags","runjags", "haven","psych","car","magicfor","lattice","Hmisc")
 new.packages <- list.of.packages[!(list.of.packages %in%installed.packages()[,"Package"])]
 if(length(new.packages)){install.packages(new.packages,repos = "http://cran.us.r-project.org")}
 lapply(list.of.packages, require, character.only = TRUE)
@@ -108,7 +108,7 @@ for (i in 1:N){ #separetely for each person
 
 ```{r excluding age}
 
-early.dat
+#early.dat
 
 ```
 
@@ -129,18 +129,6 @@ xyplot(LifeSatisfaction ~ LivingTogether, type=c("smooth", "p")) #linear negativ
 ```
 
 
-```{r, non-bayesian hierarchical regression for each person  cache=TRUE,echo=FALSE,message=FALSE,warning=FALSE }
-# option 1:
-# linear regression per person of cog on age
-lin.reg.pp<-matrix(0,N,3) #initialize, so R knows it exists
-for (i in 1:N){ #separetely for each person
-#do regression
-lm.pp<-lm(early.dat$lifeSat[pp==101] ~ age0[pp==101])
-#store the results for later access
-lin.reg.pp[i,1:2]<-lm.pp$coef #store regression weights
-lin.reg.pp[i,3]<-summary(lm.pp)$r.squared #store rsquare
-}
-```
 
 
 Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Ctrl+Alt+I*.
