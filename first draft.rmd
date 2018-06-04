@@ -1,0 +1,23 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r packages}
+
+list.of.packages <- c("knitr","rjags","runjags","psych","car","magicfor","lattice","Hmisc", "DataExplorer")
+new.packages <- list.of.packages[!(list.of.packages %in%installed.packages()[,"Package"])]
+if(length(new.packages)){install.packages(new.packages,repos = "http://cran.us.r-project.org")}
+lapply(list.of.packages, require, character.only = TRUE)
+
+```
+
+```{r reading_data}
+
+raw.data <- read.csv("soep_statV.csv",header=T,sep=",")
+
+# recoding
+
+
+
+```

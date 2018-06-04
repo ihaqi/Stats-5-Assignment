@@ -121,11 +121,22 @@ EmploymentStatus <- early.dat$emplStat55
 HealthStatus <- early.dat$healthSat
 LivingTogether <- early.dat$livtog
 
-xyplot(LifeSatisfaction ~ Age, type=c("smooth", "p")) #linear flat
+xyplot(LivingTogether ~ Age, type=c("smooth", "p")) #linear flat
 xyplot(LifeSatisfaction ~ EmploymentStatus, type=c("smooth", "p")) #non-linear ??
 xyplot(LifeSatisfaction ~ HealthStatus, type=c("smooth", "p")) #linear postive
 xyplot(LifeSatisfaction ~ LivingTogether, type=c("smooth", "p")) #linear negative
 
+```
+
+
+```{r}
+
+as.data.frame(table(early.dat$livtog[early.dat$age==55]))
+as.data.frame(table(early.dat$livtog[early.dat$age==56]))
+as.data.frame(table(early.dat$livtog[early.dat$age==57]))
+install.packages("DataExplorer")
+library(DataExplorer)
+create_report(early.dat)
 ```
 
 
