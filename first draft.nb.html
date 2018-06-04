@@ -313,16 +313,28 @@ Loading required package: DataExplorer</code></pre>
 <!-- rnb-text-begin -->
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuY2xlYW4uZGF0YSRlbXBsU3RhdDU1WzIgPT0gMF1cblxuYGBgIn0= -->
-<pre class="r"><code>clean.data$emplStat55[2 == 0]
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxucmF3LmRhdGEgPC0gcmVhZC5jc3YoXCJzb2VwX3N0YXRWLmNzdlwiLGhlYWRlcj1ULHNlcD1cIixcIilcbm15ZGF0YUNoSWQgPC0gdHJhbnNmb3JtKHJhdy5kYXRhLCBpZFBQPW1hdGNoKGlkLCB1bmlxdWUoaWQpKSlcbiMgcmVjb2RpbmdcbmNsZWFuLmRhdGEgPC0gbXlkYXRhQ2hJZFxuIyNSZWNvZGUgZW1wbG95ZW1lbnQgaW50byBiaW5hcnkgKDEgPSBmdWxsLXRpbWUgZW1wbG95ZW1lbnQpLCAoMCA9IHBhcnQgdGltZS1hbmQgdW5lbXBsb3llZClcbmNsZWFuLmRhdGEkZW1wbFN0YXQ1NVtjbGVhbi5kYXRhJGVtcGxTdGF0NTUgPT0gMl0gPC0gMFxuY2xlYW4uZGF0YSRlbXBsU3RhdDU1W2NsZWFuLmRhdGEkZW1wbFN0YXQ1NSA9PSAzXSA8LSAwXG5jbGVhbi5kYXRhJGFnZSA8LSByYXcuZGF0YSRhZ2UgLSA1NVxuYGBgIn0= -->
+<pre class="r"><code>raw.data &lt;- read.csv(&quot;soep_statV.csv&quot;,header=T,sep=&quot;,&quot;)
+mydataChId &lt;- transform(raw.data, idPP=match(id, unique(id)))
+# recoding
+clean.data &lt;- mydataChId
+##Recode employement into binary (1 = full-time employement), (0 = part time-and unemployed)
+clean.data$emplStat55[clean.data$emplStat55 == 2] &lt;- 0
+clean.data$emplStat55[clean.data$emplStat55 == 3] &lt;- 0
+clean.data$age &lt;- raw.data$age - 55</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuTiA9IGxlbmd0aCh1bmlxdWUoaWRQUCkpXG5cbmBgYCJ9 -->
+<pre class="r"><code>N = length(unique(idPP))
 </code></pre>
 <!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiaW50ZWdlcigwKVxuIn0= -->
-<pre><code>integer(0)</code></pre>
+<!-- rnb-output-begin eyJkYXRhIjoiRXJyb3IgaW4gdW5pcXVlKGlkUFApIDogb2JqZWN0ICdpZFBQJyBub3QgZm91bmRcbiJ9 -->
+<pre><code>Error in unique(idPP) : object 'idPP' not found</code></pre>
 <!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 
-<div id="rmd-source-code">LS0tDQp0aXRsZTogIlIgTm90ZWJvb2siDQpvdXRwdXQ6IGh0bWxfbm90ZWJvb2sNCi0tLQ0KDQpgYGB7ciBwYWNrYWdlc30NCg0KbGlzdC5vZi5wYWNrYWdlcyA8LSBjKCJrbml0ciIsInJqYWdzIiwicnVuamFncyIsInBzeWNoIiwiY2FyIiwibWFnaWNmb3IiLCJsYXR0aWNlIiwiSG1pc2MiLCAiRGF0YUV4cGxvcmVyIikNCm5ldy5wYWNrYWdlcyA8LSBsaXN0Lm9mLnBhY2thZ2VzWyEobGlzdC5vZi5wYWNrYWdlcyAlaW4laW5zdGFsbGVkLnBhY2thZ2VzKClbLCJQYWNrYWdlIl0pXQ0KaWYobGVuZ3RoKG5ldy5wYWNrYWdlcykpe2luc3RhbGwucGFja2FnZXMobmV3LnBhY2thZ2VzLHJlcG9zID0gImh0dHA6Ly9jcmFuLnVzLnItcHJvamVjdC5vcmciKX0NCmxhcHBseShsaXN0Lm9mLnBhY2thZ2VzLCByZXF1aXJlLCBjaGFyYWN0ZXIub25seSA9IFRSVUUpDQoNCmBgYA0KDQpgYGB7ciByZWFkaW5nX2RhdGF9DQoNCnJhdy5kYXRhIDwtIHJlYWQuY3N2KCJzb2VwX3N0YXRWLmNzdiIsaGVhZGVyPVQsc2VwPSIsIikNCm15ZGF0YUNoSWQgPC0gdHJhbnNmb3JtKHJhdy5kYXRhLCBpZFBQPW1hdGNoKGlkLCB1bmlxdWUoaWQpKSkNCiMgcmVjb2RpbmcNCmNsZWFuLmRhdGEgPC0gbXlkYXRhQ2hJZA0KIyNSZWNvZGUgZW1wbG95ZW1lbnQgaW50byBiaW5hcnkgKDEgPSBmdWxsLXRpbWUgZW1wbG95ZW1lbnQpLCAoMCA9IHBhcnQgdGltZS1hbmQgdW5lbXBsb3llZCkNCmNsZWFuLmRhdGEkZW1wbFN0YXQ1NVtjbGVhbi5kYXRhJGVtcGxTdGF0NTUgPT0gMl0gPC0gMA0KY2xlYW4uZGF0YSRlbXBsU3RhdDU1W2NsZWFuLmRhdGEkZW1wbFN0YXQ1NSA9PSAzXSA8LSAwDQoNCmBgYA==</div>
+<div id="rmd-source-code">LS0tDQp0aXRsZTogIlIgTm90ZWJvb2siDQpvdXRwdXQ6IGh0bWxfbm90ZWJvb2sNCi0tLQ0KDQpgYGB7ciBwYWNrYWdlc30NCg0KbGlzdC5vZi5wYWNrYWdlcyA8LSBjKCJrbml0ciIsInJqYWdzIiwicnVuamFncyIsInBzeWNoIiwiY2FyIiwibWFnaWNmb3IiLCJsYXR0aWNlIiwiSG1pc2MiLCAiRGF0YUV4cGxvcmVyIikNCm5ldy5wYWNrYWdlcyA8LSBsaXN0Lm9mLnBhY2thZ2VzWyEobGlzdC5vZi5wYWNrYWdlcyAlaW4laW5zdGFsbGVkLnBhY2thZ2VzKClbLCJQYWNrYWdlIl0pXQ0KaWYobGVuZ3RoKG5ldy5wYWNrYWdlcykpe2luc3RhbGwucGFja2FnZXMobmV3LnBhY2thZ2VzLHJlcG9zID0gImh0dHA6Ly9jcmFuLnVzLnItcHJvamVjdC5vcmciKX0NCmxhcHBseShsaXN0Lm9mLnBhY2thZ2VzLCByZXF1aXJlLCBjaGFyYWN0ZXIub25seSA9IFRSVUUpDQoNCmBgYA0KDQpgYGB7ciByZWFkaW5nX2NsZWFuaW5nX2RhdGF9DQoNCnJhdy5kYXRhIDwtIHJlYWQuY3N2KCJzb2VwX3N0YXRWLmNzdiIsaGVhZGVyPVQsc2VwPSIsIikNCm15ZGF0YUNoSWQgPC0gdHJhbnNmb3JtKHJhdy5kYXRhLCBpZFBQPW1hdGNoKGlkLCB1bmlxdWUoaWQpKSkNCiMgcmVjb2RpbmcNCmNsZWFuLmRhdGEgPC0gbXlkYXRhQ2hJZA0KIyNSZWNvZGUgZW1wbG95ZW1lbnQgaW50byBiaW5hcnkgKDEgPSBmdWxsLXRpbWUgZW1wbG95ZW1lbnQpLCAoMCA9IHBhcnQgdGltZS1hbmQgdW5lbXBsb3llZCkNCmNsZWFuLmRhdGEkZW1wbFN0YXQ1NVtjbGVhbi5kYXRhJGVtcGxTdGF0NTUgPT0gMl0gPC0gMA0KY2xlYW4uZGF0YSRlbXBsU3RhdDU1W2NsZWFuLmRhdGEkZW1wbFN0YXQ1NSA9PSAzXSA8LSAwDQpjbGVhbi5kYXRhJGFnZSA8LSByYXcuZGF0YSRhZ2UgLSA1NQ0KYGBgDQpgYGB7ciB9DQppZG5hbWVOYW1lID0gImlkUFAiDQpOID0gbGVuZ3RoKHVuaXF1ZShpZFBQKSkNCmBgYA0K</div>
 
 
 

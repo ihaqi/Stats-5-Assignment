@@ -12,7 +12,7 @@ lapply(list.of.packages, require, character.only = TRUE)
 
 ```
 
-```{r reading_data}
+```{r reading_cleaning_data}
 
 raw.data <- read.csv("soep_statV.csv",header=T,sep=",")
 mydataChId <- transform(raw.data, idPP=match(id, unique(id)))
@@ -21,5 +21,9 @@ clean.data <- mydataChId
 ##Recode employement into binary (1 = full-time employement), (0 = part time-and unemployed)
 clean.data$emplStat55[clean.data$emplStat55 == 2] <- 0
 clean.data$emplStat55[clean.data$emplStat55 == 3] <- 0
-
+clean.data$age <- raw.data$age - 55
+```
+```{r }
+idnameName = "idPP"
+N = length(unique(idPP))
 ```
