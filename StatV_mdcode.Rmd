@@ -1,0 +1,115 @@
+---
+title: "Untitled"
+author: "Sigert"
+date: "5 June 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, cache = TRUE)
+list.of.packages <- c("knitr","rjags","runjags", "haven","psych","car","magicfor","lattice")
+new.packages <- list.of.packages[!(list.of.packages %in%installed.packages()[,"Package"])]
+if(length(new.packages)){install.packages(new.packages,repos = "http://cran.us.r-project.org")}
+lapply(list.of.packages, require, character.only = TRUE)
+
+set.seed(777)
+Mywd<- getwd()
+setwd(Mywd)
+```
+
+```{r datapreparation, include=FALSE}
+## Unique ID's
+raw.data <- read.csv("soep_statV.csv", header = TRUE, sep = ",", dec = ".")
+clean.data <- transform(raw.data, pp=match(id,unique(id)))
+
+##centering
+clean.data$age <-raw.data$age-55
+
+##recoding some variables
+clean.data$emplStat55[clean.data$emplStat55 == 2] <- 0
+clean.data$emplStat55[clean.data$emplStat55 == 3] <- 0
+
+Nsubjects <- length(unique(clean.data$pp))
+Ntotal <- length(clean.data$pp)
+
+measurements <- c(0:5)
+Nmeasurements <- length(measurements)
+
+
+```
+
+```{r Jags preparation, include=FALSE}
+##variables
+variable.names <- list("id","ls", "age", "employ","health","partner","pp")
+colnames(clean.data) <- variable.names
+
+##standardisation
+
+standardized.data <- matrix(ncol = length(variable.names), nrow = length(clean.data$id))
+colnames(standardized.data) <-list("pp","Zls","age","Zhealth","employ","partner", "Zage")
+
+
+M.ls <- mean(clean.data$ls)
+SD.ls <- sd(clean.data$ls)
+M.health <- mean(clean.data$health)
+SD.health <- sd(clean.data$health)
+M.age <- mean(clean.data$age)
+SD.age <- sd(clean.data$age)
+
+for( i in 1:(length(clean.data$id))){
+  standardized.data[i,2] <- (M.ls-clean.data$ls[i])/SD.ls
+  standardized.data[i,1] <- clean.data$pp[i]
+  standardized.data[i,3] <- clean.data$age[i]
+  standardized.data[i,4] <- (M.health-clean.data$health[i])/SD.health
+  standardized.data[i,5] <- clean.data$employ[i]
+  standardized.data[i,6] <- clean.data$partner[i]
+  standardized.data[i,7] <- (M.age - clean.data$age[i])/SD.age
+}
+
+```
+
+```{r JAGS specifics}
+nchains = 4
+nadapt = 2000 #many uninformative dispersion parameters
+nburnin = 1000
+niter = 12000
+myinits <- NULL
+```
+
+
+```{r Descriptive Statistics}
+# Life satisfaction by age
+
+mean.table1=tapply(clean.data$ls,list(clean.data$age, clean.data$partner),mean)
+mean.table3=tapply(clean.data$ls,list(clean.data$age, clean.data$employ),mean)
+mean.table4=tapply(clean.data$ls,list(clean.data$age, clean.data$health),mean)
+
+# life satisfaction as a function of Living together and age
+colors=c("black","red")
+plot(unique(clean.data$age),mean.table1[,1],type="b",xlim=c(0,5),ylim=c(0,10),xlab="Age (in years)",ylab="Life Satisfaction",axes=F,main="Life satisfaction as a function of Living together and age")
+axis(side=1,at=c(0,1,2,3,4,5),labels=c(55,56,57,58,59,60))
+axis(side=2,at=seq(0,10,1))
+box()
+points(unique(clean.data$age),mean.table1[,2],type="b",col="red")
+# life satisfaction as a function of employement and age
+
+colors=c("black","red")
+plot(unique(clean.data$age),mean.table3[,1],type="b",xlim=c(0,5),ylim=c(0,10),xlab="Age (in years)",ylab="Life Satisfaction",axes=F,main="Life satisfaction as a function of employement and age")
+axis(side=1,at=c(0,1,2,3,4,5),labels=c(55,56,57,58,59,60))
+axis(side=2,at=seq(0,10,1))
+box()
+points(unique(clean.data$age),mean.table3[,2],type="b",col="red")
+# life satisfaction as a function of health status and age
+
+par(xpd=TRUE)
+colors=rainbow(10)
+plot(unique(clean.data$age),mean.table4[,1],type="b",xlim=c(0,5),ylim=c(0,10),xlab="Age (in years)",ylab="Life satisfaction",axes=F,main="life satisfaction as a function of health status and age")
+axis(side=1,at=c(0,1,2,3,4,5),labels=c(55,56,57,58,59,60))
+axis(side=2,at=seq(0,10,1))
+box()
+for(i in 1:length(colors)){
+  points(unique(clean.data$age),mean.table4[,1+i],type="b",col=colors[i])
+  legend(-0.180, 2, x.intersp = 0.12, legend = colnames(mean.table4), fill = colors, horiz=TRUE)
+}
+
+```
