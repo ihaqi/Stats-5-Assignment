@@ -143,7 +143,7 @@ $(document).ready(function () {
 </style>
 <script>
 $(document).ready(function () {
-  window.initializeSourceEmbed("first draft.rmd");
+  window.initializeSourceEmbed("first draft.Rmd");
   window.initializeCodeFolding("show" === "show");
 });
 </script>
@@ -175,70 +175,11 @@ $(document).ready(function () {
 <!-- rnb-text-begin -->
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubGlzdC5vZi5wYWNrYWdlcyA8LSBjKFwia25pdHJcIixcInJqYWdzXCIsXCJydW5qYWdzXCIsXCJwc3ljaFwiLFwiY2FyXCIsXCJtYWdpY2ZvclwiLFwibGF0dGljZVwiLFwiSG1pc2NcIiwgXCJEYXRhRXhwbG9yZXJcIilcbm5ldy5wYWNrYWdlcyA8LSBsaXN0Lm9mLnBhY2thZ2VzWyEobGlzdC5vZi5wYWNrYWdlcyAlaW4laW5zdGFsbGVkLnBhY2thZ2VzKClbLFwiUGFja2FnZVwiXSldXG5pZihsZW5ndGgobmV3LnBhY2thZ2VzKSl7aW5zdGFsbC5wYWNrYWdlcyhuZXcucGFja2FnZXMscmVwb3MgPSBcImh0dHA6Ly9jcmFuLnVzLnItcHJvamVjdC5vcmdcIil9XG5gYGAifQ== -->
-<pre class="r"><code>list.of.packages &lt;- c(&quot;knitr&quot;,&quot;rjags&quot;,&quot;runjags&quot;,&quot;psych&quot;,&quot;car&quot;,&quot;magicfor&quot;,&quot;lattice&quot;,&quot;Hmisc&quot;, &quot;DataExplorer&quot;)
-new.packages &lt;- list.of.packages[!(list.of.packages %in%installed.packages()[,&quot;Package&quot;])]
-if(length(new.packages)){install.packages(new.packages,repos = &quot;http://cran.us.r-project.org&quot;)}</code></pre>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxubGFwcGx5KGxpc3Qub2YucGFja2FnZXMsIHJlcXVpcmUsIGNoYXJhY3Rlci5vbmx5ID0gVFJVRSlcbmBgYFxuYGBgIn0= -->
+<p><code>r</code>r lapply(list.of.packages, require, character.only = TRUE)</p>
+<pre><code></code></pre>
 <!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiSW5zdGFsbGluZyBwYWNrYWdlcyBpbnRvIOOkvOO4sUM6L1VzZXJzL0Jhdm8vRG9jdW1lbnRzL1Ivd2luLWxpYnJhcnkvMy4146S847iyXG4oYXMg46S847ixbGli46S847iyIGlzIHVuc3BlY2lmaWVkKVxuYWxzbyBpbnN0YWxsaW5nIHRoZSBkZXBlbmRlbmNpZXMg46S847ixY2hlY2ttYXRl46S847iyLCDjpLzjuLFGb3JtdWxh46S847iyLCDjpLzjuLFsYXR0aWNlRXh0cmHjpLzjuLIsIOOkvOO4sWFjZXBhY2vjpLzjuLIsIOOkvOO4sWh0bWxUYWJsZeOkvOO4siwg46S847ixdmlyaWRpc+OkvOO4siwg46S847ixbmV0d29ya0Qz46S847iyXG5cbnRyeWluZyBVUkwgJ2h0dHA6Ly9jcmFuLnVzLnItcHJvamVjdC5vcmcvYmluL3dpbmRvd3MvY29udHJpYi8zLjUvY2hlY2ttYXRlXzEuOC41LnppcCdcbkNvbnRlbnQgdHlwZSAnYXBwbGljYXRpb24vemlwJyBsZW5ndGggNjMwNDk5IGJ5dGVzICg2MTUgS0IpXG5kb3dubG9hZGVkIDYxNSBLQlxuXG50cnlpbmcgVVJMICdodHRwOi8vY3Jhbi51cy5yLXByb2plY3Qub3JnL2Jpbi93aW5kb3dzL2NvbnRyaWIvMy41L0Zvcm11bGFfMS4yLTMuemlwJ1xuQ29udGVudCB0eXBlICdhcHBsaWNhdGlvbi96aXAnIGxlbmd0aCAxODA5MDMgYnl0ZXMgKDE3NiBLQilcbmRvd25sb2FkZWQgMTc2IEtCXG5cbnRyeWluZyBVUkwgJ2h0dHA6Ly9jcmFuLnVzLnItcHJvamVjdC5vcmcvYmluL3dpbmRvd3MvY29udHJpYi8zLjUvbGF0dGljZUV4dHJhXzAuNi0yOC56aXAnXG5Db250ZW50IHR5cGUgJ2FwcGxpY2F0aW9uL3ppcCcgbGVuZ3RoIDIxOTE4ODYgYnl0ZXMgKDIuMSBNQilcbmRvd25sb2FkZWQgMi4xIE1CXG5cbnRyeWluZyBVUkwgJ2h0dHA6Ly9jcmFuLnVzLnItcHJvamVjdC5vcmcvYmluL3dpbmRvd3MvY29udHJpYi8zLjUvYWNlcGFja18xLjQuMS56aXAnXG5Db250ZW50IHR5cGUgJ2FwcGxpY2F0aW9uL3ppcCcgbGVuZ3RoIDk3OTMzIGJ5dGVzICg5NSBLQilcbmRvd25sb2FkZWQgOTUgS0JcblxudHJ5aW5nIFVSTCAnaHR0cDovL2NyYW4udXMuci1wcm9qZWN0Lm9yZy9iaW4vd2luZG93cy9jb250cmliLzMuNS9odG1sVGFibGVfMS4xMi56aXAnXG5Db250ZW50IHR5cGUgJ2FwcGxpY2F0aW9uL3ppcCcgbGVuZ3RoIDMyMjg0MSBieXRlcyAoMzE1IEtCKVxuZG93bmxvYWRlZCAzMTUgS0JcblxudHJ5aW5nIFVSTCAnaHR0cDovL2NyYW4udXMuci1wcm9qZWN0Lm9yZy9iaW4vd2luZG93cy9jb250cmliLzMuNS92aXJpZGlzXzAuNS4xLnppcCdcbkNvbnRlbnQgdHlwZSAnYXBwbGljYXRpb24vemlwJyBsZW5ndGggMTg2NjY3MSBieXRlcyAoMS44IE1CKVxuZG93bmxvYWRlZCAxLjggTUJcblxudHJ5aW5nIFVSTCAnaHR0cDovL2NyYW4udXMuci1wcm9qZWN0Lm9yZy9iaW4vd2luZG93cy9jb250cmliLzMuNS9uZXR3b3JrRDNfMC40LnppcCdcbkNvbnRlbnQgdHlwZSAnYXBwbGljYXRpb24vemlwJyBsZW5ndGggMTk1NTA0IGJ5dGVzICgxOTAgS0IpXG5kb3dubG9hZGVkIDE5MCBLQlxuXG50cnlpbmcgVVJMICdodHRwOi8vY3Jhbi51cy5yLXByb2plY3Qub3JnL2Jpbi93aW5kb3dzL2NvbnRyaWIvMy41L0htaXNjXzQuMS0xLnppcCdcbkNvbnRlbnQgdHlwZSAnYXBwbGljYXRpb24vemlwJyBsZW5ndGggMzAxMjMyNSBieXRlcyAoMi45IE1CKVxuZG93bmxvYWRlZCAyLjkgTUJcblxudHJ5aW5nIFVSTCAnaHR0cDovL2NyYW4udXMuci1wcm9qZWN0Lm9yZy9iaW4vd2luZG93cy9jb250cmliLzMuNS9EYXRhRXhwbG9yZXJfMC42LjAuemlwJ1xuQ29udGVudCB0eXBlICdhcHBsaWNhdGlvbi96aXAnIGxlbmd0aCAxMzg5ODQyIGJ5dGVzICgxLjMgTUIpXG5kb3dubG9hZGVkIDEuMyBNQlxuIn0= -->
-<pre><code>Installing packages into 㤼㸱C:/Users/Bavo/Documents/R/win-library/3.5㤼㸲
-(as 㤼㸱lib㤼㸲 is unspecified)
-also installing the dependencies 㤼㸱checkmate㤼㸲, 㤼㸱Formula㤼㸲, 㤼㸱latticeExtra㤼㸲, 㤼㸱acepack㤼㸲, 㤼㸱htmlTable㤼㸲, 㤼㸱viridis㤼㸲, 㤼㸱networkD3㤼㸲
-
-trying URL 'http://cran.us.r-project.org/bin/windows/contrib/3.5/checkmate_1.8.5.zip'
-Content type 'application/zip' length 630499 bytes (615 KB)
-downloaded 615 KB
-
-trying URL 'http://cran.us.r-project.org/bin/windows/contrib/3.5/Formula_1.2-3.zip'
-Content type 'application/zip' length 180903 bytes (176 KB)
-downloaded 176 KB
-
-trying URL 'http://cran.us.r-project.org/bin/windows/contrib/3.5/latticeExtra_0.6-28.zip'
-Content type 'application/zip' length 2191886 bytes (2.1 MB)
-downloaded 2.1 MB
-
-trying URL 'http://cran.us.r-project.org/bin/windows/contrib/3.5/acepack_1.4.1.zip'
-Content type 'application/zip' length 97933 bytes (95 KB)
-downloaded 95 KB
-
-trying URL 'http://cran.us.r-project.org/bin/windows/contrib/3.5/htmlTable_1.12.zip'
-Content type 'application/zip' length 322841 bytes (315 KB)
-downloaded 315 KB
-
-trying URL 'http://cran.us.r-project.org/bin/windows/contrib/3.5/viridis_0.5.1.zip'
-Content type 'application/zip' length 1866671 bytes (1.8 MB)
-downloaded 1.8 MB
-
-trying URL 'http://cran.us.r-project.org/bin/windows/contrib/3.5/networkD3_0.4.zip'
-Content type 'application/zip' length 195504 bytes (190 KB)
-downloaded 190 KB
-
-trying URL 'http://cran.us.r-project.org/bin/windows/contrib/3.5/Hmisc_4.1-1.zip'
-Content type 'application/zip' length 3012325 bytes (2.9 MB)
-downloaded 2.9 MB
-
-trying URL 'http://cran.us.r-project.org/bin/windows/contrib/3.5/DataExplorer_0.6.0.zip'
-Content type 'application/zip' length 1389842 bytes (1.3 MB)
-downloaded 1.3 MB</code></pre>
-<!-- rnb-output-end -->
-<!-- rnb-output-begin eyJkYXRhIjoicGFja2FnZSDigJhjaGVja21hdGXigJkgc3VjY2Vzc2Z1bGx5IHVucGFja2VkIGFuZCBNRDUgc3VtcyBjaGVja2VkXG5wYWNrYWdlIOKAmEZvcm11bGHigJkgc3VjY2Vzc2Z1bGx5IHVucGFja2VkIGFuZCBNRDUgc3VtcyBjaGVja2VkXG5wYWNrYWdlIOKAmGxhdHRpY2VFeHRyYeKAmSBzdWNjZXNzZnVsbHkgdW5wYWNrZWQgYW5kIE1ENSBzdW1zIGNoZWNrZWRcbnBhY2thZ2Ug4oCYYWNlcGFja+KAmSBzdWNjZXNzZnVsbHkgdW5wYWNrZWQgYW5kIE1ENSBzdW1zIGNoZWNrZWRcbnBhY2thZ2Ug4oCYaHRtbFRhYmxl4oCZIHN1Y2Nlc3NmdWxseSB1bnBhY2tlZCBhbmQgTUQ1IHN1bXMgY2hlY2tlZFxucGFja2FnZSDigJh2aXJpZGlz4oCZIHN1Y2Nlc3NmdWxseSB1bnBhY2tlZCBhbmQgTUQ1IHN1bXMgY2hlY2tlZFxucGFja2FnZSDigJhuZXR3b3JrRDPigJkgc3VjY2Vzc2Z1bGx5IHVucGFja2VkIGFuZCBNRDUgc3VtcyBjaGVja2VkXG5wYWNrYWdlIOKAmEhtaXNj4oCZIHN1Y2Nlc3NmdWxseSB1bnBhY2tlZCBhbmQgTUQ1IHN1bXMgY2hlY2tlZFxucGFja2FnZSDigJhEYXRhRXhwbG9yZXLigJkgc3VjY2Vzc2Z1bGx5IHVucGFja2VkIGFuZCBNRDUgc3VtcyBjaGVja2VkXG5cblRoZSBkb3dubG9hZGVkIGJpbmFyeSBwYWNrYWdlcyBhcmUgaW5cblx0QzpcXFVzZXJzXFxCYXZvXFxBcHBEYXRhXFxMb2NhbFxcVGVtcFxcUnRtcHdUSXg4UFxcZG93bmxvYWRlZF9wYWNrYWdlc1xuIn0= -->
-<pre><code>package ‘checkmate’ successfully unpacked and MD5 sums checked
-package ‘Formula’ successfully unpacked and MD5 sums checked
-package ‘latticeExtra’ successfully unpacked and MD5 sums checked
-package ‘acepack’ successfully unpacked and MD5 sums checked
-package ‘htmlTable’ successfully unpacked and MD5 sums checked
-package ‘viridis’ successfully unpacked and MD5 sums checked
-package ‘networkD3’ successfully unpacked and MD5 sums checked
-package ‘Hmisc’ successfully unpacked and MD5 sums checked
-package ‘DataExplorer’ successfully unpacked and MD5 sums checked
-
-The downloaded binary packages are in
-    C:\Users\Bavo\AppData\Local\Temp\RtmpwTIx8P\downloaded_packages</code></pre>
-<!-- rnb-output-end -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubGFwcGx5KGxpc3Qub2YucGFja2FnZXMsIHJlcXVpcmUsIGNoYXJhY3Rlci5vbmx5ID0gVFJVRSlcbmBgYCJ9 -->
-<pre class="r"><code>lapply(list.of.packages, require, character.only = TRUE)</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiTG9hZGluZyByZXF1aXJlZCBwYWNrYWdlOiBrbml0clxuTG9hZGluZyByZXF1aXJlZCBwYWNrYWdlOiByamFnc1xuTG9hZGluZyByZXF1aXJlZCBwYWNrYWdlOiBjb2RhXG5MaW5rZWQgdG8gSkFHUyA0LjMuMFxuTG9hZGVkIG1vZHVsZXM6IGJhc2Vtb2QsYnVnc1xuTG9hZGluZyByZXF1aXJlZCBwYWNrYWdlOiBydW5qYWdzXG5Mb2FkaW5nIHJlcXVpcmVkIHBhY2thZ2U6IHBzeWNoXG5Mb2FkaW5nIHJlcXVpcmVkIHBhY2thZ2U6IGNhclxuTG9hZGluZyByZXF1aXJlZCBwYWNrYWdlOiBjYXJEYXRhXG5cbkF0dGFjaGluZyBwYWNrYWdlOiCRY2FyklxuXG5UaGUgZm9sbG93aW5nIG9iamVjdCBpcyBtYXNrZWQgZnJvbSCRcGFja2FnZTpwc3ljaJI6XG5cbiAgICBsb2dpdFxuXG5Mb2FkaW5nIHJlcXVpcmVkIHBhY2thZ2U6IG1hZ2ljZm9yXG5Mb2FkaW5nIHJlcXVpcmVkIHBhY2thZ2U6IGxhdHRpY2VcbkxvYWRpbmcgcmVxdWlyZWQgcGFja2FnZTogSG1pc2NcbkxvYWRpbmcgcmVxdWlyZWQgcGFja2FnZTogc3Vydml2YWxcbkxvYWRpbmcgcmVxdWlyZWQgcGFja2FnZTogRm9ybXVsYVxuTG9hZGluZyByZXF1aXJlZCBwYWNrYWdlOiBnZ3Bsb3QyXG5cbkF0dGFjaGluZyBwYWNrYWdlOiCRZ2dwbG90MpJcblxuVGhlIGZvbGxvd2luZyBvYmplY3RzIGFyZSBtYXNrZWQgZnJvbSCRcGFja2FnZTpwc3ljaJI6XG5cbiAgICAlKyUsIGFscGhhXG5cblxuQXR0YWNoaW5nIHBhY2thZ2U6IJFIbWlzY5JcblxuVGhlIGZvbGxvd2luZyBvYmplY3QgaXMgbWFza2VkIGZyb20gkXBhY2thZ2U6cHN5Y2iSOlxuXG4gICAgZGVzY3JpYmVcblxuVGhlIGZvbGxvd2luZyBvYmplY3RzIGFyZSBtYXNrZWQgZnJvbSCRcGFja2FnZTpiYXNlkjpcblxuICAgIGZvcm1hdC5wdmFsLCB1bml0c1xuXG5Mb2FkaW5nIHJlcXVpcmVkIHBhY2thZ2U6IERhdGFFeHBsb3JlclxuIn0= -->
+<!-- rnb-output-begin eyJkYXRhIjoiTG9hZGluZyByZXF1aXJlZCBwYWNrYWdlOiBrbml0clxuTG9hZGluZyByZXF1aXJlZCBwYWNrYWdlOiByamFnc1xuTG9hZGluZyByZXF1aXJlZCBwYWNrYWdlOiBjb2RhXG5MaW5rZWQgdG8gSkFHUyA0LjMuMFxuTG9hZGVkIG1vZHVsZXM6IGJhc2Vtb2QsYnVnc1xuTG9hZGluZyByZXF1aXJlZCBwYWNrYWdlOiBydW5qYWdzXG5Mb2FkaW5nIHJlcXVpcmVkIHBhY2thZ2U6IHBzeWNoXG5Mb2FkaW5nIHJlcXVpcmVkIHBhY2thZ2U6IGNhclxuTG9hZGluZyByZXF1aXJlZCBwYWNrYWdlOiBjYXJEYXRhXG5cbkF0dGFjaGluZyBwYWNrYWdlOiDigJhjYXLigJlcblxuVGhlIGZvbGxvd2luZyBvYmplY3QgaXMgbWFza2VkIGZyb20g4oCYcGFja2FnZTpwc3ljaOKAmTpcblxuICAgIGxvZ2l0XG5cbkxvYWRpbmcgcmVxdWlyZWQgcGFja2FnZTogbWFnaWNmb3JcbkxvYWRpbmcgcmVxdWlyZWQgcGFja2FnZTogbGF0dGljZVxuTG9hZGluZyByZXF1aXJlZCBwYWNrYWdlOiBIbWlzY1xuTG9hZGluZyByZXF1aXJlZCBwYWNrYWdlOiBzdXJ2aXZhbFxuTG9hZGluZyByZXF1aXJlZCBwYWNrYWdlOiBGb3JtdWxhXG5Mb2FkaW5nIHJlcXVpcmVkIHBhY2thZ2U6IGdncGxvdDJcblxuQXR0YWNoaW5nIHBhY2thZ2U6IOKAmGdncGxvdDLigJlcblxuVGhlIGZvbGxvd2luZyBvYmplY3RzIGFyZSBtYXNrZWQgZnJvbSDigJhwYWNrYWdlOnBzeWNo4oCZOlxuXG4gICAgJSslLCBhbHBoYVxuXG5cbkF0dGFjaGluZyBwYWNrYWdlOiDigJhIbWlzY+KAmVxuXG5UaGUgZm9sbG93aW5nIG9iamVjdCBpcyBtYXNrZWQgZnJvbSDigJhwYWNrYWdlOnBzeWNo4oCZOlxuXG4gICAgZGVzY3JpYmVcblxuVGhlIGZvbGxvd2luZyBvYmplY3RzIGFyZSBtYXNrZWQgZnJvbSDigJhwYWNrYWdlOmJhc2XigJk6XG5cbiAgICBmb3JtYXQucHZhbCwgdW5pdHNcblxuTG9hZGluZyByZXF1aXJlZCBwYWNrYWdlOiBEYXRhRXhwbG9yZXJcbltbMV1dXG5bMV0gVFJVRVxuXG5bWzJdXVxuWzFdIFRSVUVcblxuW1szXV1cblsxXSBUUlVFXG5cbltbNF1dXG5bMV0gVFJVRVxuXG5bWzVdXVxuWzFdIFRSVUVcblxuW1s2XV1cblsxXSBUUlVFXG5cbltbN11dXG5bMV0gVFJVRVxuXG5bWzhdXVxuWzFdIFRSVUVcblxuW1s5XV1cblsxXSBUUlVFXG4ifQ== -->
 <pre><code>Loading required package: knitr
 Loading required package: rjags
 Loading required package: coda
@@ -249,9 +190,9 @@ Loading required package: psych
 Loading required package: car
 Loading required package: carData
 
-Attaching package: 㤼㸱car㤼㸲
+Attaching package: ‘car’
 
-The following object is masked from 㤼㸱package:psych㤼㸲:
+The following object is masked from ‘package:psych’:
 
     logit
 
@@ -262,27 +203,25 @@ Loading required package: survival
 Loading required package: Formula
 Loading required package: ggplot2
 
-Attaching package: 㤼㸱ggplot2㤼㸲
+Attaching package: ‘ggplot2’
 
-The following objects are masked from 㤼㸱package:psych㤼㸲:
+The following objects are masked from ‘package:psych’:
 
     %+%, alpha
 
 
-Attaching package: 㤼㸱Hmisc㤼㸲
+Attaching package: ‘Hmisc’
 
-The following object is masked from 㤼㸱package:psych㤼㸲:
+The following object is masked from ‘package:psych’:
 
     describe
 
-The following objects are masked from 㤼㸱package:base㤼㸲:
+The following objects are masked from ‘package:base’:
 
     format.pval, units
 
-Loading required package: DataExplorer</code></pre>
-<!-- rnb-output-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiW1sxXV1cblsxXSBUUlVFXG5cbltbMl1dXG5bMV0gVFJVRVxuXG5bWzNdXVxuWzFdIFRSVUVcblxuW1s0XV1cblsxXSBUUlVFXG5cbltbNV1dXG5bMV0gVFJVRVxuXG5bWzZdXVxuWzFdIFRSVUVcblxuW1s3XV1cblsxXSBUUlVFXG5cbltbOF1dXG5bMV0gVFJVRVxuXG5bWzldXVxuWzFdIFRSVUVcbiJ9 -->
-<pre><code>[[1]]
+Loading required package: DataExplorer
+[[1]]
 [1] TRUE
 
 [[2]]
@@ -313,16 +252,31 @@ Loading required package: DataExplorer</code></pre>
 <!-- rnb-text-begin -->
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuY2xlYW4uZGF0YSRlbXBsU3RhdDU1WzIgPT0gMF1cblxuYGBgIn0= -->
-<pre class="r"><code>clean.data$emplStat55[2 == 0]
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYWdlIC0gNTVcblxuYGBgIn0= -->
+<pre class="r"><code>age - 55
 </code></pre>
 <!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiaW50ZWdlcigwKVxuIn0= -->
-<pre><code>integer(0)</code></pre>
+<!-- rnb-output-begin eyJkYXRhIjoiICAgWzFdIDAgMSAyIDMgNCAwIDAgMSAyIDMgMCAxIDAgMSAyIDMgNCA1IDAgMSAyIDMgNCA1IDAgMCAxIDIgMyA0IDUgMCAxIDIgMyA0IDUgMCAxIDIgMyA0IDUgMCAwIDEgMiAzIDQgNSAwIDEgMiAzIDAgMSAyIDMgNCA1IDAgMSAyIDMgNCA1IDAgMSAyIDNcbiAgWzcxXSA0IDUgMCAxIDIgMyA0IDUgMCAwIDEgMiAzIDQgNSAwIDEgMiAzIDQgMCAxIDIgMyA0IDUgMCAxIDAgMSAyIDMgNCA1IDAgMSAyIDMgMCAxIDIgMyA0IDUgMCAxIDIgMyA0IDUgMCAxIDIgMyA0IDUgMCAwIDEgMiAzIDQgNSAwIDEgMiAzIDQgNSAwXG4gWzE0MV0gMSAyIDMgNCA1IDAgMSAyIDQgNSAwIDEgMiAzIDQgMCAxIDIgMyA0IDUgMCAxIDIgMyA0IDUgMCAxIDIgMyA0IDUgMCAxIDIgMyA0IDUgMCAwIDEgMiAzIDQgNSAwIDEgMiAzIDQgNSAwIDAgMSAyIDMgNCA1IDAgMSAyIDAgMSAyIDMgMCAxIDIgM1xuIFsyMTFdIDQgNSAwIDEgMiAzIDQgNSAwIDEgMiAzIDQgNSAwIDEgMiAzIDQgNSAwIDEgMiAzIDAgMSAyIDMgMCAxIDIgMyA0IDUgMCAxIDIgMyA0IDUgMCAxIDIgMyA0IDUgMCAxIDIgMyA0IDUgMCAxIDIgMyAwIDEgMiAzIDQgNSAwIDEgMiAzIDQgNSAwIDFcbiBbMjgxXSAyIDMgNCA1IDAgMSAyIDMgNCA1IDAgMiAzIDQgNSAwIDEgMiAzIDUgMCAxIDIgMyA0IDAgMSAyIDMgNCAwIDEgMiAzIDQgNSAwIDEgMiAzIDQgMCAxIDIgMyA0IDUgMCAxIDIgMyA0IDUgMCAxIDIgMyAwIDEgMiAzIDQgNSAwIDEgMiAzIDQgNSAwXG4gWzM1MV0gMCAxIDIgMyA0IDUgMCAxIDIgMyA0IDUgMCAxIDIgMyA0IDUgMCAxIDIgMyA0IDUgMCAxIDIgMyA0IDUgMCAxIDIgMyA1IDAgMSAyIDMgNCAwIDEgMiAzIDQgMCAxIDIgMyA0IDUgMCAxIDAgMCAxIDIgMyA0IDUgMCAxIDIgMyA0IDUgMCAxIDIgM1xuIFs0MjFdIDQgNSAwIDEgMiAzIDQgNSAwIDEgMiAzIDQgNSAwIDEgMiAzIDQgNSAwIDEgMiAzIDQgMCAxIDIgMCAxIDIgMCAxIDIgMCAxIDIgMyAwIDEgMiAzIDQgNSAwIDEgMiAwIDEgMiAzIDQgNSAwIDEgMiAzIDQgNSAwIDEgMiAzIDQgNSAwIDIgMyA0IDVcbiBbNDkxXSAxIDIgMyA0IDUgMCAxIDAgMSAwIDAgMSAyIDMgNCA1IDAgMCAxIDIgMyA0IDUgMCAxIDAgMSAyIDMgNCA1IDAgMSAyIDMgNCA1IDAgMSAyIDMgNCA1IDAgMSAyIDAgMSAwIDEgMiAzIDQgNSA1IDAgMSAwIDEgMiAzIDQgNSAwIDEgMiAzIDAgMCAxXG4gWzU2MV0gMiAzIDQgNSAwIDAgMSAwIDEgMiAzIDQgNSAwIDEgMiAzIDEgMiAzIDAgMSAwIDEgMiAzIDQgNSAwIDEgMiAzIDQgNSAwIDEgMiAzIDQgNSAwIDEgMiAzIDQgNSAwIDEgMiAzIDQgNSAwIDEgMiAzIDQgNSAwIDEgMiAzIDQgNSAwIDEgMiAzIDQgNVxuIFs2MzFdIDAgMSAwIDEgMiAzIDQgNSAwIDAgMCAxIDIgMyA0IDUgMCAxIDIgMyA0IDUgMCAxIDIgMyA0IDUgMCAxIDIgMyAwIDEgMiAzIDQgNSAwIDEgMCAxIDIgMyA0IDUgMCAxIDMgMCAxIDIgMyA0IDUgMCAxIDIgMyA0IDUgMCAxIDIgMyA0IDUgMCAxIDJcbiBbNzAxXSAzIDQgNSAwIDEgMiAzIDQgMCAxIDIgMyA0IDAgMSAwIDEgMyAwIDEgMiAzIDQgMCAxIDIgMyAwIDEgMiAwIDEgMiAwIDAgMSAyIDAgMSAyIDMgNCA1IDAgMSAyIDMgNCA1IDAgMSAyIDMgNCA1IDAgMSAyIDMgNCA1IDAgMSAyIDAgMSAyIDMgNCA1XG4gWzc3MV0gMCAxIDIgMyA0IDUgMCAxIDIgMyA0IDUgMCAyIDMgNCA1IDAgMSAyIDMgNCA1IDAgMSAyIDMgNCA1IDAgMSAyIDMgNCA1IDAgMSAyIDMgNCA1IDAgMSAyIDMgNCA1IDAgMSAyIDMgNCA1IDAgMSAyIDMgNCA1IDAgMCAxIDIgMyA0IDUgMCAxIDIgM1xuIFs4NDFdIDQgNSAwIDEgMiAzIDQgNSAwIDEgMiAzIDQgNSAwIDEgMiAzIDQgNSAwIDEgMiAzIDQgMCAwIDEgMiAzIDQgNSAwIDEgMiAzIDQgNSAwIDIgMyA0IDUgMCAxIDIgMyA0IDUgMCAxIDIgMyA0IDUgMCAxIDIgMCAwIDEgMiAzIDQgNSAwIDEgMiAzIDRcbiBbOTExXSA1IDAgMSAyIDMgNCA1IDAgMSAyIDMgNCA1IDAgMSAyIDMgNCA1IDAgMSAyIDMgNCA1IDAgMSAyIDMgNCA1IDAgMSAyIDMgNCA1IDAgMSAyIDMgNCA1IDAgMSAyIDMgNCA1IDAgMSAyIDMgNCA1IDAgMSAyIDMgNCA1IDAgMSAyIDMgNCA1IDAgMSAyXG4gWzk4MV0gMyA0IDUgMCAxIDIgMyA0IDUgMCAwIDEgMiAzIDQgMCAxIDIgMCAxXG4gWyByZWFjaGVkIGdldE9wdGlvbihcIm1heC5wcmludFwiKSAtLSBvbWl0dGVkIDUwMjQgZW50cmllcyBdXG4ifQ== -->
+<pre><code>   [1] 0 1 2 3 4 0 0 1 2 3 0 1 0 1 2 3 4 5 0 1 2 3 4 5 0 0 1 2 3 4 5 0 1 2 3 4 5 0 1 2 3 4 5 0 0 1 2 3 4 5 0 1 2 3 0 1 2 3 4 5 0 1 2 3 4 5 0 1 2 3
+  [71] 4 5 0 1 2 3 4 5 0 0 1 2 3 4 5 0 1 2 3 4 0 1 2 3 4 5 0 1 0 1 2 3 4 5 0 1 2 3 0 1 2 3 4 5 0 1 2 3 4 5 0 1 2 3 4 5 0 0 1 2 3 4 5 0 1 2 3 4 5 0
+ [141] 1 2 3 4 5 0 1 2 4 5 0 1 2 3 4 0 1 2 3 4 5 0 1 2 3 4 5 0 1 2 3 4 5 0 1 2 3 4 5 0 0 1 2 3 4 5 0 1 2 3 4 5 0 0 1 2 3 4 5 0 1 2 0 1 2 3 0 1 2 3
+ [211] 4 5 0 1 2 3 4 5 0 1 2 3 4 5 0 1 2 3 4 5 0 1 2 3 0 1 2 3 0 1 2 3 4 5 0 1 2 3 4 5 0 1 2 3 4 5 0 1 2 3 4 5 0 1 2 3 0 1 2 3 4 5 0 1 2 3 4 5 0 1
+ [281] 2 3 4 5 0 1 2 3 4 5 0 2 3 4 5 0 1 2 3 5 0 1 2 3 4 0 1 2 3 4 0 1 2 3 4 5 0 1 2 3 4 0 1 2 3 4 5 0 1 2 3 4 5 0 1 2 3 0 1 2 3 4 5 0 1 2 3 4 5 0
+ [351] 0 1 2 3 4 5 0 1 2 3 4 5 0 1 2 3 4 5 0 1 2 3 4 5 0 1 2 3 4 5 0 1 2 3 5 0 1 2 3 4 0 1 2 3 4 0 1 2 3 4 5 0 1 0 0 1 2 3 4 5 0 1 2 3 4 5 0 1 2 3
+ [421] 4 5 0 1 2 3 4 5 0 1 2 3 4 5 0 1 2 3 4 5 0 1 2 3 4 0 1 2 0 1 2 0 1 2 0 1 2 3 0 1 2 3 4 5 0 1 2 0 1 2 3 4 5 0 1 2 3 4 5 0 1 2 3 4 5 0 2 3 4 5
+ [491] 1 2 3 4 5 0 1 0 1 0 0 1 2 3 4 5 0 0 1 2 3 4 5 0 1 0 1 2 3 4 5 0 1 2 3 4 5 0 1 2 3 4 5 0 1 2 0 1 0 1 2 3 4 5 5 0 1 0 1 2 3 4 5 0 1 2 3 0 0 1
+ [561] 2 3 4 5 0 0 1 0 1 2 3 4 5 0 1 2 3 1 2 3 0 1 0 1 2 3 4 5 0 1 2 3 4 5 0 1 2 3 4 5 0 1 2 3 4 5 0 1 2 3 4 5 0 1 2 3 4 5 0 1 2 3 4 5 0 1 2 3 4 5
+ [631] 0 1 0 1 2 3 4 5 0 0 0 1 2 3 4 5 0 1 2 3 4 5 0 1 2 3 4 5 0 1 2 3 0 1 2 3 4 5 0 1 0 1 2 3 4 5 0 1 3 0 1 2 3 4 5 0 1 2 3 4 5 0 1 2 3 4 5 0 1 2
+ [701] 3 4 5 0 1 2 3 4 0 1 2 3 4 0 1 0 1 3 0 1 2 3 4 0 1 2 3 0 1 2 0 1 2 0 0 1 2 0 1 2 3 4 5 0 1 2 3 4 5 0 1 2 3 4 5 0 1 2 3 4 5 0 1 2 0 1 2 3 4 5
+ [771] 0 1 2 3 4 5 0 1 2 3 4 5 0 2 3 4 5 0 1 2 3 4 5 0 1 2 3 4 5 0 1 2 3 4 5 0 1 2 3 4 5 0 1 2 3 4 5 0 1 2 3 4 5 0 1 2 3 4 5 0 0 1 2 3 4 5 0 1 2 3
+ [841] 4 5 0 1 2 3 4 5 0 1 2 3 4 5 0 1 2 3 4 5 0 1 2 3 4 0 0 1 2 3 4 5 0 1 2 3 4 5 0 2 3 4 5 0 1 2 3 4 5 0 1 2 3 4 5 0 1 2 0 0 1 2 3 4 5 0 1 2 3 4
+ [911] 5 0 1 2 3 4 5 0 1 2 3 4 5 0 1 2 3 4 5 0 1 2 3 4 5 0 1 2 3 4 5 0 1 2 3 4 5 0 1 2 3 4 5 0 1 2 3 4 5 0 1 2 3 4 5 0 1 2 3 4 5 0 1 2 3 4 5 0 1 2
+ [981] 3 4 5 0 1 2 3 4 5 0 0 1 2 3 4 0 1 2 0 1
+ [ reached getOption(&quot;max.print&quot;) -- omitted 5024 entries ]</code></pre>
 <!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 
-<div id="rmd-source-code">LS0tDQp0aXRsZTogIlIgTm90ZWJvb2siDQpvdXRwdXQ6IGh0bWxfbm90ZWJvb2sNCi0tLQ0KDQpgYGB7ciBwYWNrYWdlc30NCg0KbGlzdC5vZi5wYWNrYWdlcyA8LSBjKCJrbml0ciIsInJqYWdzIiwicnVuamFncyIsInBzeWNoIiwiY2FyIiwibWFnaWNmb3IiLCJsYXR0aWNlIiwiSG1pc2MiLCAiRGF0YUV4cGxvcmVyIikNCm5ldy5wYWNrYWdlcyA8LSBsaXN0Lm9mLnBhY2thZ2VzWyEobGlzdC5vZi5wYWNrYWdlcyAlaW4laW5zdGFsbGVkLnBhY2thZ2VzKClbLCJQYWNrYWdlIl0pXQ0KaWYobGVuZ3RoKG5ldy5wYWNrYWdlcykpe2luc3RhbGwucGFja2FnZXMobmV3LnBhY2thZ2VzLHJlcG9zID0gImh0dHA6Ly9jcmFuLnVzLnItcHJvamVjdC5vcmciKX0NCmxhcHBseShsaXN0Lm9mLnBhY2thZ2VzLCByZXF1aXJlLCBjaGFyYWN0ZXIub25seSA9IFRSVUUpDQoNCmBgYA0KDQpgYGB7ciByZWFkaW5nX2RhdGF9DQoNCnJhdy5kYXRhIDwtIHJlYWQuY3N2KCJzb2VwX3N0YXRWLmNzdiIsaGVhZGVyPVQsc2VwPSIsIikNCm15ZGF0YUNoSWQgPC0gdHJhbnNmb3JtKHJhdy5kYXRhLCBpZFBQPW1hdGNoKGlkLCB1bmlxdWUoaWQpKSkNCiMgcmVjb2RpbmcNCmNsZWFuLmRhdGEgPC0gbXlkYXRhQ2hJZA0KIyNSZWNvZGUgZW1wbG95ZW1lbnQgaW50byBiaW5hcnkgKDEgPSBmdWxsLXRpbWUgZW1wbG95ZW1lbnQpLCAoMCA9IHBhcnQgdGltZS1hbmQgdW5lbXBsb3llZCkNCmNsZWFuLmRhdGEkZW1wbFN0YXQ1NVtjbGVhbi5kYXRhJGVtcGxTdGF0NTUgPT0gMl0gPC0gMA0KY2xlYW4uZGF0YSRlbXBsU3RhdDU1W2NsZWFuLmRhdGEkZW1wbFN0YXQ1NSA9PSAzXSA8LSAwDQoNCmBgYA==</div>
+<div id="rmd-source-code">LS0tDQp0aXRsZTogIlIgTm90ZWJvb2siDQpvdXRwdXQ6IGh0bWxfbm90ZWJvb2sNCi0tLQ0KDQpgYGB7ciBwYWNrYWdlc30NCg0KbGlzdC5vZi5wYWNrYWdlcyA8LSBjKCJrbml0ciIsInJqYWdzIiwicnVuamFncyIsInBzeWNoIiwiY2FyIiwibWFnaWNmb3IiLCJsYXR0aWNlIiwiSG1pc2MiLCAiRGF0YUV4cGxvcmVyIikNCm5ldy5wYWNrYWdlcyA8LSBsaXN0Lm9mLnBhY2thZ2VzWyEobGlzdC5vZi5wYWNrYWdlcyAlaW4laW5zdGFsbGVkLnBhY2thZ2VzKClbLCJQYWNrYWdlIl0pXQ0KaWYobGVuZ3RoKG5ldy5wYWNrYWdlcykpe2luc3RhbGwucGFja2FnZXMobmV3LnBhY2thZ2VzLHJlcG9zID0gImh0dHA6Ly9jcmFuLnVzLnItcHJvamVjdC5vcmciKX0NCmxhcHBseShsaXN0Lm9mLnBhY2thZ2VzLCByZXF1aXJlLCBjaGFyYWN0ZXIub25seSA9IFRSVUUpDQoNCmBgYA0KDQpgYGB7ciByZWFkaW5nX2RhdGF9DQoNCnJhdy5kYXRhIDwtIHJlYWQuY3N2KCJzb2VwX3N0YXRWLmNzdiIsaGVhZGVyPVQsc2VwPSIsIikNCm15ZGF0YUNoSWQgPC0gdHJhbnNmb3JtKHJhdy5kYXRhLCBpZFBQPW1hdGNoKGlkLCB1bmlxdWUoaWQpKSkNCiMgcmVjb2RpbmcNCmNsZWFuLmRhdGEgPC0gbXlkYXRhQ2hJZA0KIyNSZWNvZGUgZW1wbG95ZW1lbnQgaW50byBiaW5hcnkgKDEgPSBmdWxsLXRpbWUgZW1wbG95ZW1lbnQpLCAoMCA9IHBhcnQgdGltZS1hbmQgdW5lbXBsb3llZCkNCmNsZWFuLmRhdGEkZW1wbFN0YXQ1NVtjbGVhbi5kYXRhJGVtcGxTdGF0NTUgPT0gMl0gPC0gMA0KY2xlYW4uZGF0YSRlbXBsU3RhdDU1W2NsZWFuLmRhdGEkZW1wbFN0YXQ1NSA9PSAzXSA8LSAwDQpjbGVhbi5kYXRhJGFnZSA8LSByYXcuZGF0YSRhZ2UgLSA1NSANCmBgYA==</div>
 
 
 

@@ -3,7 +3,7 @@ title: "R Notebook"
 output: html_notebook
 ---
 
-```{r packages}
+```{r packages, include=FALSE}
 
 list.of.packages <- c("knitr","rjags","runjags","psych","car","magicfor","lattice","Hmisc", "DataExplorer")
 new.packages <- list.of.packages[!(list.of.packages %in%installed.packages()[,"Package"])]
@@ -21,5 +21,9 @@ clean.data <- mydataChId
 ##Recode employement into binary (1 = full-time employement), (0 = part time-and unemployed)
 clean.data$emplStat55[clean.data$emplStat55 == 2] <- 0
 clean.data$emplStat55[clean.data$emplStat55 == 3] <- 0
+clean.data$age <- raw.data$age - 55 
+```
+```{r }
 
 ```
+
