@@ -103,7 +103,7 @@ points(unique(clean.data$age),mean.table3[,2],type="b",col="red")
 
 par(xpd=TRUE)
 colors=rainbow(10)
-plot(unique(clean.data$age),mean.table4[,1],type="b",xlim=c(0,5),ylim=c(0,10),xlab="Age (in years)",ylab="Life satisfaction",axes=F,main="life satisfaction as a function of health status and age")
+plot(unique(clean.data$age),mean.table4[,1],type="n",xlim=c(0,5),ylim=c(0,10),xlab="Age (in years)",ylab="Life satisfaction",axes=F,main="life satisfaction as a function of health status and age")
 axis(side=1,at=c(0,1,2,3,4,5),labels=c(55,56,57,58,59,60))
 axis(side=2,at=seq(0,10,1))
 box()
