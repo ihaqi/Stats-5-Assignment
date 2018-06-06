@@ -5,7 +5,7 @@ output: html_notebook
 
 ```{r packages}
 
-list.of.packages <- c("knitr","rjags","runjags","psych","car","magicfor","lattice","Hmisc", "DataExplorer")
+list.of.packages <- c("knitr","rjags","runjags","psych","car","magicfor","lattice","Hmisc", "DataExplorer", "CorrMixed")
 new.packages <- list.of.packages[!(list.of.packages %in%installed.packages()[,"Package"])]
 if(length(new.packages)){install.packages(new.packages,repos = "http://cran.us.r-project.org")}
 lapply(list.of.packages, require, character.only = TRUE)
@@ -18,6 +18,39 @@ raw.data <- read.csv("soep_statV.csv",header=T,sep=",")
 
 # recoding
 
+```
 
+## spaghetti plot 
 
+```{r, cache=TRUE,echo=FALSE,message=FALSE,warning=FALSE}
+# create spaghetti plot in two plots
+pp<-raw.data$id
+cog<-raw.data$livtog
+ppp <- unique(pp)
+par(mfrow=c(1,2)) 
+plot.new()
+# set up coordinate axes, labels, etc.
+plot(age[pp==1],cog[pp==1],type="n",xlim=c(55,60),ylim=c(0,1),xlab="Age (in years)",ylab="IQ",axes=F)
+axis(side=1,at=c(1,1.5,2),labels=c(1,1.5,2))
+axis(side=2,at=seq(40,160,20))
+box()
+# draw lines, one per participant
+for (j in 1:length(ppp)){
+i <- ppp[j]
+  if (T) {
+points(age[pp==i],cog[pp==i],type="l")
+}
+}
+
+# set up coordinate axes, labels, etc.
+plot(age[pp==1],cog[pp==1],type="n",xlim=c(1,2),ylim=c(40,160),xlab="Age (in years)",ylab="IQ",axes=F, main="Intervention")
+axis(side=1,at=c(1,1.5,2),labels=c(1,1.5,2))
+axis(side=2,at=seq(40,160,20))
+box()
+# draw lines, one per participant
+for (i in 1:N){
+if (mean(progr[pp==i])==1) {
+points(age[pp==i],cog[pp==i],type="l")
+}
+}
 ```

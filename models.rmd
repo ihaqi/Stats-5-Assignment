@@ -1,0 +1,30 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+
+```{r setup}
+#rm(list = ls())
+
+# loading and installing packages
+list.of.packages <- c("knitr","rjags","runjags", "haven","psych","car","magicfor","lattice","Hmisc", "coda", "lme4")
+new.packages <- list.of.packages[!(list.of.packages %in%installed.packages()[,"Package"])]
+if(length(new.packages)){install.packages(new.packages,repos = "http://cran.us.r-project.org")}
+lapply(list.of.packages, require, character.only = TRUE)
+
+```
+
+
+```{r }
+
+# only age
+classic.model.0 <- lmer(ls ~ 1 + za + (1 + za|pp) ,data = clean.data)
+
+classic.model.singles <- lmer(ls ~ 1 + za +  zh + zp + ze + (1 + za +  zh + zp|pp) ,data = clean.data)
+
+classic.model.full <- lmer(ls ~ 1 + za*ze +  zh + zp + ze + (1 + za +  zh + zp|pp) ,data = clean.data)
+
+# lmer(cog~1 + age0*progr + (1|pp) + (0 + age0|pp)   ,data=early.dat)
+
+```
