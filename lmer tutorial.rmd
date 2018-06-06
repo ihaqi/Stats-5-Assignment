@@ -3,16 +3,83 @@ title: "R Notebook"
 output: html_notebook
 ---
 
-This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
+```{r packages we need and reading data}
 
-Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Ctrl+Shift+Enter*. 
+install.packages("lme4")
+library(lme4)
 
-```{r}
-plot(cars)
+# politeness = read.csv(file.choose( ))
+
+politeness <- read.csv("http://www.bodowinter.com/tutorial/politeness_data.csv")
+
 ```
 
-Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Ctrl+Alt+I*.
 
-When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Ctrl+Shift+K* to preview the HTML file).
+```{r tutorial starts here, not conclusive}
 
-The preview shows you a rendered HTML copy of the contents of the editor. Consequently, unlike *Knit*, *Preview* does not run any R code chunks. Instead, the output of the chunk when it was last run in the editor is displayed.
+head(politeness)
+which(is.na(politeness)==T)
+
+boxplot(frequency ~ attitude*gender,col=c("white","lightgray"),politeness)
+
+politeness.null <- lmer(frequency ~ gender + (1|subject) + (1|scenario), data=politeness, REML = F)
+
+summary(politeness.null)
+
+politeness.model <- lmer(frequency ~ attitude + gender + (1+attitude|subject) + (1+attitude|scenario),data=politeness, REML=FALSE)
+
+politeness.model21 <- lmer(frequency ~ 1+ attitude + gender + (attitude|subject) + (attitude|scenario),data=politeness, REML=FALSE)
+
+summary(politeness.model)
+
+```
+
+
+# The Different combinations of effects etc.
+
+
+```{r}
+politeness.model11 <- lmer(frequency ~ attitude*gender + (1+attitude|subject) + (1+attitude|scenario),data=politeness, REML=FALSE)
+
+politeness.model12 <- lmer(frequency ~ attitude*gender + attitude + gender + (1+attitude|subject) + (1+attitude|scenario),data=politeness, REML=FALSE)
+
+politeness.model13 <- lmer(frequency ~ attitude*gender + attitude + gender + (1+attitude*gender|subject) + (1+attitude|scenario),data=politeness, REML=FALSE)
+
+politeness.model14 <- lmer(frequency ~ attitude*gender + attitude + gender + (1+attitude*gender|subject) + (1+attitude*gender|scenario),data=politeness, REML=FALSE)
+```
+- 11 is exactly the same as 12
+- 11 slightly better than 13 (p=0.96)
+- 14: `unable to evaluate scaled gradientModel failed to converge: degenerate  Hessian with 2 negative eigenvalues`
+
+
+```{r}
+politeness.model21 <- lmer(frequency ~ attitude + gender + (1+attitude|subject) + (1+attitude|scenario),data=politeness, REML=FALSE)
+
+politeness.model22 <- lmer(frequency ~ 1+ attitude + gender + (attitude|subject) + (attitude|scenario),data=politeness, REML=FALSE)
+
+politeness.model23 <- lmer(frequency ~ 1+ attitude*gender + (attitude|subject) + (attitude|scenario),data=politeness, REML=FALSE)
+
+politeness.model24 <- lmer(frequency ~ 1+ attitude*gender + (attitude*gender|subject) + (attitude|scenario),data=politeness, REML=FALSE)
+
+politeness.model25 <- lmer(frequency ~ 1+ attitude*gender + (attitude + attitude*gender|subject) + (attitude|scenario),data=politeness, REML=FALSE)
+
+politeness.model26 <- lmer(frequency ~ 1+ attitude + gender + (attitude*gender|subject) + (attitude|scenario),data=politeness, REML=FALSE)
+
+```
+- 21 is exactly the same as 22
+- 21 not significantly different with 23, i.e. no significant interaction (p=0.1517). However, AIC, BIC, and logLikelihood give different results, thus hard to compare which one is better.
+- 24, 25 and 26: `unable to evaluate scaled gradientModel failed to converge: degenerate  Hessian with 2 negative eigenvalues`
+
+
+```{r}
+politeness.model2 <- lmer(frequency ~ attitude + gender + (1|subject) +(1attitude|subject) + (1+attitude|scenario),data=politeness, REML=FALSE)
+
+summary(politeness.model2)
+
+anova(politeness.null,politeness.model)
+
+anova(politeness.model,politeness.model21)
+
+```
+
+
