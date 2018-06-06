@@ -1,0 +1,90 @@
+---
+title: "data preparation etc"
+author: "Manuel"
+date: "June 6, 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+
+knitr::opts_chunk$set(echo = FALSE, cache = TRUE)
+list.of.packages <- c("knitr","rjags","runjags", "haven","psych","car","magicfor","lattice", "lme4")
+new.packages <- list.of.packages[!(list.of.packages %in%installed.packages()[,"Package"])]
+if(length(new.packages)){install.packages(new.packages,repos = "http://cran.us.r-project.org")}
+lapply(list.of.packages, require, character.only = TRUE)
+
+my.normalize <- function(x) {
+  return ((x - min(x, na.rm = TRUE)) / (max(x, na.rm = TRUE) - min(x, na.rm = TRUE)))
+  }
+
+set.seed(777)
+Mywd<- getwd()
+setwd(Mywd)
+```
+
+```{r}
+
+# rm(list=ls())
+
+data.raw <- read.csv("soep_statV.csv", header = TRUE, sep = ",", dec = ".")
+data.raw.tmp <- transform(data.raw, pp=match(id,unique(id)))
+data.recoded <- data.raw.tmp
+data.recoded$emplStat55[data.raw.tmp$emplStat55!=1] <- 0
+
+pp <- data.recoded$pp
+norm.ls <- my.normalize(data.recoded$lifeSat) # ls: life satisfaction
+norm.a <- my.normalize(data.recoded$age) #  age
+norm.e <- my.normalize(data.recoded$emplStat55) # e: is he full-time employed?
+norm.h <- my.normalize(data.recoded$healthSat) #  h: health
+norm.p <- my.normalize(data.recoded$livtog) # p: partneered?
+
+data.norm <- as.data.frame(cbind(pp,norm.e,norm.a,norm.h,norm.p,norm.ls))
+
+save(data.norm, file = "data.norm.Rdata")
+
+#rm(data.raw.tmp,data.recoded,pp,norm.e,norm.a,norm.h,norm.p,norm.ls)
+
+```
+
+```{r trying lmer}
+
+model00.lmer <- lmer(norm.ls ~ norm.a + (1 |pp), data = data.norm, REML=T)
+model01.lmer <- lmer(norm.ls ~ 1 + norm.a + (1 |pp), data = data.norm, REML=T)
+model02.lmer <- lmer(norm.ls ~ norm.a + (1 + norm.a |pp), data = data.norm, REML=FALSE)
+model03.lmer <- lmer(norm.ls ~ 1 + norm.a + (1 + norm.a|pp), data = data.norm, REML=FALSE)
+model04.lmer <- lmer(norm.ls ~ norm.a + (norm.a|pp), data = data.norm, REML=FALSE)
+model05.lmer <- lmer(norm.ls ~ 0 + norm.a + (0 + norm.a|pp), data = data.norm, REML=FALSE)
+model06.lmer <- lmer(norm.ls ~ 1 + norm.h + (norm.h|pp), data = data.norm, REML=T)
+model07.lmer <- lmer(norm.ls ~ 1 + norm.h + (0 + norm.h|pp), data = data.norm, REML=F)
+
+# model 00 = 01
+# model 02 = 03
+# model 03 == 04 ???
+# model 04 gives intercept, but 5 doesn't
+
+anova(model00.lmer,model01.lmer)
+
+summary(model04.lmer)
+summary(model05.lmer)
+```
+
+
+```{r shits - don't run it}
+data.complete <- as.data.frame(matrix(nrow = max(pp)*6, ncol = 6),colname=colnames(data.norm))
+colnames(data.complete) <- colnames(data.norm)
+
+for (i in 1:max(pp)) {
+#  data.complete$norm.e[(6*i-5):6*i] <- data.norm$norm.e[data.norm$pp[1]==i]
+  data.complete[(6*i-5):6*i,1] <- i
+#  data.complete$norm.a[(6*i-5):6*i] <- c(0:5)/5
+}
+    
+for (i in 1:pp) {
+  data.complete$pp[(6*i-5):6*i] <- i
+  data.complete$norm.a[(6*i-5):6*i] <- c(0:5)/5
+}
+
+for (i in 1:dim(data.norm)[1]) {
+  data.complete
+}
+```

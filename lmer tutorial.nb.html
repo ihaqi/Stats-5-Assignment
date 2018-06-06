@@ -1698,13 +1698,6 @@ $(document).ready(function () {
 <!-- rnb-text-begin -->
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxucG9saXRlbmVzcyA9IHJlYWQuY3N2KGZpbGUuY2hvb3NlKCApKVxuXG5gYGAifQ== -->
-<pre class="r"><code>politeness = read.csv(file.choose( ))
-</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiRXJyb3IgaW4gZmlsZS5jaG9vc2UoKSA6IGZpbGUgY2hvaWNlIGNhbmNlbGxlZFxuIn0= -->
-<pre><code>Error in file.choose() : file choice cancelled</code></pre>
-<!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <!-- rnb-text-end -->
@@ -1733,20 +1726,15 @@ summary(politeness.model)
 <h1>The Different combinations of effects etc.</h1>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxucG9saXRlbmVzcy5tb2RlbDExIDwtIGxtZXIoZnJlcXVlbmN5IH4gYXR0aXR1ZGUqZ2VuZGVyICsgKDErYXR0aXR1ZGV8c3ViamVjdCkgKyAoMSthdHRpdHVkZXxzY2VuYXJpbyksZGF0YT1wb2xpdGVuZXNzLCBSRU1MPUZBTFNFKVxucG9saXRlbmVzcy5tb2RlbDEyIDwtIGxtZXIoZnJlcXVlbmN5IH4gYXR0aXR1ZGUqZ2VuZGVyICsgYXR0aXR1ZGUgKyBnZW5kZXIgKyAoMSthdHRpdHVkZXxzdWJqZWN0KSArICgxK2F0dGl0dWRlfHNjZW5hcmlvKSxkYXRhPXBvbGl0ZW5lc3MsIFJFTUw9RkFMU0UpXG5wb2xpdGVuZXNzLm1vZGVsMTMgPC0gbG1lcihmcmVxdWVuY3kgfiBhdHRpdHVkZSpnZW5kZXIgKyBhdHRpdHVkZSArIGdlbmRlciArICgxK2F0dGl0dWRlKmdlbmRlcnxzdWJqZWN0KSArICgxK2F0dGl0dWRlfHNjZW5hcmlvKSxkYXRhPXBvbGl0ZW5lc3MsIFJFTUw9RkFMU0UpXG5gYGAifQ== -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxucG9saXRlbmVzcy5tb2RlbDExIDwtIGxtZXIoZnJlcXVlbmN5IH4gYXR0aXR1ZGUqZ2VuZGVyICsgKDErYXR0aXR1ZGV8c3ViamVjdCkgKyAoMSthdHRpdHVkZXxzY2VuYXJpbyksZGF0YT1wb2xpdGVuZXNzLCBSRU1MPUZBTFNFKVxuXG5wb2xpdGVuZXNzLm1vZGVsMTIgPC0gbG1lcihmcmVxdWVuY3kgfiBhdHRpdHVkZSpnZW5kZXIgKyBhdHRpdHVkZSArIGdlbmRlciArICgxK2F0dGl0dWRlfHN1YmplY3QpICsgKDErYXR0aXR1ZGV8c2NlbmFyaW8pLGRhdGE9cG9saXRlbmVzcywgUkVNTD1GQUxTRSlcblxucG9saXRlbmVzcy5tb2RlbDEzIDwtIGxtZXIoZnJlcXVlbmN5IH4gYXR0aXR1ZGUqZ2VuZGVyICsgYXR0aXR1ZGUgKyBnZW5kZXIgKyAoMSthdHRpdHVkZSpnZW5kZXJ8c3ViamVjdCkgKyAoMSthdHRpdHVkZXxzY2VuYXJpbyksZGF0YT1wb2xpdGVuZXNzLCBSRU1MPUZBTFNFKVxuXG5wb2xpdGVuZXNzLm1vZGVsMTQgPC0gbG1lcihmcmVxdWVuY3kgfiBhdHRpdHVkZSpnZW5kZXIgKyBhdHRpdHVkZSArIGdlbmRlciArICgxK2F0dGl0dWRlKmdlbmRlcnxzdWJqZWN0KSArICgxK2F0dGl0dWRlKmdlbmRlcnxzY2VuYXJpbyksZGF0YT1wb2xpdGVuZXNzLCBSRU1MPUZBTFNFKVxuYGBgIn0= -->
 <pre class="r"><code>politeness.model11 &lt;- lmer(frequency ~ attitude*gender + (1+attitude|subject) + (1+attitude|scenario),data=politeness, REML=FALSE)
+
 politeness.model12 &lt;- lmer(frequency ~ attitude*gender + attitude + gender + (1+attitude|subject) + (1+attitude|scenario),data=politeness, REML=FALSE)
-politeness.model13 &lt;- lmer(frequency ~ attitude*gender + attitude + gender + (1+attitude*gender|subject) + (1+attitude|scenario),data=politeness, REML=FALSE)</code></pre>
+
+politeness.model13 &lt;- lmer(frequency ~ attitude*gender + attitude + gender + (1+attitude*gender|subject) + (1+attitude|scenario),data=politeness, REML=FALSE)
+
+politeness.model14 &lt;- lmer(frequency ~ attitude*gender + attitude + gender + (1+attitude*gender|subject) + (1+attitude*gender|scenario),data=politeness, REML=FALSE)</code></pre>
 <!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoidW5hYmxlIHRvIGV2YWx1YXRlIHNjYWxlZCBncmFkaWVudE1vZGVsIGZhaWxlZCB0byBjb252ZXJnZTogZGVnZW5lcmF0ZSAgSGVzc2lhbiB3aXRoIDIgbmVnYXRpdmUgZWlnZW52YWx1ZXNcbiJ9 -->
-<pre><code>unable to evaluate scaled gradientModel failed to converge: degenerate  Hessian with 2 negative eigenvalues</code></pre>
-<!-- rnb-output-end -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxucG9saXRlbmVzcy5tb2RlbDE0IDwtIGxtZXIoZnJlcXVlbmN5IH4gYXR0aXR1ZGUqZ2VuZGVyICsgYXR0aXR1ZGUgKyBnZW5kZXIgKyAoMSthdHRpdHVkZSpnZW5kZXJ8c3ViamVjdCkgKyAoMSthdHRpdHVkZSpnZW5kZXJ8c2NlbmFyaW8pLGRhdGE9cG9saXRlbmVzcywgUkVNTD1GQUxTRSlcbmBgYCJ9 -->
-<pre class="r"><code>politeness.model14 &lt;- lmer(frequency ~ attitude*gender + attitude + gender + (1+attitude*gender|subject) + (1+attitude*gender|scenario),data=politeness, REML=FALSE)</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoidW5hYmxlIHRvIGV2YWx1YXRlIHNjYWxlZCBncmFkaWVudE1vZGVsIGZhaWxlZCB0byBjb252ZXJnZTogZGVnZW5lcmF0ZSAgSGVzc2lhbiB3aXRoIDIgbmVnYXRpdmUgZWlnZW52YWx1ZXNcbiJ9 -->
-<pre><code>unable to evaluate scaled gradientModel failed to converge: degenerate  Hessian with 2 negative eigenvalues</code></pre>
-<!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <ul>
@@ -1756,13 +1744,20 @@ politeness.model13 &lt;- lmer(frequency ~ attitude*gender + attitude + gender + 
 </ul>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxucG9saXRlbmVzcy5tb2RlbDI2IDwtIGxtZXIoZnJlcXVlbmN5IH4gMSsgYXR0aXR1ZGUgKyBnZW5kZXIgKyAoYXR0aXR1ZGUqZ2VuZGVyfHN1YmplY3QpICsgKGF0dGl0dWRlfHNjZW5hcmlvKSxkYXRhPXBvbGl0ZW5lc3MsIFJFTUw9RkFMU0UpXG5cbmBgYCJ9 -->
-<pre class="r"><code>politeness.model26 &lt;- lmer(frequency ~ 1+ attitude + gender + (attitude*gender|subject) + (attitude|scenario),data=politeness, REML=FALSE)
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxucG9saXRlbmVzcy5tb2RlbDIxIDwtIGxtZXIoZnJlcXVlbmN5IH4gYXR0aXR1ZGUgKyBnZW5kZXIgKyAoMSthdHRpdHVkZXxzdWJqZWN0KSArICgxK2F0dGl0dWRlfHNjZW5hcmlvKSxkYXRhPXBvbGl0ZW5lc3MsIFJFTUw9RkFMU0UpXG5cbnBvbGl0ZW5lc3MubW9kZWwyMiA8LSBsbWVyKGZyZXF1ZW5jeSB+IDErIGF0dGl0dWRlICsgZ2VuZGVyICsgKGF0dGl0dWRlfHN1YmplY3QpICsgKGF0dGl0dWRlfHNjZW5hcmlvKSxkYXRhPXBvbGl0ZW5lc3MsIFJFTUw9RkFMU0UpXG5cbnBvbGl0ZW5lc3MubW9kZWwyMyA8LSBsbWVyKGZyZXF1ZW5jeSB+IDErIGF0dGl0dWRlKmdlbmRlciArIChhdHRpdHVkZXxzdWJqZWN0KSArIChhdHRpdHVkZXxzY2VuYXJpbyksZGF0YT1wb2xpdGVuZXNzLCBSRU1MPUZBTFNFKVxuXG5wb2xpdGVuZXNzLm1vZGVsMjQgPC0gbG1lcihmcmVxdWVuY3kgfiAxKyBhdHRpdHVkZSpnZW5kZXIgKyAoYXR0aXR1ZGUqZ2VuZGVyfHN1YmplY3QpICsgKGF0dGl0dWRlfHNjZW5hcmlvKSxkYXRhPXBvbGl0ZW5lc3MsIFJFTUw9RkFMU0UpXG5cbnBvbGl0ZW5lc3MubW9kZWwyNSA8LSBsbWVyKGZyZXF1ZW5jeSB+IDErIGF0dGl0dWRlKmdlbmRlciArIChhdHRpdHVkZSArIGF0dGl0dWRlKmdlbmRlcnxzdWJqZWN0KSArIChhdHRpdHVkZXxzY2VuYXJpbyksZGF0YT1wb2xpdGVuZXNzLCBSRU1MPUZBTFNFKVxuXG5wb2xpdGVuZXNzLm1vZGVsMjYgPC0gbG1lcihmcmVxdWVuY3kgfiAxKyBhdHRpdHVkZSArIGdlbmRlciArIChhdHRpdHVkZSpnZW5kZXJ8c3ViamVjdCkgKyAoYXR0aXR1ZGV8c2NlbmFyaW8pLGRhdGE9cG9saXRlbmVzcywgUkVNTD1GQUxTRSlcblxuYGBgIn0= -->
+<pre class="r"><code>politeness.model21 &lt;- lmer(frequency ~ attitude + gender + (1+attitude|subject) + (1+attitude|scenario),data=politeness, REML=FALSE)
+
+politeness.model22 &lt;- lmer(frequency ~ 1+ attitude + gender + (attitude|subject) + (attitude|scenario),data=politeness, REML=FALSE)
+
+politeness.model23 &lt;- lmer(frequency ~ 1+ attitude*gender + (attitude|subject) + (attitude|scenario),data=politeness, REML=FALSE)
+
+politeness.model24 &lt;- lmer(frequency ~ 1+ attitude*gender + (attitude*gender|subject) + (attitude|scenario),data=politeness, REML=FALSE)
+
+politeness.model25 &lt;- lmer(frequency ~ 1+ attitude*gender + (attitude + attitude*gender|subject) + (attitude|scenario),data=politeness, REML=FALSE)
+
+politeness.model26 &lt;- lmer(frequency ~ 1+ attitude + gender + (attitude*gender|subject) + (attitude|scenario),data=politeness, REML=FALSE)
 </code></pre>
 <!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoidW5hYmxlIHRvIGV2YWx1YXRlIHNjYWxlZCBncmFkaWVudE1vZGVsIGZhaWxlZCB0byBjb252ZXJnZTogZGVnZW5lcmF0ZSAgSGVzc2lhbiB3aXRoIDEgbmVnYXRpdmUgZWlnZW52YWx1ZXNcbiJ9 -->
-<pre><code>unable to evaluate scaled gradientModel failed to converge: degenerate  Hessian with 1 negative eigenvalues</code></pre>
-<!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <ul>
