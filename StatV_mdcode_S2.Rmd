@@ -19,55 +19,60 @@ setwd(Mywd)
 
 ```{r datapreparation, include=FALSE}
 ## Unique ID's
-raw.data <- read.csv("soep_statV.csv", header = TRUE, sep = ",", dec = ".")
-clean.data <- transform(raw.data, pp=match(id,unique(id)))
+my.normalize <- function(x) {
+  return ((x - min(x, na.rm = TRUE)) / (max(x, na.rm = TRUE) - min(x, na.rm = TRUE)))
+  }
 
-##centering
-clean.data$age <-raw.data$age-55
+set.seed(777)
+# rm(list=ls())
 
-##recoding some variables
-clean.data$emplStat55[clean.data$emplStat55 == 2] <- 0
-clean.data$emplStat55[clean.data$emplStat55 == 3] <- 0
+data.raw <- read.csv("soep_statV.csv", header = TRUE, sep = ",", dec = ".")
+data.raw.tmp <- transform(data.raw, pp=match(id,unique(id)))
+data.recoded <- data.raw.tmp
+data.recoded$emplStat55[data.raw.tmp$emplStat55!=1] <- 0
 
-Nsubjects <- length(unique(clean.data$pp))
-Ntotal <- length(clean.data$pp)
+norm.pp <- data.recoded$pp
+norm.LS <- my.normalize(data.recoded$lifeSat) # ls: life satisfaction
+norm.Age <- my.normalize(data.recoded$age) #  age
+norm.Empl <- my.normalize(data.recoded$emplStat55) # e: is he full-time employed?
+norm.Health <- my.normalize(data.recoded$healthSat) #  h: health
+norm.Partner <- my.normalize(data.recoded$livtog) # p: partneered?
 
-measurements <- c(0:5)
-Nmeasurements <- length(measurements)
+data.norm <- as.data.frame(cbind(pp,norm.e,norm.a,norm.h,norm.p,norm.ls))
+
+save(data.norm, file = "data.norm.Rdata")
+
+Nsubjects <- length(unique(data.norm[,1]))
+Ntotal <- length(data.norm[,1])
+
+yName = "norm.LS" 
+xName = c("norm.Empl","norm.Age", "norm.Health", "norm.Partner")
+y = data.norm[6]
+x = as.matrix(data.norm[2:5],ncol=length(xName))
+
+Empl = x[,1]
+Age = x[,2] 
+Health = x[,3]
+Partner = x[,4]
 
 
 ```
 
 ```{r Jags preparation, include=FALSE}
-##variables
-variable.names <- list("id","ls", "age", "employ","health","partner","pp")
-colnames(clean.data) <- variable.names
 
-##standardisation
-
-standardized.data.tmp <- matrix(ncol = length(variable.names), nrow = length(clean.data$id))
-colnames(standardized.data.tmp) <-list("pp","Zls","age","Zhealth","employ","partner", "Zage")
-
-
-M.ls <- mean(clean.data$ls)
-SD.ls <- sd(clean.data$ls)
-M.health <- mean(clean.data$health)
-SD.health <- sd(clean.data$health)
-M.age <- mean(clean.data$age)
-SD.age <- sd(clean.data$age)
-
-for( i in 1:(length(clean.data$id))){
-  standardized.data.tmp[i,2] <- (M.ls-clean.data$ls[i])/SD.ls
-  standardized.data.tmp[i,1] <- clean.data$pp[i]
-  standardized.data.tmp[i,3] <- clean.data$age[i]
-  standardized.data.tmp[i,4] <- (M.health-clean.data$health[i])/SD.health
-  standardized.data.tmp[i,5] <- clean.data$employ[i]
-  standardized.data.tmp[i,6] <- clean.data$partner[i]
-  standardized.data.tmp[i,7] <- (M.age - clean.data$age[i])/SD.age
-}
-standardized.data <- standardized.data.tmp
+dataList = list(
+    x = x ,
+    y = y ,
+    s = pp ,
+    Ntotal = Ntotal ,
+    Nx = dim(x)[2] ,
+    NxO = dim(x)[2]-1, #employment is measured at the individual level
+    Nsubjects = Nsubjects 
+  )
 
 ```
+
+
 
 ```{r JAGS specifics}
 nchains = 2
@@ -114,66 +119,106 @@ for(i in 1:length(colors)){
 }
 
 ```
-```{r model 1}
+
+```{r model without interactions: model}
 modelString = "
 model {
 for ( i in 1:Ntotal ) {
-	y[i] ~ dnorm( Beta0[pp[i]] + Beta1[pp[i]]*x[i,3]+ Beta2[pp[i]]*x[i, 4]+Beta3[pp[i]]*x[i,5]+Beta4[pp[i]]*x[i,6], 1/sigma^2 )
-} #x3 = age, x4 = zhealth, x5 = employ, x6 = partner
-		
-for (j in 1:Nsubjects ) {
-		Beta0[j] ~ dnorm( beta0mu, 1/(beta0sigma)^2 )
-		Beta1[j] ~ dnorm( beta1mu, 1/(beta1sigma)^2 )
-		Beta2[j] ~ dnorm( beta2mu, 1/(beta2sigma)^2 )
-		Beta3[j] ~ dnorm( beta3mu, 1/(beta3sigma)^2 )
-		Beta4[j] ~ dnorm( beta4mu, 1/(beta4sigma)^2 )
+	y[i] ~ dnorm( beta0[pp[i]] + beta1[pp[i]]*x[i,1]+ beta2[pp[i]]*x[i, 2]+beta3[pp[i]]*x[i,3]+beta4[pp[i]]*x[i,4] + sum( beta[1:NxO] * x[i,2:Nx] ), 1/sigma^2 )
+} 
+#Empl Age Health Partner
+for (j in 1:Nsubjects){
+  beta0[j] ~ dnorm( beta0mu , 1/(beta0sigma)^2 ) 
+  beta1[j] ~ dnorm( beta1mu , 1/(beta1sigma)^2 )
+  beta2[j] ~ dnorm( beta2mu , 1/(beta2sigma)^2 )
+  beta3[j] ~ dnorm( beta3mu , 1/(beta3sigma)^2 )
+  beta4[j] ~ dnorm( beta4mu , 1/(beta4sigma)^2 )
+}	
+ # Priors vague :
+    for ( j in 1:NxO ) {
+      beta[j] ~ dnorm( 0 , 1/2^10 )
+    }
+
+    beta0mu ~ dnorm( 0 , 1/(10)^3 ) 
+    beta1mu ~ dnorm( 0 , 1/(10)^3 )
+    beta0sigma ~ dunif( 1.0E-3 , 1.0E+3 )  
+    beta1sigma ~ dunif( 1.0E-3 , 1.0E+3 )
+    beta2mu ~ dnorm( 0 , 1/(10)^3 ) 
+    beta3mu ~ dnorm( 0 , 1/(10)^3 )
+    beta2sigma ~ dunif( 1.0E-3 , 1.0E+3 )  
+    beta3sigma ~ dunif( 1.0E-3 , 1.0E+3 )
+    beta4mu ~ dnorm( 0 , 1/(10)^3 ) 
+    beta4sigma ~ dunif( 1.0E-3 , 1.0E+3 )  
+    sigma ~ dunif( 1.0E-3 , 1.0E+3 )
 }
+"
 
-
-beta0mu ~ dnorm( 0, 1/(2^10) )
-beta1mu ~ dnorm( 0, 1/(2^10) )
-beta2mu ~ dnorm( 0, 1/(2^10) )
-beta3mu ~ dnorm( 0, 1/(2^10) )
-beta4mu ~ dnorm( 0, 1/(2^10) )
-
-beta0sigma ~ dunif( 1.0E-3 , 1.0E+3 )
-beta1sigma ~ dunif( 1.0E-3 , 1.0E+3 )
-beta2sigma ~ dunif( 1.0E-3 , 1.0E+3 )
-beta3sigma ~ dunif( 1.0E-3 , 1.0E+3 )
-beta4sigma ~ dunif( 1.0E-3 , 1.0E+3 )
-
-sigma ~ dunif( 1.0E-3 , 1.0E+3 )
-}"
 writeLines(modelString , con="model_full_no_interaction" )
 ```
 
-```{r Simple bayesian model}
+```{r model without interactions:, Jags Cache = T}
 #no correlation, using standardized data for life satisfaction and health variables
 
-za = standardized.data[, 7]
-e = standardized.data[, 5]
-p = standardized.data[, 6]
-zh = standardized.data[, 4]
-xvars <- as.matrix(standardized.data, ncols = length(colnames(standardized.data)))
+xvars <- as.matrix(data.norm, ncols = length(colnames(data.norm)))
+xvarss <- xvars[,2:5]
+Beta <- c(0:5)
 
-
-y = standardized.data[, 2]
-pp = standardized.data[, 1]
+y = data.norm[, 6]
+pp = data.norm[, 1]
 
 simple_model <- list(
   y = y,
   pp = pp,
-  x = xvars,
+  x = xvarss,
   Nsubjects = Nsubjects,
+  Beta = Beta,
   Ntotal = Ntotal
 )
 
-out.simple.model <- run.jags(model = "model_full_no_interaction", monitor = c("beta0mu", "beta1mu", "beta2mu","beta3mu","beta4mu", "Beta0","Beta1","Beta2","Beta3","Beta4"), data = simple_model, inits = myinits, n.chains = nchains, adapt = nadapt, burnin = nburn, sample = niter)
+out.simple.model <- run.jags(model = "model_full_no_interaction", monitor = c("beta0mu", "beta1mu", "beta2mu","beta3mu","beta4mu", "beta"), data = simple_model, inits = myinits, n.chains = nchains, adapt = nadapt, burnin = nburn, sample = niter)
 
-a <- summary(out.simple.model)
-b <- lm(y ~ za, e, p, zh)
+save(out.simple.model, file = "simple.model.Rdata")
 
-a
-summary(b)
 ```
+
+
+# large beta for age, because of other confounds? 
+#Model looking at interactions
+
+```{r model with interactions: model}
+modelString = "
+model {
+for ( i in 1:Ntotal ) {
+	y[i] ~ dnorm( beta0[pp[i]] + beta1[pp[i]]*x[i,1]+ beta2[pp[i]]*x[i, 2]+beta3[pp[i]]*x[i,3]+beta4[pp[i]]*x[i,4] +  beta[1] * x[i,2], 1/sigma^2 )
+} 
+#Empl Age Health Partner
+for (j in 1:Nsubjects){
+  beta0[j] ~ dnorm( beta0mu , 1/(beta0sigma)^2 ) 
+  beta1[j] ~ dnorm( beta1mu , 1/(beta1sigma)^2 )
+  beta2[j] ~ dnorm( beta2mu , 1/(beta2sigma)^2 )
+  beta3[j] ~ dnorm( beta3mu , 1/(beta3sigma)^2 )
+  beta4[j] ~ dnorm( beta4mu , 1/(beta4sigma)^2 )
+}	
+ # Priors vague :
+
+    beta[1] ~ dnorm( 0 , 1/2^10 )
+
+    beta0mu ~ dnorm( 0 , 1/(10)^3 ) 
+    beta1mu ~ dnorm( 0 , 1/(10)^3 )
+    beta0sigma ~ dunif( 1.0E-3 , 1.0E+3 )  
+    beta1sigma ~ dunif( 1.0E-3 , 1.0E+3 )
+    beta2mu ~ dnorm( 0 , 1/(10)^3 ) 
+    beta3mu ~ dnorm( 0 , 1/(10)^3 )
+    beta2sigma ~ dunif( 1.0E-3 , 1.0E+3 )  
+    beta3sigma ~ dunif( 1.0E-3 , 1.0E+3 )
+    beta4mu ~ dnorm( 0 , 1/(10)^3 ) 
+    beta4sigma ~ dunif( 1.0E-3 , 1.0E+3 )  
+    sigma ~ dunif( 1.0E-3 , 1.0E+3 )
+}
+"
+
+writeLines(modelString , con="model_full_interaction" )
+```
+
+
 

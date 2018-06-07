@@ -12,7 +12,6 @@ for (j in 1:Nsubjects ) {
 		Beta4[j] ~ dnorm( beta4mu, 1/(beta4sigma)^2 )
 }
 
-
 beta0mu ~ dnorm( 0, 1/(2^10) )
 beta1mu ~ dnorm( 0, 1/(2^10) )
 beta2mu ~ dnorm( 0, 1/(2^10) )

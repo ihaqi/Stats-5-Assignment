@@ -1,29 +1,30 @@
 
 model {
 for ( i in 1:Ntotal ) {
-	y[i] ~ dnorm( Beta0[pp[i]] + Beta1[pp[i]]*x[i,3]+ Beta2[pp[i]]*x[i, 4]+Beta3[pp[i]]*x[i,5]+Beta4[pp[i]]*x[i,6], 1/sigma^2 )
-} #x3 = age, x4 = zhealth, x5 = employ, x6 = partner
-		
-for (j in 1:Nsubjects ) {
-		Beta0[j] ~ dnorm( beta0mu, 1/(beta0sigma)^2 )
-		Beta1[j] ~ dnorm( beta1mu, 1/(beta1sigma)^2 )
-		Beta2[j] ~ dnorm( beta2mu, 1/(beta2sigma)^2 )
-		Beta3[j] ~ dnorm( beta3mu, 1/(beta3sigma)^2 )
-		Beta4[j] ~ dnorm( beta4mu, 1/(beta4sigma)^2 )
+	y[i] ~ dnorm( beta0[pp[i]] + beta1[pp[i]]*x[i,1]+ beta2[pp[i]]*x[i, 2]+beta3[pp[i]]*x[i,3]+beta4[pp[i]]*x[i,4] +  beta[1] * x[i,2], 1/sigma^2 )
+} 
+#x3 = age, x4 = zhealth, x5 = employ, x6 = partner
+for (j in 1:Nsubjects){
+  beta0[j] ~ dnorm( beta0mu , 1/(beta0sigma)^2 ) 
+  beta1[j] ~ dnorm( beta1mu , 1/(beta1sigma)^2 )
+  beta2[j] ~ dnorm( beta2mu , 1/(beta2sigma)^2 )
+  beta3[j] ~ dnorm( beta3mu , 1/(beta3sigma)^2 )
+  beta4[j] ~ dnorm( beta4mu , 1/(beta4sigma)^2 )
+}	
+ # Priors vague :
+
+    beta[1] ~ dnorm( 0 , 1/2^10 )
+
+    beta0mu ~ dnorm( 0 , 1/(10)^3 ) 
+    beta1mu ~ dnorm( 0 , 1/(10)^3 )
+    beta0sigma ~ dunif( 1.0E-3 , 1.0E+3 )  
+    beta1sigma ~ dunif( 1.0E-3 , 1.0E+3 )
+    beta2mu ~ dnorm( 0 , 1/(10)^3 ) 
+    beta3mu ~ dnorm( 0 , 1/(10)^3 )
+    beta2sigma ~ dunif( 1.0E-3 , 1.0E+3 )  
+    beta3sigma ~ dunif( 1.0E-3 , 1.0E+3 )
+    beta4mu ~ dnorm( 0 , 1/(10)^3 ) 
+    beta4sigma ~ dunif( 1.0E-3 , 1.0E+3 )  
+    sigma ~ dunif( 1.0E-3 , 1.0E+3 )
 }
 
-
-beta0mu ~ dnorm( 0, 1/(2^10) )
-beta1mu ~ dnorm( 0, 1/(2^10) )
-beta2mu ~ dnorm( 0, 1/(2^10) )
-beta3mu ~ dnorm( 0, 1/(2^10) )
-beta4mu ~ dnorm( 0, 1/(2^10) )
-
-beta0sigma ~ dunif( 1.0E-3 , 1.0E+3 )
-beta1sigma ~ dunif( 1.0E-3 , 1.0E+3 )
-beta2sigma ~ dunif( 1.0E-3 , 1.0E+3 )
-beta3sigma ~ dunif( 1.0E-3 , 1.0E+3 )
-beta4sigma ~ dunif( 1.0E-3 , 1.0E+3 )
-
-sigma ~ dunif( 1.0E-3 , 1.0E+3 )
-}
