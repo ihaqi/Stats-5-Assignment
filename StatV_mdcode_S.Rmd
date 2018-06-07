@@ -6,6 +6,7 @@ output: html_document
 ---
 
 ```{r setup, include=FALSE}
+rm(list=ls()) 
 knitr::opts_chunk$set(echo = FALSE, cache = TRUE)
 list.of.packages <- c("knitr","rjags","runjags", "haven","psych","car","magicfor","lattice")
 new.packages <- list.of.packages[!(list.of.packages %in%installed.packages()[,"Package"])]
@@ -71,10 +72,15 @@ standardized.data <- standardized.data.tmp
 
 ```{r JAGS specifics}
 nchains = 2
-nadapt = 200 #many uninformative dispersion parameters
-nburn = 500
-niter = 3000
+nadapt = 2000 #many uninformative dispersion parameters
+nburnin = 1000
+niter = 12000
 myinits <- NULL
+numSavedSteps=10000 
+smallsteps = 1
+
+zparameters = c( "beta0mu" , "beta1mu" , "sigma", "beta0sigma", "beta1sigma", "beta0", "beta1") 
+
 ```
 
 
@@ -114,38 +120,6 @@ for(i in 1:length(colors)){
 }
 
 ```
-```{r model 1}
-modelString = "
-model {
-for ( i in 1:Ntotal ) {
-	y[i] ~ dnorm( Beta0[pp[i]] + Beta1[pp[i]]*x[i,3]+ Beta2[pp[i]]*x[i, 4]+Beta3[pp[i]]*x[i,5]+Beta4[pp[i]]*x[i,6], 1/sigma^2 )
-} #x3 = age, x4 = zhealth, x5 = employ, x6 = partner
-		
-for (j in 1:Nsubjects ) {
-		Beta0[j] ~ dnorm( beta0mu, 1/(beta0sigma)^2 )
-		Beta1[j] ~ dnorm( beta1mu, 1/(beta1sigma)^2 )
-		Beta2[j] ~ dnorm( beta2mu, 1/(beta2sigma)^2 )
-		Beta3[j] ~ dnorm( beta3mu, 1/(beta3sigma)^2 )
-		Beta4[j] ~ dnorm( beta4mu, 1/(beta4sigma)^2 )
-}
-
-
-beta0mu ~ dnorm( 0, 1/(2^10) )
-beta1mu ~ dnorm( 0, 1/(2^10) )
-beta2mu ~ dnorm( 0, 1/(2^10) )
-beta3mu ~ dnorm( 0, 1/(2^10) )
-beta4mu ~ dnorm( 0, 1/(2^10) )
-
-beta0sigma ~ dunif( 1.0E-3 , 1.0E+3 )
-beta1sigma ~ dunif( 1.0E-3 , 1.0E+3 )
-beta2sigma ~ dunif( 1.0E-3 , 1.0E+3 )
-beta3sigma ~ dunif( 1.0E-3 , 1.0E+3 )
-beta4sigma ~ dunif( 1.0E-3 , 1.0E+3 )
-
-sigma ~ dunif( 1.0E-3 , 1.0E+3 )
-}"
-writeLines(modelString , con="model_full_no_interaction" )
-```
 
 ```{r Simple bayesian model}
 #no correlation, using standardized data for life satisfaction and health variables
@@ -154,26 +128,100 @@ za = standardized.data[, 7]
 e = standardized.data[, 5]
 p = standardized.data[, 6]
 zh = standardized.data[, 4]
-xvars <- as.matrix(standardized.data, ncols = length(colnames(standardized.data)))
-
+xvars <- list(za, e, p, zh)
 
 y = standardized.data[, 2]
 pp = standardized.data[, 1]
 
-simple_model <- list(
-  y = y,
+
+
+```
+
+```{r datalists, cache=TRUE, echo=FALSE}
+Zsimple_model_age <- list(
+  zy = y,
   pp = pp,
-  x = xvars,
+  zx = za,
+  Nx = 1,
   Nsubjects = Nsubjects,
-  Ntotal = Ntotal
-)
+  Ntotal = Ntotal,
+  M.ls = M.ls, #ymean
+  M.age= M.age,#xmean
+  SD.ls = SD.ls,
+  SD.age = SD.age)
 
-out.simple.model <- run.jags(model = "model_full_no_interaction", monitor = c("beta0mu", "beta1mu", "beta2mu","beta3mu","beta4mu", "Beta0","Beta1","Beta2","Beta3","Beta4"), data = simple_model, inits = myinits, n.chains = nchains, adapt = nadapt, burnin = nburn, sample = niter)
+```
 
-a <- summary(out.simple.model)
-b <- lm(y ~ za, e, p, zh)
+```{r simple_model_Age,echo=TRUE ,cache= TRUE}
+modelString = "
+model {
+    for ( i in 1:Ntotal ) {
+      zy[i] ~ dnorm( zbeta0[pp[i]] + zbeta1[pp[i]] * zx[i] , 1/zsigma^2 )
+    }
+    for ( j in 1:Nsubjects ) {
+      zbeta0[j] ~ dnorm( zbeta0mu , 1/(zbeta0sigma)^2 )  
+      zbeta1[j] ~ dnorm( zbeta1mu , 1/(zbeta1sigma)^2 )
+    }
+    # Priors vague on standardized scale:
+    zbeta0mu ~ dnorm( 0 , 1/(10)^2 )
+    zbeta1mu ~ dnorm( 0 , 1/(10)^2 )
+    zsigma ~ dunif( 1.0E-3 , 1.0E+3 )
+    zbeta0sigma ~ dunif( 1.0E-3 , 1.0E+3 )
+    zbeta1sigma ~ dunif( 1.0E-3 , 1.0E+3 )
+    # Transform to original scale:
+    for ( j in 1:Nsubjects ) {
+      beta1[j] <- zbeta1[j] * SD.ls / SD.age  
+      beta0[j] <- zbeta0[j] * SD.ls  + M.ls - zbeta1[j] * M.age * SD.ls / SD.age 
+    }
+    beta1mu <- zbeta1mu * SD.ls / SD.age  
+    beta0mu <- zbeta0mu * SD.ls  + M.ls - zbeta1mu * M.age * SD.ls / SD.age 
+    sigma <- zsigma * SD.ls
+    beta0sigma <- zbeta0sigma * SD.ls 
+    beta1sigma <- zbeta1sigma * SD.ls/ SD.age  
+  }
+    " # close quote for modelString
+  # Write out modelString to a text file
+  writeLines( modelString , con="HSimple_model_age.txt" )
+```
 
-a
-summary(b)
+```{r JAGS}
+out <- run.jags( method=c("rjags","parallel")[2] ,
+                          model="HSimple_model_age.txt" , 
+                          monitor=zparameters , 
+                          data=Zsimple_model_age ,  
+                          #inits=initsList , 
+                          n.chains=nchains ,
+                          adapt=nadapt ,
+                          burnin=nburnin , 
+                          sample=ceiling(numSavedSteps/nchains), #*100 ,
+                          thin=smallsteps ,
+                          summarise=FALSE ,
+                          plots=FALSE )
+simplemodelagesamples = as.mcmc.list( out )
+
+
+```
+
+```{r dia, echo=TRUE}
+gelman.diag(simplemodelagesamples, multivariate=FALSE)
+
+```
+
+```{r summary, echo=TRUE}
+simp <- summary(simplemodelagesamples)
+simp
+```
+```{r}
+mcmcMat = as.matrix(simplemodelagesamples,chains=TRUE) #convert mcmclist to matrix
+mcmc.int<- mcmcMat[,7:(N+6)] #individual intercepts
+mcmc.sl<- mcmcMat[,(N+7):(2*N+6)] #individual slopes
+
+mth <- apply(mcmc.int,2,mean)
+qthL <- apply(mcmc.int,2,quantile,.025)
+qthH <- apply(mcmc.int,2,quantile,.975)
+plot(lin.reg.pp[,1],mth,pch=20,xlab="intercept individual regression",ylab="personal intercept hierarchical regression")
+abline(0,1)
+for (j in 1:N){ lines(c(lin.reg.pp[j,1],lin.reg.pp[j,1]),c(qthL[j],qthH[j]),col="gray") }
+points(lin.reg.pp[,1],mth,pch=20)
 ```
 
