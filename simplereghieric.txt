@@ -1,0 +1,24 @@
+
+model {
+  for ( i in 1:Ntotal ) {
+      zy[i] ~ dnorm( zbeta0[s[i]] + zbeta1 * zx[i] , 1/zsigma^2 )
+    }
+    for ( j in 1:Nsubj ) {
+      zbeta0[j] ~ dnorm( zbeta0mu , 1/(zbeta0sigma)^2 )  
+    }
+    # Priors vague on standardized scale:
+    zbeta1 ~ dnorm( 0 , 1/(10)^2 )    
+    zbeta0mu ~ dnorm( 0 , 1/(10)^2 )
+    zsigma ~ dunif( 1.0E-3 , 1.0E+3 )
+    zbeta0sigma ~ dunif( 1.0E-3 , 1.0E+3 )
+    # Transform to original scale:
+      beta1 <- zbeta1 * ysd / xsd  
+    for ( j in 1:Nsubj ) {
+      beta0[j] <- zbeta0[j] * ysd  + ym - zbeta1 * xm * ysd / xsd 
+    }
+    beta1mu <- zbeta1 * ysd / xsd  
+    beta0mu <- zbeta0mu * ysd  + ym - zbeta1 * xm * ysd / xsd 
+    sigma <- zsigma * ysd
+    beta0sigma <- zbeta0sigma * ysd 
+  }
+    

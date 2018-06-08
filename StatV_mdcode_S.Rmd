@@ -1,0 +1,227 @@
+---
+title: "Untitled"
+author: "Sigert"
+date: "5 June 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+rm(list=ls()) 
+knitr::opts_chunk$set(echo = FALSE, cache = TRUE)
+list.of.packages <- c("knitr","rjags","runjags", "haven","psych","car","magicfor","lattice")
+new.packages <- list.of.packages[!(list.of.packages %in%installed.packages()[,"Package"])]
+if(length(new.packages)){install.packages(new.packages,repos = "http://cran.us.r-project.org")}
+lapply(list.of.packages, require, character.only = TRUE)
+
+set.seed(777)
+Mywd<- getwd()
+setwd(Mywd)
+```
+
+```{r datapreparation, include=FALSE}
+## Unique ID's
+raw.data <- read.csv("soep_statV.csv", header = TRUE, sep = ",", dec = ".")
+clean.data <- transform(raw.data, pp=match(id,unique(id)))
+
+##centering
+clean.data$age <-raw.data$age-55
+
+##recoding some variables
+clean.data$emplStat55[clean.data$emplStat55 == 2] <- 0
+clean.data$emplStat55[clean.data$emplStat55 == 3] <- 0
+
+Nsubjects <- length(unique(clean.data$pp))
+Ntotal <- length(clean.data$pp)
+
+measurements <- c(0:5)
+Nmeasurements <- length(measurements)
+
+
+```
+
+```{r Jags preparation, include=FALSE}
+##variables
+variable.names <- list("id","ls", "age", "employ","health","partner","pp")
+colnames(clean.data) <- variable.names
+
+##standardisation
+
+standardized.data.tmp <- matrix(ncol = length(variable.names), nrow = length(clean.data$id))
+colnames(standardized.data.tmp) <-list("pp","Zls","age","Zhealth","employ","partner", "Zage")
+
+
+M.ls <- mean(clean.data$ls)
+SD.ls <- sd(clean.data$ls)
+M.health <- mean(clean.data$health)
+SD.health <- sd(clean.data$health)
+M.age <- mean(clean.data$age)
+SD.age <- sd(clean.data$age)
+
+for( i in 1:(length(clean.data$id))){
+  standardized.data.tmp[i,2] <- (M.ls-clean.data$ls[i])/SD.ls
+  standardized.data.tmp[i,1] <- clean.data$pp[i]
+  standardized.data.tmp[i,3] <- clean.data$age[i]
+  standardized.data.tmp[i,4] <- (M.health-clean.data$health[i])/SD.health
+  standardized.data.tmp[i,5] <- clean.data$employ[i]
+  standardized.data.tmp[i,6] <- clean.data$partner[i]
+  standardized.data.tmp[i,7] <- (M.age - clean.data$age[i])/SD.age
+}
+standardized.data <- standardized.data.tmp
+
+```
+
+```{r JAGS specifics}
+nchains = 2
+nadapt = 2000 #many uninformative dispersion parameters
+nburnin = 1000
+niter = 12000
+myinits <- NULL
+numSavedSteps=10000 
+smallsteps = 1
+
+zparameters = c( "beta0mu" , "beta1mu" , "sigma", "beta0sigma", "beta1sigma", "beta0", "beta1") 
+
+```
+
+
+```{r Exploratory Statistics}
+# Life satisfaction by age
+
+mean.table1=tapply(clean.data$ls,list(clean.data$age, clean.data$partner),mean)
+mean.table3=tapply(clean.data$ls,list(clean.data$age, clean.data$employ),mean)
+mean.table4=tapply(clean.data$ls,list(clean.data$age, clean.data$health),mean)
+
+# life satisfaction as a function of Living together and age
+colors=c("black","red")
+plot(unique(clean.data$age),mean.table1[,1],type="b",xlim=c(0,5),ylim=c(0,10),xlab="Age (in years)",ylab="Life Satisfaction",axes=F,main="Life satisfaction as a function of Living together and age")
+axis(side=1,at=c(0,1,2,3,4,5),labels=c(55,56,57,58,59,60))
+axis(side=2,at=seq(0,10,1))
+box()
+points(unique(clean.data$age),mean.table1[,2],type="b",col="red")
+# life satisfaction as a function of employement and age
+
+colors=c("black","red")
+plot(unique(clean.data$age),mean.table3[,1],type="b",xlim=c(0,5),ylim=c(0,10),xlab="Age (in years)",ylab="Life Satisfaction",axes=F,main="Life satisfaction as a function of employement and age")
+axis(side=1,at=c(0,1,2,3,4,5),labels=c(55,56,57,58,59,60))
+axis(side=2,at=seq(0,10,1))
+box()
+points(unique(clean.data$age),mean.table3[,2],type="b",col="red")
+# life satisfaction as a function of health status and age
+
+par(xpd=TRUE)
+colors=rainbow(10)
+plot(unique(clean.data$age),mean.table4[,1],type="n",xlim=c(0,5),ylim=c(0,10),xlab="Age (in years)",ylab="Life satisfaction",axes=F,main="life satisfaction as a function of health status and age")
+axis(side=1,at=c(0,1,2,3,4,5),labels=c(55,56,57,58,59,60))
+axis(side=2,at=seq(0,10,1))
+box()
+for(i in 1:length(colors)){
+  points(unique(clean.data$age),mean.table4[,1+i],type="b",col=colors[i])
+  legend(-0.180, 2, x.intersp = 0.12, legend = colnames(mean.table4), fill = colors, horiz=TRUE)
+}
+
+```
+
+```{r Simple bayesian model}
+#no correlation, using standardized data for life satisfaction and health variables
+
+za = standardized.data[, 7]
+e = standardized.data[, 5]
+p = standardized.data[, 6]
+zh = standardized.data[, 4]
+xvars <- list(za, e, p, zh)
+
+y = standardized.data[, 2]
+pp = standardized.data[, 1]
+
+
+
+```
+
+```{r datalists, cache=TRUE, echo=FALSE}
+Zsimple_model_age <- list(
+  zy = y,
+  pp = pp,
+  zx = za,
+  Nx = 1,
+  Nsubjects = Nsubjects,
+  Ntotal = Ntotal,
+  M.ls = M.ls, #ymean
+  M.age= M.age,#xmean
+  SD.ls = SD.ls,
+  SD.age = SD.age)
+
+```
+
+```{r simple_model_Age,echo=TRUE ,cache= TRUE}
+modelString = "
+model {
+    for ( i in 1:Ntotal ) {
+      zy[i] ~ dnorm( zbeta0[pp[i]] + zbeta1[pp[i]] * zx[i] , 1/zsigma^2 )
+    }
+    for ( j in 1:Nsubjects ) {
+      zbeta0[j] ~ dnorm( zbeta0mu , 1/(zbeta0sigma)^2 )  
+      zbeta1[j] ~ dnorm( zbeta1mu , 1/(zbeta1sigma)^2 )
+    }
+    # Priors vague on standardized scale:
+    zbeta0mu ~ dnorm( 0 , 1/(10)^2 )
+    zbeta1mu ~ dnorm( 0 , 1/(10)^2 )
+    zsigma ~ dunif( 1.0E-3 , 1.0E+3 )
+    zbeta0sigma ~ dunif( 1.0E-3 , 1.0E+3 )
+    zbeta1sigma ~ dunif( 1.0E-3 , 1.0E+3 )
+    # Transform to original scale:
+    for ( j in 1:Nsubjects ) {
+      beta1[j] <- zbeta1[j] * SD.ls / SD.age  
+      beta0[j] <- zbeta0[j] * SD.ls  + M.ls - zbeta1[j] * M.age * SD.ls / SD.age 
+    }
+    beta1mu <- zbeta1mu * SD.ls / SD.age  
+    beta0mu <- zbeta0mu * SD.ls  + M.ls - zbeta1mu * M.age * SD.ls / SD.age 
+    sigma <- zsigma * SD.ls
+    beta0sigma <- zbeta0sigma * SD.ls 
+    beta1sigma <- zbeta1sigma * SD.ls/ SD.age  
+  }
+    " # close quote for modelString
+  # Write out modelString to a text file
+  writeLines( modelString , con="HSimple_model_age.txt" )
+```
+
+```{r JAGS}
+out <- run.jags( method=c("rjags","parallel")[2] ,
+                          model="HSimple_model_age.txt" , 
+                          monitor=zparameters , 
+                          data=Zsimple_model_age ,  
+                          #inits=initsList , 
+                          n.chains=nchains ,
+                          adapt=nadapt ,
+                          burnin=nburnin , 
+                          sample=ceiling(numSavedSteps/nchains), #*100 ,
+                          thin=smallsteps ,
+                          summarise=FALSE ,
+                          plots=FALSE )
+simplemodelagesamples = as.mcmc.list( out )
+
+
+```
+
+```{r dia, echo=TRUE}
+gelman.diag(simplemodelagesamples, multivariate=FALSE)
+
+```
+
+```{r summary, echo=TRUE}
+simp <- summary(simplemodelagesamples)
+simp
+```
+```{r}
+mcmcMat = as.matrix(simplemodelagesamples,chains=TRUE) #convert mcmclist to matrix
+mcmc.int<- mcmcMat[,7:(N+6)] #individual intercepts
+mcmc.sl<- mcmcMat[,(N+7):(2*N+6)] #individual slopes
+
+mth <- apply(mcmc.int,2,mean)
+qthL <- apply(mcmc.int,2,quantile,.025)
+qthH <- apply(mcmc.int,2,quantile,.975)
+plot(lin.reg.pp[,1],mth,pch=20,xlab="intercept individual regression",ylab="personal intercept hierarchical regression")
+abline(0,1)
+for (j in 1:N){ lines(c(lin.reg.pp[j,1],lin.reg.pp[j,1]),c(qthL[j],qthH[j]),col="gray") }
+points(lin.reg.pp[,1],mth,pch=20)
+```
+

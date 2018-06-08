@@ -1,0 +1,224 @@
+---
+title: "Untitled"
+author: "Sigert"
+date: "5 June 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+rm(list=ls())
+knitr::opts_chunk$set(echo = FALSE, cache = TRUE)
+list.of.packages <- c("knitr","rjags","runjags", "haven","psych","car","magicfor","lattice")
+new.packages <- list.of.packages[!(list.of.packages %in%installed.packages()[,"Package"])]
+if(length(new.packages)){install.packages(new.packages,repos = "http://cran.us.r-project.org")}
+lapply(list.of.packages, require, character.only = TRUE)
+
+set.seed(777)
+Mywd<- getwd()
+setwd(Mywd)
+```
+
+```{r datapreparation, include=FALSE}
+## Unique ID's
+my.normalize <- function(x) {
+  return ((x - mean(x, na.rm = TRUE)) / (sd(x, na.rm = TRUE)))
+  }
+
+set.seed(777)
+# rm(list=ls())
+
+data.raw <- read.csv("soep_statV.csv", header = TRUE, sep = ",", dec = ".")
+data.raw.tmp <- transform(data.raw, pp=match(id,unique(id)))
+data.recoded <- data.raw.tmp
+data.recoded$emplStat55[data.raw.tmp$emplStat55!=1] <- 0
+
+pp <- data.recoded$pp
+norm.ls <- my.normalize(data.recoded$lifeSat) # ls: life satisfaction
+norm.a <- my.normalize(data.recoded$age) #  age
+norm.e <- data.recoded$emplStat55 # e: is he full-time employed?
+norm.h <- my.normalize(data.recoded$healthSat) #  h: health
+norm.p <- data.recoded$livtog # p: partneered?
+
+data.norm <- as.data.frame(cbind(pp,norm.ls,norm.a,norm.h,norm.p,norm.e))
+
+save(data.norm, file = "data.norm.Rdata")
+
+
+Nsubjects <- length(unique(data.norm[,1]))
+Ntotal <- length(data.norm[,1])
+
+yName = "norm.LS" 
+<<<<<<< HEAD
+xName = c("norm.a","norm.h","norm.p","norm.e")
+=======
+xName = c("norm.Age", "norm.Health", "norm.Partner","norm.Empl")
+>>>>>>> f8b9dd55259504da83cd1e0b181205be14bc382b
+y1 <- data.norm[1]
+y <- as.matrix(y1)
+x = as.matrix(data.norm[3:6],ncol=length(xName))
+
+Empl = x[,4]
+Age = x[,1] 
+Health = x[,2]
+Partner = x[,3]
+Nx = dim(x)[2]
+Nx0 = dim(x)[2]-3 #Change for between subject madness 
+
+
+```
+
+```{r Jags preparation, include=FALSE}
+
+dataList = list(
+    x = x ,
+    y = y ,
+    pp = pp ,
+    Ntotal = Ntotal ,
+    Nx = Nx ,
+    Nx0 = Nx0, #employment is measured at the individual level
+    Nsubjects = Nsubjects 
+  )
+
+```
+
+
+
+```{r JAGS specifics}
+nchains = 2
+nadapt = 200 #many uninformative dispersion parameters
+nburn = 500
+niter = 3000
+myinits <- NULL
+```
+
+
+```{r Exploratory Statistics}
+# # Life satisfaction by age
+# 
+# mean.table1=tapply(clean.data$ls,list(clean.data$age, clean.data$partner),mean)
+# mean.table3=tapply(clean.data$ls,list(clean.data$age, clean.data$employ),mean)
+# mean.table4=tapply(clean.data$ls,list(clean.data$age, clean.data$health),mean)
+# 
+# # life satisfaction as a function of Living together and age
+# colors=c("black","red")
+# plot(unique(clean.data$age),mean.table1[,1],type="b",xlim=c(0,5),ylim=c(0,10),xlab="Age (in years)",ylab="Life Satisfaction",axes=F,main="Life satisfaction as a function of Living together and age")
+# axis(side=1,at=c(0,1,2,3,4,5),labels=c(55,56,57,58,59,60))
+# axis(side=2,at=seq(0,10,1))
+# box()
+# points(unique(clean.data$age),mean.table1[,2],type="b",col="red")
+# # life satisfaction as a function of employement and age
+# 
+# colors=c("black","red")
+# plot(unique(clean.data$age),mean.table3[,1],type="b",xlim=c(0,5),ylim=c(0,10),xlab="Age (in years)",ylab="Life Satisfaction",axes=F,main="Life satisfaction as a function of employement and age")
+# axis(side=1,at=c(0,1,2,3,4,5),labels=c(55,56,57,58,59,60))
+# axis(side=2,at=seq(0,10,1))
+# box()
+# points(unique(clean.data$age),mean.table3[,2],type="b",col="red")
+# # life satisfaction as a function of health status and age
+# 
+# par(xpd=TRUE)
+# colors=rainbow(10)
+# plot(unique(clean.data$age),mean.table4[,1],type="n",xlim=c(0,5),ylim=c(0,10),xlab="Age (in years)",ylab="Life satisfaction",axes=F,main="life satisfaction as a function of health status and age")
+# axis(side=1,at=c(0,1,2,3,4,5),labels=c(55,56,57,58,59,60))
+# axis(side=2,at=seq(0,10,1))
+# box()
+# for(i in 1:length(colors)){
+#   points(unique(clean.data$age),mean.table4[,1+i],type="b",col=colors[i])
+#   legend(-0.180, 2, x.intersp = 0.12, legend = colnames(mean.table4), fill = colors, horiz=TRUE)
+# }
+
+```
+
+```{r model without interactions: model}
+modelString = "
+model {
+for ( i in 1:Ntotal ) {
+<<<<<<< HEAD
+	y[i,1] ~ dnorm( beta0[pp[i]] + beta1[pp[i]]*x[i,1]+ beta2[pp[i]]*x[i, 2]+beta3[pp[i]]*x[i,3]+beta4[pp[i]]*x[i,4] + sum( betax[1:Nx0] * x[i,(Nx-Nx0+1):Nx] ), 1/sigma^2 )
+=======
+	y[i,1] ~ dnorm( beta0[pp[i]] + beta2[pp[i]]*x[i, 2]+beta3[pp[i]]*x[i,3]+beta4[pp[i]]*x[i,4] + sum( betax[1:Nx0] * x[i,(Nx-Nx0+1):Nx] ), 1/sigma^2 )
+>>>>>>> f8b9dd55259504da83cd1e0b181205be14bc382b
+} 
+#Empl Age Health Partner ## Don't forget to set your between subjects to the end of X!
+
+#Betas
+for(j in 1:Nsubjects){
+beta0[j] ~ dnorm( beta0mu , beta0sigma )
+beta1[j] ~ dnorm( beta1mu , beta1sigma )
+beta2[j] ~ dnorm( beta2mu , beta2sigma )
+beta3[j] ~ dnorm( beta3mu , beta3sigma )
+beta4[j] ~ dnorm( beta4mu , beta4sigma )
+}
+
+
+ # Priors vague :
+    for ( q in 1: Nx0 ) {
+      betax[q] ~ dnorm( 0 , 1/2^10 )
+    }
+    beta0mu ~ dnorm( 0 , 1/(10)^3 ) 
+    beta1mu ~ dnorm( 0 , 1/(10)^3 )
+    beta0sigma ~ dunif( 1.0E-3 , 1.0E+3 )  
+    beta1sigma ~ dunif( 1.0E-3 , 1.0E+3 )
+    beta2mu ~ dnorm( 0 , 1/(10)^3 ) 
+    beta3mu ~ dnorm( 0 , 1/(10)^3 )
+    beta2sigma ~ dunif( 1.0E-3 , 1.0E+3 )  
+    beta3sigma ~ dunif( 1.0E-3 , 1.0E+3 )
+    beta4mu ~ dnorm( 0 , 1/(10)^3 ) 
+    beta4sigma ~ dunif( 1.0E-3 , 1.0E+3 )  
+    sigma ~ dunif( 1.0E-3 , 1.0E+3 )
+}
+"
+
+writeLines(modelString , con="model_full_no_correlation" )
+```
+
+```{r model without interactions:, Jags Cache = T}
+#no correlation, using standardized data for life satisfaction and health variables
+
+xvars <- as.matrix(data.norm, ncols = length(colnames(data.norm)))
+xvarss <- xvars[,2:5]
+beta <- c(1:4)
+
+
+out.simple.model <- run.jags(model = "model_full_no_correlation", monitor = c("beta0mu", "beta1mu", "beta2mu","beta3mu","beta4mu", "betax"), data = dataList, inits = myinits, n.chains = nchains, adapt = nadapt, burnin = nburn, sample = niter)
+
+summary(out.simple.model)
+save(out.simple.model, file = "simple.model.Rdata")
+
+```
+
+
+#assume interaction between age and health
+```{r AgeXhealth}
+AgeXHealth = data.norm[, "norm.a"]*data.norm[, "norm.h"]
+x = cbind(x, AgeXHealth)
+```
+
+
+```{r}
+dataList1 = list(
+    x = x ,
+    y = y ,
+    pp = pp ,
+    Ntotal = Ntotal ,
+    Nsubjects = Nsubjects,
+    Nx0 = dim(x)[2]-1,
+    Nx=dim(x)[2]
+  )
+```
+
+```{r }
+parametersI = c( "sigma","beta0mu","beta0sigma", "beta1mu","beta1sigma","beta2mu","beta2sigma", "beta3mu","beta3sigma","beta4mu","beta4sigma", "betax") 
+
+```
+```{r}
+out.simple.modelI <- run.jags(model = "model_full_no_correlation", monitor = parametersI, data = dataList1, inits = myinits, n.chains = nchains, adapt = nadapt, burnin = nburn, sample = niter)
+
+summary(out.simple.modelI)
+<<<<<<< HEAD
+save(out.simple.modelI, file = "simple.model1.Rdata")
+=======
+save(out.simple.model, file = "simple.model.2.Rdata")
+>>>>>>> f8b9dd55259504da83cd1e0b181205be14bc382b
+```
+

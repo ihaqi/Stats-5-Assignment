@@ -1,0 +1,17 @@
+
+model {
+        for ( i in 1:Ntotal ) {
+      y[i] ~ dnorm( beta[s[i],1] + beta[s[i],2] * x[i] , 1/sigma^2 )
+    }
+    for( j in 1 : Nsubj ) {  
+          beta[j , 1 : 2] ~ dmnorm(betamu, R) # dmnorm takes precision matrix as input  (and mean)
+  }
+    betamu[1 : 2] ~ dmnorm(mean, prec) 
+    R[1 : 2 , 1 : 2] ~ dwish(Omega, df) #dwish takes inverse scale matrix omega as input (and degrees of freedom)
+    S<-inverse(R) 
+    ss[1]<-sqrt(S[1,1]) #var to sd 
+    ss[2]<-sqrt(S[2,2]) #var to sd
+    ss[3]<-S[1,2]/(ss[1]*ss[2]) #cov to cor
+    sigma ~ dunif( 1.0E-3 , 1.0E+3 )
+     }
+  

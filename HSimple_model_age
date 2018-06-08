@@ -1,0 +1,27 @@
+
+model {
+    for ( i in 1:Ntotal ) {
+      zy[i] ~ dnorm( zbeta0[s[i]] + zbeta1[s[i]] * zx[i] , 1/zsigma^2 )
+    }
+    for ( j in 1:Nsubjects ) {
+      zbeta0[j] ~ dnorm( zbeta0mu , 1/(zbeta0sigma)^2 )  
+      zbeta1[j] ~ dnorm( zbeta1mu , 1/(zbeta1sigma)^2 )
+    }
+    # Priors vague on standardized scale:
+    zbeta0mu ~ dnorm( 0 , 1/(10)^2 )
+    zbeta1mu ~ dnorm( 0 , 1/(10)^2 )
+    zsigma ~ dunif( 1.0E-3 , 1.0E+3 )
+    zbeta0sigma ~ dunif( 1.0E-3 , 1.0E+3 )
+    zbeta1sigma ~ dunif( 1.0E-3 , 1.0E+3 )
+    # Transform to original scale:
+    for ( j in 1:Nsubj ) {
+      beta1[j] <- zbeta1[j] * SD.ls / SD.age  
+      beta0[j] <- zbeta0[j] * SD.ls  + M.ls - zbeta1[j] * M.age * SD.ls / SD.age 
+    }
+    beta1mu <- zbeta1mu * SD.ls / SD.age  
+    beta0mu <- zbeta0mu * SD.ls  + M.ls - zbeta1mu * M.age * SD.ls / SD.age 
+    sigma <- zsigma * SD.ls
+    beta0sigma <- zbeta0sigma * SD.ls 
+    beta1sigma <- zbeta1sigma * SD.ls/ SD.age  
+  }
+    
