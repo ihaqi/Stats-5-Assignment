@@ -12,8 +12,8 @@ for (j in 1:Nsubjects){
   beta4[j] ~ dnorm( beta4mu , 1/(beta4sigma)^2 )
 }	
  # Priors vague :
-    for ( j in 1:NxO ) {
-      beta[j] ~ dnorm( 0 , 1/2^10 )
+    for ( k in 1:length(NxO )) {
+      beta[k] ~ dnorm( 0 , 1/2^10 )
     }
 
     beta0mu ~ dnorm( 0 , 1/(10)^3 ) 
