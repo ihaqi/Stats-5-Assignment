@@ -20,11 +20,11 @@ setwd(Mywd)
 ```{r datapreparation, include=FALSE}
 ## Unique ID's
 my.normalize <- function(x) {
-  return ((x - min(x, na.rm = TRUE)) / (max(x, na.rm = TRUE) - min(x, na.rm = TRUE)))
+  return ((x - mean(x, na.rm = TRUE)) / (sd(x, na.rm = TRUE)))
   }
 
 set.seed(777)
-# rm(list=ls())
+#rm(list=ls())
 
 data.raw <- read.csv("soep_statV.csv", header = TRUE, sep = ",", dec = ".")
 data.raw.tmp <- transform(data.raw, pp=match(id,unique(id)))
@@ -34,9 +34,9 @@ data.recoded$emplStat55[data.raw.tmp$emplStat55!=1] <- 0
 pp <- data.recoded$pp
 norm.ls <- my.normalize(data.recoded$lifeSat) # ls: life satisfaction
 norm.a <- my.normalize(data.recoded$age) #  age
-norm.e <- my.normalize(data.recoded$emplStat55) # e: is he full-time employed?
+norm.e <- data.recoded$emplStat55 # e: is he full-time employed?
 norm.h <- my.normalize(data.recoded$healthSat) #  h: health
-norm.p <- my.normalize(data.recoded$livtog) # p: partneered?
+norm.p <- data.recoded$livtog # p: partneered?
 
 data.norm <- as.data.frame(cbind(pp,norm.e,norm.a,norm.h,norm.p,norm.ls))
 
@@ -170,52 +170,14 @@ xvarss <- xvars[,2:5]
 beta <- c(1:4)
 
 
-out.simple.model <- run.jags(model = "model_full_no_correlation", monitor = c("beta0mu", "beta1mu", "beta2mu","beta3mu","beta4mu", "beta"), data = dataList, inits = myinits, n.chains = nchains, adapt = nadapt, burnin = nburn, sample = niter)
+out.simple.model <- run.jags(model = "model_full_no_correlation", monitor = c("beta0mu", "beta1mu", "beta2mu","beta3mu","beta4mu", "betax"), data = dataList, inits = myinits, n.chains = nchains, adapt = nadapt, burnin = nburn, sample = niter)
+
+model[[1]] <- out.simple.model
+modelparameters[[1]] <- as.data.frame(out.simple.model$monitor)
 
 summary(out.simple.model)
 save(out.simple.model, file = "simple.model.Rdata")
 
-```
-
-```{r functions}
-
-```
-
-
-```{r model with interactions: model}
-modelString = "
-model {
-for ( i in 1:Ntotal ) {
-	y[i] ~ dnorm( beta0[pp[i]] + beta1[pp[i]]*x[i,1]+ beta2[pp[i]]*x[i, 2]+beta3[pp[i]]*x[i,3]+beta4[pp[i]]*x[i,4] + sum( beta[1:NxO] * x[i,2:Nx] ), 1/sigma^2 )
-} 
-#Empl Age Health Partner
-for (j in 1:Nsubjects){
-  beta0[j] ~ dnorm( beta0mu , 1/(beta0sigma)^2 ) 
-  beta1[j] ~ dnorm( beta1mu , 1/(beta1sigma)^2 )
-  beta2[j] ~ dnorm( beta2mu , 1/(beta2sigma)^2 )
-  beta3[j] ~ dnorm( beta3mu , 1/(beta3sigma)^2 )
-  beta4[j] ~ dnorm( beta4mu , 1/(beta4sigma)^2 )
-}	
- # Priors vague :
-    for ( j in 1:NxO ) {
-      beta[j] ~ dnorm( 0 , 1/2^10 )
-    }
-
-    beta0mu ~ dnorm( 0 , 1/(10)^3 ) 
-    beta1mu ~ dnorm( 0 , 1/(10)^3 )
-    beta0sigma ~ dunif( 1.0E-3 , 1.0E+3 )  
-    beta1sigma ~ dunif( 1.0E-3 , 1.0E+3 )
-    beta2mu ~ dnorm( 0 , 1/(10)^3 ) 
-    beta3mu ~ dnorm( 0 , 1/(10)^3 )
-    beta2sigma ~ dunif( 1.0E-3 , 1.0E+3 )  
-    beta3sigma ~ dunif( 1.0E-3 , 1.0E+3 )
-    beta4mu ~ dnorm( 0 , 1/(10)^3 ) 
-    beta4sigma ~ dunif( 1.0E-3 , 1.0E+3 )  
-    sigma ~ dunif( 1.0E-3 , 1.0E+3 )
-}
-"
-
-writeLines(modelString , con="model_full_interaction" )
 ```
 
 
