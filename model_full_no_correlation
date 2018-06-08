@@ -1,18 +1,24 @@
 
 model {
 for ( i in 1:Ntotal ) {
-	y[i] ~ dnorm( beta[pp[i]] + beta[pp[i]]*x[i,1]+ beta[pp[i]]*x[i, 2]+beta[pp[i]]*x[i,3]+beta[pp[i]]*x[i,4] + sum( beta[1:Nx0] * x[i,2:Nx] ), 1/sigma^2 )
+	y[i,1] ~ dnorm( beta0[pp[i]] + beta1[pp[i]]*x[i,1]+ beta2[pp[i]]*x[i, 2]+beta3[pp[i]]*x[i,3]+beta4[pp[i]]*x[i,4] + sum( betax[1:Nx0] * x[i,2:Nx] ), 1/sigma^2 )
 } 
 #Empl Age Health Partner
-for (j in 1:Nsubjects){
-  beta[j, 1:4] ~ dnorm( beta0mu , 1/(beta0sigma)^2 ) 
 
-}	
+#Betas
+for(j in 1:Nsubjects){
+beta0[j] ~ dnorm( 0 , 1/(10)^3 )
+beta1[j] ~ dnorm( 0 , 1/(10)^3 )
+beta2[j] ~ dnorm( 0 , 1/(10)^3 )
+beta3[j] ~ dnorm( 0 , 1/(10)^3 )
+beta4[j] ~ dnorm( 0 , 1/(10)^3 )
+}
+
+
  # Priors vague :
-    for ( j in 1: Nx0 ) {
-      beta[j] ~ dnorm( 0 , 1/2^10 )
+    for ( q in 1: Nx0 ) {
+      betax[q] ~ dnorm( 0 , 1/2^10 )
     }
-
     beta0mu ~ dnorm( 0 , 1/(10)^3 ) 
     beta1mu ~ dnorm( 0 , 1/(10)^3 )
     beta0sigma ~ dunif( 1.0E-3 , 1.0E+3 )  
