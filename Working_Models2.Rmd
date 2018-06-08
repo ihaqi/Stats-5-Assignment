@@ -39,7 +39,7 @@ norm.e <- data.recoded$emplStat55 # e: is he full-time employed?
 norm.h <- my.normalize(data.recoded$healthSat) #  h: health
 norm.p <- data.recoded$livtog # p: partneered?
 
-data.norm <- as.data.frame(cbind(pp,norm.e,norm.a,norm.h,norm.p,norm.ls))
+data.norm <- as.data.frame(cbind(pp,norm.ls,norm.a,norm.h,norm.p,norm.e))
 
 save(data.norm, file = "data.norm.Rdata")
 
@@ -48,15 +48,15 @@ Nsubjects <- length(unique(data.norm[,1]))
 Ntotal <- length(data.norm[,1])
 
 yName = "norm.LS" 
-xName = c("norm.Empl","norm.Age", "norm.Health", "norm.Partner")
-y1 <- data.norm[6]
+xName = c("norm.a","norm.h","norm.p","norm.e")
+y1 <- data.norm[1]
 y <- as.matrix(y1)
-x = as.matrix(data.norm[2:5],ncol=length(xName))
+x = as.matrix(data.norm[3:6],ncol=length(xName))
 
-Empl = x[,1]
-Age = x[,2] 
-Health = x[,3]
-Partner = x[,4]
+Empl = x[,4]
+Age = x[,1] 
+Health = x[,2]
+Partner = x[,3]
 Nx = dim(x)[2]
 Nx0 = dim(x)[2]-3
 
@@ -129,7 +129,7 @@ myinits <- NULL
 modelString = "
 model {
 for ( i in 1:Ntotal ) {
-	y[i,1] ~ dnorm( beta0[pp[i]] + beta1[pp[i]]*x[i,1]+ beta2[pp[i]]*x[i, 2]+beta3[pp[i]]*x[i,3]+beta4[pp[i]]*x[i,4] + sum( betax[1:Nx0] * x[i,2:Nx] ), 1/sigma^2 )
+	y[i,1] ~ dnorm( beta0[pp[i]] + beta1[pp[i]]*x[i,1]+ beta2[pp[i]]*x[i, 2]+beta3[pp[i]]*x[i,3]+beta4[pp[i]]*x[i,4] + sum( betax[1:Nx0] * x[i,(Nx-Nx0+1):Nx] ), 1/sigma^2 )
 } 
 #Empl Age Health Partner
 
@@ -191,10 +191,10 @@ x = cbind(x, AgeXHealth)
 dataList1 = list(
     x = x ,
     y = y ,
-    s = pp ,
+    pp = pp ,
     Ntotal = Ntotal ,
     Nsubjects = Nsubjects,
-    NxO = dim(x)[2]-1,
+    Nx0 = dim(x)[2]-1,
     Nx=dim(x)[2]
   )
 ```
@@ -207,6 +207,6 @@ parametersI = c( "sigma", "beta","beta0mu","beta0sigma", "beta1mu","beta1sigma",
 out.simple.modelI <- run.jags(model = "model_full_no_correlation", monitor = parametersI, data = dataList1, inits = myinits, n.chains = nchains, adapt = nadapt, burnin = nburn, sample = niter)
 
 summary(out.simple.modelI)
-save(out.simple.model, file = "simple.model.Rdata")
+save(out.simple.modelI, file = "simple.model1.Rdata")
 ```
 
