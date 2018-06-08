@@ -7,7 +7,7 @@ output: html_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE, cache = TRUE)
-list.of.packages <- c("knitr","rjags","runjags", "haven","psych","car","magicfor","lattice", "kableExtra")
+list.of.packages <- c("knitr","rjags","runjags", "haven","psych","car","magicfor","lattice")
 new.packages <- list.of.packages[!(list.of.packages %in%installed.packages()[,"Package"])]
 if(length(new.packages)){install.packages(new.packages,repos = "http://cran.us.r-project.org")}
 lapply(list.of.packages, require, character.only = TRUE)
@@ -38,7 +38,7 @@ norm.e <- my.normalize(data.recoded$emplStat55) # e: is he full-time employed?
 norm.h <- my.normalize(data.recoded$healthSat) #  h: health
 norm.p <- my.normalize(data.recoded$livtog) # p: partneered?
 
-data.norm <- as.data.frame(cbind(norm.pp,norm.Empl,norm.Age,norm.Health,norm.Partner,norm.LS))
+data.norm <- as.data.frame(cbind(pp,norm.e,norm.a,norm.h,norm.p,norm.ls))
 
 save(data.norm, file = "data.norm.Rdata")
 
@@ -66,17 +66,10 @@ Nx0 = dim(x)[2]-3
 dataList = list(
     x = x ,
     y = y ,
-<<<<<<< HEAD
-    s = norm.pp ,
-    Ntotal = Ntotal ,
-    Nx = dim(x)[4] ,
-    NxO = dim(x)[4]-1, #employment is measured at the individual level
-=======
     pp = pp ,
     Ntotal = Ntotal ,
     Nx = Nx ,
     Nx0 = Nx0, #employment is measured at the individual level
->>>>>>> c22217d5c53b1b92441283e0624003918ee38682
     Nsubjects = Nsubjects 
   )
 
@@ -149,13 +142,8 @@ beta4[j] ~ dnorm( 0 , 1/(10)^3 )
 
 
  # Priors vague :
-<<<<<<< HEAD
-    for ( k in 1:length(NxO )) {
-      beta[k] ~ dnorm( 0 , 1/2^10 )
-=======
     for ( q in 1: Nx0 ) {
       betax[q] ~ dnorm( 0 , 1/2^10 )
->>>>>>> c22217d5c53b1b92441283e0624003918ee38682
     }
     beta0mu ~ dnorm( 0 , 1/(10)^3 ) 
     beta1mu ~ dnorm( 0 , 1/(10)^3 )
@@ -181,23 +169,8 @@ xvars <- as.matrix(data.norm, ncols = length(colnames(data.norm)))
 xvarss <- xvars[,2:5]
 beta <- c(1:4)
 
-<<<<<<< HEAD
-simple_model <- list(
-  y = y,
-  pp = pp,
-  x = x,
-  Nx = ncol(x) ,
-  NxO = ncol(x)-1,
-  Nsubjects = Nsubjects,
-  beta = Beta,
-  Ntotal = Ntotal
-)
-
-out.simple.model <- run.jags(model = "model_full_no_correlation", monitor = c("beta0mu", "beta1mu", "beta2mu","beta3mu","beta4mu", "beta"), data = simple_model, inits = myinits, n.chains = nchains, adapt = nadapt, burnin = nburn, sample = niter)
-=======
 
 out.simple.model <- run.jags(model = "model_full_no_correlation", monitor = c("beta0mu", "beta1mu", "beta2mu","beta3mu","beta4mu", "beta"), data = dataList, inits = myinits, n.chains = nchains, adapt = nadapt, burnin = nburn, sample = niter)
->>>>>>> c22217d5c53b1b92441283e0624003918ee38682
 
 summary(out.simple.model)
 save(out.simple.model, file = "simple.model.Rdata")
