@@ -6,6 +6,7 @@ output: html_document
 ---
 
 ```{r setup, include=FALSE}
+rm(list=ls())
 knitr::opts_chunk$set(echo = FALSE, cache = TRUE)
 list.of.packages <- c("knitr","rjags","runjags", "haven","psych","car","magicfor","lattice")
 new.packages <- list.of.packages[!(list.of.packages %in%installed.packages()[,"Package"])]
@@ -24,7 +25,7 @@ my.normalize <- function(x) {
   }
 
 set.seed(777)
-#rm(list=ls())
+# rm(list=ls())
 
 data.raw <- read.csv("soep_statV.csv", header = TRUE, sep = ",", dec = ".")
 data.raw.tmp <- transform(data.raw, pp=match(id,unique(id)))
@@ -38,25 +39,26 @@ norm.e <- data.recoded$emplStat55 # e: is he full-time employed?
 norm.h <- my.normalize(data.recoded$healthSat) #  h: health
 norm.p <- data.recoded$livtog # p: partneered?
 
-data.norm <- as.data.frame(cbind(pp,norm.e,norm.a,norm.h,norm.p,norm.ls))
+data.norm <- as.data.frame(cbind(pp,norm.ls,norm.a,norm.h,norm.p,norm.e))
 
 save(data.norm, file = "data.norm.Rdata")
+
 
 Nsubjects <- length(unique(data.norm[,1]))
 Ntotal <- length(data.norm[,1])
 
 yName = "norm.LS" 
-xName = c("norm.Empl","norm.Age", "norm.Health", "norm.Partner")
-y1 = data.norm[6]
+xName = c("norm.Age", "norm.Health", "norm.Partner","norm.Empl")
+y1 <- data.norm[1]
 y <- as.matrix(y1)
-x = as.matrix(data.norm[2:5],ncol=length(xName))
+x = as.matrix(data.norm[3:6],ncol=length(xName))
 
-Empl = x[,1]
-Age = x[,2] 
-Health = x[,3]
-Partner = x[,4]
+Empl = x[,4]
+Age = x[,1] 
+Health = x[,2]
+Partner = x[,3]
 Nx = dim(x)[2]
-Nx0 = dim(x)[2]-3
+Nx0 = dim(x)[2]-3 #Change for between subject madness 
 
 
 ```
@@ -127,17 +129,17 @@ myinits <- NULL
 modelString = "
 model {
 for ( i in 1:Ntotal ) {
-	y[i,1] ~ dnorm( beta0[pp[i]] + beta1[pp[i]]*x[i,1]+ beta2[pp[i]]*x[i, 2]+beta3[pp[i]]*x[i,3]+beta4[pp[i]]*x[i,4] + sum( betax[1:Nx0] * x[i,2:Nx] ), 1/sigma^2 )
+	y[i,1] ~ dnorm( beta0[pp[i]] + beta2[pp[i]]*x[i, 2]+beta3[pp[i]]*x[i,3]+beta4[pp[i]]*x[i,4] + sum( betax[1:Nx0] * x[i,(Nx-Nx0+1):Nx] ), 1/sigma^2 )
 } 
-#Empl Age Health Partner
+#Empl Age Health Partner ## Don't forget to set your between subjects to the end of X!
 
 #Betas
 for(j in 1:Nsubjects){
-beta0[j] ~ dnorm( 0 , 1/(10)^3 )
-beta1[j] ~ dnorm( 0 , 1/(10)^3 )
-beta2[j] ~ dnorm( 0 , 1/(10)^3 )
-beta3[j] ~ dnorm( 0 , 1/(10)^3 )
-beta4[j] ~ dnorm( 0 , 1/(10)^3 )
+beta0[j] ~ dnorm( beta0mu , beta0sigma )
+beta1[j] ~ dnorm( beta1mu , beta1sigma )
+beta2[j] ~ dnorm( beta2mu , beta2sigma )
+beta3[j] ~ dnorm( beta3mu , beta3sigma )
+beta4[j] ~ dnorm( beta4mu , beta4sigma )
 }
 
 
@@ -172,13 +174,39 @@ beta <- c(1:4)
 
 out.simple.model <- run.jags(model = "model_full_no_correlation", monitor = c("beta0mu", "beta1mu", "beta2mu","beta3mu","beta4mu", "betax"), data = dataList, inits = myinits, n.chains = nchains, adapt = nadapt, burnin = nburn, sample = niter)
 
-model[[1]] <- out.simple.model
-modelparameters[[1]] <- as.data.frame(out.simple.model$monitor)
-
 summary(out.simple.model)
 save(out.simple.model, file = "simple.model.Rdata")
 
 ```
 
 
+#assume interaction between age and health
+```{r AgeXhealth}
+AgeXHealth = data.norm[, "norm.a"]*data.norm[, "norm.h"]
+x = cbind(x, AgeXHealth)
+```
+
+
+```{r}
+dataList1 = list(
+    x = x ,
+    y = y ,
+    pp = pp ,
+    Ntotal = Ntotal ,
+    Nsubjects = Nsubjects,
+    Nx0 = dim(x)[2]-1,
+    Nx=dim(x)[2]
+  )
+```
+
+```{r }
+parametersI = c( "sigma","beta0mu","beta0sigma", "beta1mu","beta1sigma","beta2mu","beta2sigma", "beta3mu","beta3sigma","beta4mu","beta4sigma", "betax") 
+
+```
+```{r}
+out.simple.modelI <- run.jags(model = "model_full_no_correlation", monitor = parametersI, data = dataList1, inits = myinits, n.chains = nchains, adapt = nadapt, burnin = nburn, sample = niter)
+
+summary(out.simple.modelI)
+save(out.simple.model, file = "simple.model.2.Rdata")
+```
 

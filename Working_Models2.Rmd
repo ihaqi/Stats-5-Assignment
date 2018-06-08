@@ -48,7 +48,11 @@ Nsubjects <- length(unique(data.norm[,1]))
 Ntotal <- length(data.norm[,1])
 
 yName = "norm.LS" 
+<<<<<<< HEAD
 xName = c("norm.a","norm.h","norm.p","norm.e")
+=======
+xName = c("norm.Age", "norm.Health", "norm.Partner","norm.Empl")
+>>>>>>> f8b9dd55259504da83cd1e0b181205be14bc382b
 y1 <- data.norm[1]
 y <- as.matrix(y1)
 x = as.matrix(data.norm[3:6],ncol=length(xName))
@@ -58,7 +62,7 @@ Age = x[,1]
 Health = x[,2]
 Partner = x[,3]
 Nx = dim(x)[2]
-Nx0 = dim(x)[2]-3
+Nx0 = dim(x)[2]-3 #Change for between subject madness 
 
 
 ```
@@ -129,9 +133,13 @@ myinits <- NULL
 modelString = "
 model {
 for ( i in 1:Ntotal ) {
+<<<<<<< HEAD
 	y[i,1] ~ dnorm( beta0[pp[i]] + beta1[pp[i]]*x[i,1]+ beta2[pp[i]]*x[i, 2]+beta3[pp[i]]*x[i,3]+beta4[pp[i]]*x[i,4] + sum( betax[1:Nx0] * x[i,(Nx-Nx0+1):Nx] ), 1/sigma^2 )
+=======
+	y[i,1] ~ dnorm( beta0[pp[i]] + beta2[pp[i]]*x[i, 2]+beta3[pp[i]]*x[i,3]+beta4[pp[i]]*x[i,4] + sum( betax[1:Nx0] * x[i,(Nx-Nx0+1):Nx] ), 1/sigma^2 )
+>>>>>>> f8b9dd55259504da83cd1e0b181205be14bc382b
 } 
-#Empl Age Health Partner
+#Empl Age Health Partner ## Don't forget to set your between subjects to the end of X!
 
 #Betas
 for(j in 1:Nsubjects){
@@ -172,7 +180,7 @@ xvarss <- xvars[,2:5]
 beta <- c(1:4)
 
 
-out.simple.model <- run.jags(model = "model_full_no_correlation", monitor = c("beta0mu", "beta1mu", "beta2mu","beta3mu","beta4mu", "beta"), data = dataList, inits = myinits, n.chains = nchains, adapt = nadapt, burnin = nburn, sample = niter)
+out.simple.model <- run.jags(model = "model_full_no_correlation", monitor = c("beta0mu", "beta1mu", "beta2mu","beta3mu","beta4mu", "betax"), data = dataList, inits = myinits, n.chains = nchains, adapt = nadapt, burnin = nburn, sample = niter)
 
 summary(out.simple.model)
 save(out.simple.model, file = "simple.model.Rdata")
@@ -200,13 +208,17 @@ dataList1 = list(
 ```
 
 ```{r }
-parametersI = c( "sigma", "beta","beta0mu","beta0sigma", "beta1mu","beta1sigma","beta2mu","beta2sigma", "beta3mu","beta3sigma","beta4mu","beta4sigma", "betax") 
+parametersI = c( "sigma","beta0mu","beta0sigma", "beta1mu","beta1sigma","beta2mu","beta2sigma", "beta3mu","beta3sigma","beta4mu","beta4sigma", "betax") 
 
 ```
 ```{r}
 out.simple.modelI <- run.jags(model = "model_full_no_correlation", monitor = parametersI, data = dataList1, inits = myinits, n.chains = nchains, adapt = nadapt, burnin = nburn, sample = niter)
 
 summary(out.simple.modelI)
+<<<<<<< HEAD
 save(out.simple.modelI, file = "simple.model1.Rdata")
+=======
+save(out.simple.model, file = "simple.model.2.Rdata")
+>>>>>>> f8b9dd55259504da83cd1e0b181205be14bc382b
 ```
 
