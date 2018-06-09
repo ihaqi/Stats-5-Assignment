@@ -2005,14 +2005,18 @@ mod_sim2 = coda.samples(model=jags.m,
 <!-- rnb-text-begin -->
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYmV0YW11MT1hcy5tYXRyaXgoY29tYmluZS5tY21jKG91dC5zaW1wbGUubW9kZWwkbWNtYylbLFwiYmV0YW11XCJdKVxuXG5gYGAifQ== -->
-<pre class="r"><code>betamu1=as.matrix(combine.mcmc(out.simple.model$mcmc)[,&quot;betamu&quot;])
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZ2VsbWFuLnBsb3Qob3V0KVxuXG5gYGAifQ== -->
+<pre class="r"><code>gelman.plot(out)
 </code></pre>
 <!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiRXJyb3IgaW4gYFsuZGVmYXVsdGAoY29tYmluZS5tY21jKG91dC5zaW1wbGUubW9kZWwkbWNtYyksICwgXCJiZXRhbXVcIikgOiBcbiAgc3Vic2NyaXB0IG91dCBvZiBib3VuZHNcbiJ9 -->
-<pre><code>Error in `[.default`(combine.mcmc(out.simple.model$mcmc), , &quot;betamu&quot;) : 
-  subscript out of bounds</code></pre>
+<!-- rnb-output-begin eyJkYXRhIjoiRXJyb3IgaW4gcGxvdC5uZXcoKSA6IGZpZ3VyZSBtYXJnaW5zIHRvbyBsYXJnZVxuIn0= -->
+<pre><code>Error in plot.new() : figure margins too large</code></pre>
 <!-- rnb-output-end -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuVmlldyhkYXRhLnJhdylcblZpZXcoZGF0YS5ub3JtKVxuVmlldyhkYXRhLm5vcm0pXG5gYGAifQ== -->
+<pre class="r"><code>View(data.raw)
+View(data.norm)
+View(data.norm)</code></pre>
+<!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <!-- rnb-text-end -->

@@ -78,7 +78,7 @@ summary(politeness.model2)
 
 anova(politeness.null,politeness.model)
 
-anova(politeness.model,politeness.model21)
+anova(politeness.model21,politeness.model22)
 
 ```
 

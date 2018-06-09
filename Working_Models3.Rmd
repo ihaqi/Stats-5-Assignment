@@ -173,11 +173,7 @@ xvarss <- xvars[,2:5]
 beta <- c(1:4)
 
 
-<<<<<<< HEAD
-out.simple.model <- run.jags(model = "model_full_no_correlation", monitor = c("beta0mu", "betax"), data = dataList, inits = myinits, n.chains = nchains, adapt = nadapt, burnin = nburn, sample = niter)
-=======
 out.simple.model <- run.jags(model = "model_full_no_correlation", monitor = c("beta0mu", "beta1mu", "beta2mu","beta3mu","beta4mu", "betax", "beta0"), data = dataList, inits = myinits, n.chains = nchains, adapt = nadapt, burnin = nburn, sample = niter)
->>>>>>> S
 
 summary(out.simple.model)
 save(out.simple.model, file = "simple.model.Rdata")

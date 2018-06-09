@@ -6,14 +6,9 @@ for ( i in 1:Ntotal ) {
 ## Don't forget to set your between subjects to the end of X! #age, health, partner,, between subjects is betax1, interaction is beta1+i
 
 #Betas
-<<<<<<< HEAD
-for(j in 1:Nsubjects){
-beta0[j] ~ dnorm( beta0mu , 1/beta0sigma^2 ) 
-=======
 for (j in 1:Nsubjects) {
 beta0[j] ~ dnorm( beta0mu , 1/beta0sigma^2 )
 beta1[j] ~ dnorm( beta1mu , 1/beta1sigma^2 )
->>>>>>> S
 beta2[j] ~ dnorm( beta2mu , 1/beta2sigma^2 )
 beta3[j] ~ dnorm( beta3mu , 1/beta3sigma^2 )
 
@@ -21,8 +16,8 @@ beta3[j] ~ dnorm( beta3mu , 1/beta3sigma^2 )
 
 
  # Priors vague :
-    for ( q in 1: Nx0 ) {
-      betax[q] ~ dnorm( 0 , 1/2^10 )
+    for ( q in (1: Nx0 )) {
+      betax[q] ~ dnorm( 0 , 1/(2^10) )
     }
     beta0mu ~ dnorm( 0 , 1/(10)^3 ) 
     beta1mu ~ dnorm( 0 , 1/(10)^3 )

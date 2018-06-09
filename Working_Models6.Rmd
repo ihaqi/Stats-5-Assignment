@@ -87,9 +87,9 @@ dataList = list(
 
 ```{r JAGS specifics}
 nchains = 2
-nadapt = 200 #many uninformative dispersion parameters
-nburn = 500
-niter = 3000
+nadapt = 1000 #many uninformative dispersion parameters
+nburn = 1000
+niter = 5000
 myinits <- NULL
 ```
 
@@ -177,7 +177,7 @@ writeLines(modelString , con="model_full_no_correlation" )
 # beta <- c(1:4)
 
 
-out.simple.model <- run.jags(model = "model_full_no_correlation", monitor = c("beta0mu", "beta1mu", "beta2mu","beta3mu","beta4mu", "betax"), data = dataList, inits = myinits, n.chains = nchains, adapt = nadapt, burnin = nburn, sample = niter)
+out.simple.model <- run.jags(model = "model_full_no_correlation", monitor = c("beta0mu", "beta1mu", "beta2mu","beta3mu","beta4mu", "betax"),thin = 10, data = dataList, inits = myinits, n.chains = nchains, adapt = nadapt, burnin = nburn, sample = niter)
 
 summary(out.simple.model)
 #save(out.simple.model, file = "simple.model.Rdata")
