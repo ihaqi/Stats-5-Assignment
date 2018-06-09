@@ -131,8 +131,6 @@ beta3[j] ~ dnorm( beta3mu , 1/beta3sigma^2 )
     beta2sigma ~ dunif( 1.0E-3 , 1.0E+3 )  
     beta3sigma ~ dunif( 1.0E-3 , 1.0E+3 )
 
-    varprior <- dgamma(0.00001, 0.00001)
- 
     sigma ~ dunif( 1.0E-3 , 1.0E+3 )
 }
 "
@@ -178,8 +176,6 @@ beta3[j] ~ dnorm( beta3mu , 1/beta3sigma^2 )
     beta3mu ~ dnorm( 0 , 1/(10)^3 )
     beta2sigma ~ dunif( 1.0E-3 , 1.0E+3 )  
     beta3sigma ~ dunif( 1.0E-3 , 1.0E+3 )
-
-    varprior <- dgamma(0.00001, 0.00001)
  
     sigma ~ dunif( 1.0E-3 , 1.0E+3 )
 }
@@ -188,14 +184,13 @@ beta3[j] ~ dnorm( beta3mu , 1/beta3sigma^2 )
 writeLines(modelString , con="model_full_no_correlation_refinedI" )
 ```
 
-```{r Model with refined interactions}
+```{r Model with refined interactions, age taken out as within subject variable}
 #Preperation
 x = as.matrix(data.norm[3:6],ncol=length(xName))
-Nx = dim(x)[2]
-Nx0 = dim(x)[2]-3 #Change for between subject madness
-
 x = cbind(x, AgeXPartner, AgeXEmploy, HealthXEmploy)
 
+Nx = dim(x)[2]
+Nx0 = dim(x)[2]-3 #Change for between subject madness
 dataList.I.noCOR. = list(
     x = x ,
     y = y ,
@@ -217,10 +212,10 @@ out.model.I.noCOR <- run.jags(model = "model_full_no_correlation_refinedI", moni
 #Preperation
 
 x = as.matrix(data.norm[3:6],ncol=length(xName))
+x = cbind(x, AgeXPartner, AgeXEmploy, HealthXEmploy)
+
 Nx = dim(x)[2]
 Nx0 = dim(x)[2]-3 #Change for between subject madness
-
-x = cbind(x, AgeXPartner, AgeXEmploy, HealthXEmploy)
 
 dataList.I.COR = list(
     x = x ,
