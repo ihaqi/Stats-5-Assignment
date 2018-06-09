@@ -200,9 +200,12 @@ dataList.I.noCOR. = list(
     Nx0 = Nx0, #employment is measured at the individual level
     Nsubjects = Nsubjects 
   )
+```
 
-out.model.I.noCOR <- run.jags(model = "model_full_no_correlation_refinedI", monitor = c("beta0mu", "beta1mu", "beta2mu","beta3mu", "betax"), data = dataList, inits = myinits, n.chains = nchains, adapt = nadapt, burnin = nburn, sample = niter, thin = 1)
+```{r running the next model}
+out.model.I.noCOR <- run.jags(model = "model_full_no_correlation_refinedI", monitor = c("beta0mu", "beta2mu","beta3mu", "betax"), data = dataList.I.noCOR., inits = myinits, n.chains = nchains, adapt = nadapt, burnin = nburn, sample = niter, thin = 1)
 
+summary(out.model.I.noCOR)
 ```
 
 
