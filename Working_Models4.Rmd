@@ -136,7 +136,6 @@ for ( i in 1:Ntotal ) {
 #Betas
 for(j in 1:Nsubjects){
 beta0[j] ~ dnorm( beta0mu , 1/beta0sigma^2 ) 
-beta1[j] ~ dnorm( beta1mu , 1/beta1sigma^2 )
 beta2[j] ~ dnorm( beta2mu , 1/beta2sigma^2 )
 beta3[j] ~ dnorm( beta3mu , 1/beta3sigma^2 )
 beta4[j] ~ dnorm( beta4mu , 1/beta4sigma^2 )
