@@ -69,9 +69,9 @@ Nx0 = dim(x)[2]-3 #Change for between subject madness
 
 ```{r JAGS specifics}
 nchains = 2
-nadapt = 500 #many uninformative dispersion parameters
+nadapt = 1000 #many uninformative dispersion parameters
 nburn = 1000
-niter = 2000
+niter = 5000
 myinits <- NULL
 ```
 
@@ -308,11 +308,75 @@ parameters.C.I <- c("ss", "cor12","cor13","cor23","betamu", "betax")
 
 out.model.COR <- run.jags(model = "model_full_correlation", monitor = parameters.C.I, data = dataList.I.COR, inits = myinits, n.chains = nchains, adapt = nadapt, burnin = nburn, sample = niter)
 
-summary(out.simple.model.correlations)
+summary(out.model.COR)
 
 ```
 
-```{r}
+```{r Model with refined correlations and interactions}
+#Preperation
 
+x = as.matrix(data.norm[3:6],ncol=length(xName))
+x = cbind(x, HealthXEmploy)
+
+Nx = dim(x)[2]
+Nx0 = dim(x)[2]-3 #Change for between subject madness
+
+dataList.I.COR2 = list(
+    x = x ,
+    y = y ,
+    pp = pp ,
+    Ntotal = Ntotal ,
+    Nsubjects = Nsubjects,
+    Nx0 = Nx0,
+    Nx= Nx,
+    omega = diag(c(1,1)),
+    mean = c(0,0),
+    df = 2,
+    prec = diag(c(1.0E-6,1.0E-6))
+  )
 ```
 
+```{r Models With refined Correlation and refined interactions}
+modelString = "
+model {
+for ( i in 1:Ntotal ) {
+	y[i,1] ~ dnorm( beta[pp[i],1] + beta[pp[i],2]*x[i, 2]+beta3[pp[i]]*x[i,3]+ sum( betax[1:Nx0] * x[i,(Nx-Nx0+1):Nx]), 1/sigma^2 )
+} 
+ # Don't forget to set your between subjects to the end of X! Dont forget that the first beta is beta0
+
+#Betas
+for(j in 1:Nsubjects){
+beta[j, 1:2] ~ dmnorm( betamu , M )
+beta3[j] ~ dnorm( 0 , 1/(10)^5)
+}
+ #Priors vague:
+for (q in 1:Nx0){
+  betax[q] ~ dnorm( 0 , 1/(10)^5)
+}
+
+  betamu[1:2] ~ dmnorm(mean, prec)
+
+  M[1 : 2, 1 : 2] ~ dwish(omega, df)
+  MA <- inverse(M)
+  
+  for (z in 1:2){ #variance to sd
+  ss[z] <- sqrt(MA[z,z])
+  }
+  cor12 <- MA[1,2]/ss[1]*ss[2]
+
+  sigma ~ dunif( 1.0E-3 , 1.0E+3 )  
+
+}
+"
+
+writeLines(modelString , con="model_full_correlation_2" )
+```
+
+```{r Running Jags correlation final}
+parameters.C.I.2 <- c("ss", "cor12","betamu", "betax")
+
+out.model.COR2 <- run.jags(model = "model_full_correlation_2", monitor = parameters.C.I.2, data = dataList.I.COR2, inits = myinits, n.chains = nchains, adapt = nadapt, burnin = nburn, sample = niter, thin = 1)
+
+summary(out.model.COR2)
+
+```
