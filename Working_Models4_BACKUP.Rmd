@@ -41,6 +41,7 @@ norm.p <- data.recoded$livtog # p: partneered?
 
 data.norm <- as.data.frame(cbind(pp,norm.ls,norm.a,norm.h,norm.p,norm.e))
 
+
 save(data.norm, file = "data.norm.Rdata")
 
 
@@ -49,7 +50,7 @@ Ntotal <- length(data.norm[,1])
 
 yName = "norm.LS" 
 xName = c("norm.Age", "norm.Health", "norm.Partner","norm.Empl")
-y1 <- data.norm[1]
+y1 <- data.norm[2]
 y <- as.matrix(y1)
 x = as.matrix(data.norm[3:6],ncol=length(xName))
 
@@ -57,6 +58,10 @@ Empl = x[,4]
 Age = x[,1] 
 Health = x[,2]
 Partner = x[,3]
+
+#Adding interactions
+AgeXHealth = data.norm[, "norm.a"]*data.norm[, "norm.h"]
+x = cbind(x, AgeXHealth)
 Nx = dim(x)[2]
 Nx0 = dim(x)[2]-3 #Change for between subject madness 
 
@@ -125,11 +130,11 @@ myinits <- NULL
 
 ```
 
-```{r model without interactions: model}
+```{r model no correlations}
 modelString = "
 model {
 for ( i in 1:Ntotal ) {
-	y[i,1] ~ dnorm( beta0[pp[i]] + beta2[pp[i]]*x[i, 2]+beta3[pp[i]]*x[i,3]+beta4[pp[i]]*x[i,4] + sum( betax[1:Nx0] * x[i,(Nx-Nx0+1):Nx] ), 1/sigma^2 )
+	y[i] ~ dnorm( beta0[pp[i]] + beta2[pp[i]]*x[i, 2]+beta3[pp[i]]*x[i,3]+beta4[pp[i]]*x[i,4] + sum( betax[1:Nx0] * [i,[(Nx-Nx0+1):Nx] ), 1/sigma^2 )
 } 
 #Empl Age Health Partner ## Don't forget to set your between subjects to the end of X!
 
@@ -143,7 +148,7 @@ beta4[j] ~ dnorm( beta4mu , 1/beta4sigma^2 )
 
 
  # Priors vague :
-    for ( q in 1: Nx0 ) {
+    for ( q in (1: Nx0 ) {
       betax[q] ~ dnorm( 0 , 1/2^10 )
     }
     beta0mu ~ dnorm( 0 , 1/(10)^3 ) 
@@ -166,35 +171,24 @@ writeLines(modelString , con="model_full_no_correlation" )
 ```{r model without interactions:, Jags Cache = T}
 #no correlation, using standardized data for life satisfaction and health variables
 
-xvars <- as.matrix(data.norm, ncols = length(colnames(data.norm)))
-xvarss <- xvars[,2:5]
-beta <- c(1:4)
+# xvars <- as.matrix(data.norm, ncols = length(colnames(data.norm)))
+# xvarss <- xvars[,2:5]
+# beta <- c(1:4)
 
 
 out.simple.model <- run.jags(model = "model_full_no_correlation", monitor = c("beta0mu", "beta1mu", "beta2mu","beta3mu","beta4mu", "betax", "beta0"), data = dataList, inits = myinits, n.chains = nchains, adapt = nadapt, burnin = nburn, sample = niter)
 
 summary(out.simple.model)
-save(out.simple.model, file = "simple.model.Rdata")
+#save(out.simple.model, file = "simple.model.Rdata")
 
-library(coda)
 
-out.simple.model.mcmc <- as.mcmc(out.simple.model)
-model.no.interactions <- as.matrix(out.simple.model.mcmc)
-model.no.interactions.betas <- model.no.interactions[, grep("betax[", colnames(model.no.interactions), fixed=T)]
-
-out.simple.model.mcmc
-
-summary(out.simple.model)
-hist(out.simple.model$sample)
-plot(out.simple.model$mcmc)
 
 ```
 
 
 #assume interaction between age and health
 ```{r AgeXhealth}
-AgeXHealth = data.norm[, "norm.a"]*data.norm[, "norm.h"]
-x = cbind(x, AgeXHealth)
+
 ```
 
 
@@ -205,8 +199,8 @@ dataList1 = list(
     pp = pp ,
     Ntotal = Ntotal ,
     Nsubjects = Nsubjects,
-    Nx0 = dim(x)[2]-1,
-    Nx=dim(x)[2]
+    Nx0 = Nx0,
+    Nx = Nx
   )
 ```
 
@@ -221,29 +215,25 @@ summary(out.simple.modelI)
 save(out.simple.model, file = "simple.model.2.Rdata")
 ```
 
-```{r Models With Correlation and interaction}
+```{r Models With Correlation and possible interaction if you include this in x vector at end}
 modelString = "
 model {
 for ( i in 1:Ntotal ) {
-	y[i,1] ~ dnorm( beta0[pp[i]] + beta2[pp[i]]*x[i, 2]+beta3[pp[i]]*x[i,3]+beta4[pp[i]]*x[i,4] + sum( betax[1:Nx0] * x[i,(Nx-Nx0+1):Nx] ), 1/sigma^2 )
+	y[i,1] ~ dnorm( beta[pp[i],1] + beta[pp[i],2]*x[i, 2]+beta[pp[i],3]*x[i,3]+beta[pp[i],4]*x[i,4] + sum( betax[1:Nx0] * x[i,(Nx-Nx0+1):Nx]), 1/sigma^2 )
 } 
-# Age partner, health, empl ## Don't forget to set your between subjects to the end of X!
+# Age partner, health, empl # Don't forget to set your between subjects to the end of X! Dont forget that the first beta is beta0
 
 #Betas
 for(j in 1:Nsubjects){
-beta0[j] ~ dmnorm( betamu , M ) 
-beta2[j] ~ dmnorm( betamu , M )
-beta3[j] ~ dmnorm( betamu , M )
-beta4[j] ~ dmnorm( betamu , M )
+beta[j, 1:4] ~ dmnorm( betamu , M ) 
+}
+ #Priors vague:
+for (q in 1:Nx0){
+  betax[q] ~ dnorm( 0 , 1/(10)^5)
 }
 
-
- # Priors vague :
-    for ( q in 1: Nx0 ) {
-      betax[q] ~ dnorm( 0 , 1/(10)^5)
-    }
-
   betamu[1:4] ~ dmnorm(mean, prec)
+
   M[1 : 4, 1 : 4] ~ dwish(omega, df)
   MA <- inverse(M)
   
@@ -269,26 +259,28 @@ writeLines(modelString , con="model_full_correlation" )
 
 ```{r Data List Correlations}
 
-#still using cbind to include interaction between age and health
+
 dataList2 = list(
     x = x ,
     y = y ,
     pp = pp ,
     Ntotal = Ntotal ,
     Nsubjects = Nsubjects,
-    Nx0 = dim(x)[2]-1,
+    Nx0 = dim(x)[2]-3,
     Nx=dim(x)[2],
     omega = diag(c(1,1,1,1)),
     mean = c(0,0,0,0),
-    df = 4+1,
+    df = 3+1,
     prec = diag(c(1.0E-6,1.0E-6,1.0E-6,1.0E-6))
   )
 ```
 
-```{r Running Jags}
+```{r Running Jags correlation}
 parameters.C.I <- c("ss", "cor1","cor2","cor3","betamu", "betax")
 
 out.simple.model.correlations <- run.jags(model = "model_full_correlation", monitor = parameters.C.I, data = dataList2, inits = myinits, n.chains = nchains, adapt = nadapt, burnin = nburn, sample = niter)
+
+summary(out.simple.model.correlations)
 
 ```
 
