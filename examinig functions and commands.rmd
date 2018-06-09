@@ -134,5 +134,8 @@ coda::traceplot((beta0.1))
 
 gelman.plot(out)
 
+betamu1=as.matrix(combine.mcmc(out.simple.model$mcmc)[,"beta0mu"])
+
+
 ```
 
