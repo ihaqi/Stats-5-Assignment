@@ -22,7 +22,7 @@ nchains = 2
 nadapt = 1200 #many uninformative dispersion parameters
 nburn = 1500
 niter = 3000
-params = c("betax", "y")
+params = c("beta0mu", "beta1mu", "beta2mu","beta3mu","beta4mu", "betax", "beta0")#c("betax", "y")
 myinits <- NULL#list("beta0mu"=-0.5, "beta1mu"=0.25)
 ```
 

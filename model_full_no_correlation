@@ -4,38 +4,18 @@ for ( i in 1:Ntotal ) {
 	y[i,1] ~ dnorm( beta0[pp[i]] + beta2[pp[i]]*x[i, 2]+beta3[pp[i]]*x[i,3]+beta4[pp[i]]*x[i,4] + sum( betax[1:Nx0] * x[i,(Nx-Nx0+1):Nx] ), 1/sigma^2 )
 } 
 #Empl Age Health Partner ## Don't forget to set your between subjects to the end of X!
-<<<<<<< HEAD
-
-# #Betas
-# for(j in 1:Nsubjects){
-# beta0[j] ~ dnorm( beta0mu , beta0sigma )
-# beta1[j] ~ dnorm( beta1mu , beta1sigma )
-# beta2[j] ~ dnorm( beta2mu , beta2sigma )
-# beta3[j] ~ dnorm( beta3mu , beta3sigma )
-# beta4[j] ~ dnorm( beta4mu , beta4sigma )
-# }
 
 #Betas
 for(j in 1:Nsubjects){
-beta0[j] ~ dnorm( beta0mu , 1/beta0sigma^2 )
-beta1[j] ~ dnorm( beta1mu , 1/beta1sigma^2 )
-=======
-
-#Betas
-for (j in 1:Nsubjects) {
 beta0[j] ~ dnorm( beta0mu , 1/beta0sigma^2 ) 
->>>>>>> S
 beta2[j] ~ dnorm( beta2mu , 1/beta2sigma^2 )
 beta3[j] ~ dnorm( beta3mu , 1/beta3sigma^2 )
 beta4[j] ~ dnorm( beta4mu , 1/beta4sigma^2 )
 }
 
+
  # Priors vague :
-<<<<<<< HEAD
-    for ( q in 1: (Nx-Nx0) ) {
-=======
-    for ( q in (1: Nx0 )) {
->>>>>>> S
+    for ( q in 1: Nx0 ) {
       betax[q] ~ dnorm( 0 , 1/2^10 )
     }
     beta0mu ~ dnorm( 0 , 1/(10)^3 ) 
