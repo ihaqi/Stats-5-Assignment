@@ -202,20 +202,49 @@ dataList.I.noCOR. = list(
   )
 ```
 
+
 ```{r running the next model}
 out.model.I.noCOR <- run.jags(model = "model_full_no_correlation_refinedI", monitor = c("beta0mu", "beta2mu","beta3mu", "betax"), data = dataList.I.noCOR., inits = myinits, n.chains = nchains, adapt = nadapt, burnin = nburn, sample = niter, thin = 1)
 
 summary(out.model.I.noCOR)
 ```
 
+```{r BIC for refined interactions 1}
+BIC1 <- BIC(out.model.I.noCOR)
+```
+
+
+```{r Model with refined interactions2, age taken out as within subject variable}
+#Preperation
+x = as.matrix(data.norm[3:6],ncol=length(xName))
+x = cbind(x, HealthXEmploy)
+
+Nx = dim(x)[2]
+Nx0 = dim(x)[2]-3 #Change for between subject madness
+dataList.I.noCOR. = list(
+    x = x ,
+    y = y ,
+    pp = pp ,
+    Ntotal = Ntotal ,
+    Nx = Nx ,
+    Nx0 = Nx0, #employment is measured at the individual level
+    Nsubjects = Nsubjects 
+  )
+```
+
+```{r running the next model, only one interaction}
+out.model.I.noCOR2 <- run.jags(model = "model_full_no_correlation_refinedI", monitor = c("beta0mu", "beta2mu","beta3mu", "betax"), data = dataList.I.noCOR., inits = myinits, n.chains = nchains, adapt = nadapt, burnin = nburn, sample = niter, thin = 1)
+
+summary(out.model.I.noCOR2)
+```
 
 
 
-```{r Model with correlations and refined interactions}
+```{r Model with correlations and refined interactions2}
 #Preperation
 
 x = as.matrix(data.norm[3:6],ncol=length(xName))
-x = cbind(x, AgeXPartner, AgeXEmploy, HealthXEmploy)
+x = cbind(x, HealthXEmploy)
 
 Nx = dim(x)[2]
 Nx0 = dim(x)[2]-3 #Change for between subject madness
@@ -226,12 +255,12 @@ dataList.I.COR = list(
     pp = pp ,
     Ntotal = Ntotal ,
     Nsubjects = Nsubjects,
-    Nx0 = dim(x)[2]-3,
-    Nx=dim(x)[2],
-    omega = diag(c(1,1,1,1)),
-    mean = c(0,0,0,0),
+    Nx0 = Nx0,
+    Nx= Nx,
+    omega = diag(c(1,1,1)),
+    mean = c(0,0,0),
     df = 2+1,
-    prec = diag(c(1.0E-6,1.0E-6,1.0E-6,1.0E-6))
+    prec = diag(c(1.0E-6,1.0E-6,1.0E-6))
   )
 ```
 
@@ -275,9 +304,9 @@ writeLines(modelString , con="model_full_correlation" )
 
 
 ```{r Running Jags correlation}
-parameters.C.I <- c("ss", "cor1","cor2","cor3","betamu", "betax")
+parameters.C.I <- c("ss", "cor12","cor13","cor23","betamu", "betax")
 
-out.simple.model.correlations <- run.jags(model = "model_full_correlation", monitor = parameters.C.I, data = dataList.I.COR, inits = myinits, n.chains = nchains, adapt = nadapt, burnin = nburn, sample = niter)
+out.model.COR <- run.jags(model = "model_full_correlation", monitor = parameters.C.I, data = dataList.I.COR, inits = myinits, n.chains = nchains, adapt = nadapt, burnin = nburn, sample = niter)
 
 summary(out.simple.model.correlations)
 
