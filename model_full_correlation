@@ -1,0 +1,37 @@
+
+model {
+for ( i in 1:Ntotal ) {
+	y[i,1] ~ dnorm( beta[pp[i],1] + beta[pp[i],2]*x[i, 2]+beta[pp[i],3]*x[i,3]+beta[pp[i],4]*x[i,4] + sum( betax[1:Nx0] * x[i,(Nx-Nx0+1):Nx]), 1/sigma^2 )
+} 
+# Age partner, health, empl # Don't forget to set your between subjects to the end of X! Dont forget that the first beta is beta0
+
+#Betas
+for(j in 1:Nsubjects){
+beta[j, 1:4] ~ dmnorm( betamu , M ) 
+}
+ #Priors vague:
+for (q in 1:Nx0){
+  betax[q] ~ dnorm( 0 , 1/(10)^5)
+}
+
+  betamu[1:4] ~ dmnorm(mean, prec)
+
+  M[1 : 4, 1 : 4] ~ dwish(omega, df)
+  MA <- inverse(M)
+  
+  for (z in 1:4){ #variance to sd
+  ss[z] <- sqrt(MA[z,z])
+  }
+  # cor 1 2 and 3 are three lists containing 3, 2, and 1 correlations respectively. 
+  for (a in 1:3){ #covariance to correlations
+  cor1[a] <- MA[1, a+1]/(ss[1]*ss[a+1])
+  }
+  for (b in 1:2){
+  cor2[b] <- MA[2, b+2]/(ss[2]*ss[b+2])
+  }
+  cor3 <- MA[3, 4]/(ss[3]*ss[4])  
+  
+  sigma ~ dunif( 1.0E-3 , 1.0E+3 )  
+
+}
+
