@@ -1,0 +1,138 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r Jags preparation, include=FALSE}
+
+dataList = list(
+    x = x ,
+    y = y ,
+    pp = pp ,
+    Ntotal = Ntotal ,
+    Nx = Nx ,
+    Nx0 = Nx0, #employment is measured at the individual level
+    Nsubjects = Nsubjects 
+  )
+
+```
+
+```{r JAGS specifics}
+nchains = 2
+nadapt = 1200 #many uninformative dispersion parameters
+nburn = 1500
+niter = 3000
+params = c("betax", "y")
+myinits <- NULL#list("beta0mu"=-0.5, "beta1mu"=0.25)
+```
+
+```{r model without interactions: model}
+modelString = "
+model {
+for ( i in 1:Ntotal ) {
+	y[i,1] ~ dnorm( beta0[pp[i]] + beta2[pp[i]]*x[i, 2]+beta3[pp[i]]*x[i,3]+beta4[pp[i]]*x[i,4] + sum( betax[1:Nx0] * x[i,(Nx-Nx0+1):Nx] ), 1/sigma^2 )
+} 
+#Empl Age Health Partner ## Don't forget to set your between subjects to the end of X!
+
+# #Betas
+# for(j in 1:Nsubjects){
+# beta0[j] ~ dnorm( beta0mu , beta0sigma )
+# beta1[j] ~ dnorm( beta1mu , beta1sigma )
+# beta2[j] ~ dnorm( beta2mu , beta2sigma )
+# beta3[j] ~ dnorm( beta3mu , beta3sigma )
+# beta4[j] ~ dnorm( beta4mu , beta4sigma )
+# }
+
+#Betas
+for(j in 1:Nsubjects){
+beta0[j] ~ dnorm( beta0mu , 1/beta0sigma^2 )
+beta1[j] ~ dnorm( beta1mu , 1/beta1sigma^2 )
+beta2[j] ~ dnorm( beta2mu , 1/beta2sigma^2 )
+beta3[j] ~ dnorm( beta3mu , 1/beta3sigma^2 )
+beta4[j] ~ dnorm( beta4mu , 1/beta4sigma^2 )
+}
+
+ # Priors vague :
+    for ( q in 1: (Nx-Nx0) ) {
+      betax[q] ~ dnorm( 0 , 1/2^10 )
+    }
+    beta0mu ~ dnorm( 0 , 1/(10)^3 ) 
+    beta1mu ~ dnorm( 0 , 1/(10)^3 )
+    beta0sigma ~ dunif( 1.0E-3 , 1.0E+3 )  
+    beta1sigma ~ dunif( 1.0E-3 , 1.0E+3 )
+    beta2mu ~ dnorm( 0 , 1/(10)^3 ) 
+    beta3mu ~ dnorm( 0 , 1/(10)^3 )
+    beta2sigma ~ dunif( 1.0E-3 , 1.0E+3 )  
+    beta3sigma ~ dunif( 1.0E-3 , 1.0E+3 )
+    beta4mu ~ dnorm( 0 , 1/(10)^3 ) 
+    beta4sigma ~ dunif( 1.0E-3 , 1.0E+3 )  
+    sigma ~ dunif( 1.0E-3 , 1.0E+3 )
+}
+"
+
+writeLines(modelString , con="model_full_no_correlation" )
+```
+
+
+
+```{r making jags model}
+
+jags.m <- jags.model( file = "model_full_no_correlation", data=dataList, inits=myinits, n.chains=2, n.adapt=500 )
+
+```
+
+```{r coda sampling}
+
+#update(mod, 500) # burn-in
+
+mod_sim2 = coda.samples(model=jags.m,
+                       variable.names=params,
+                       n.iter=10000)
+
+#summary(mod_sim)
+
+```
+
+```{r coda time}
+library(coda)
+#load(out.simple.model)
+plot(mod_sim2[2][,60])
+
+```
+
+
+```{r}
+library(coda)
+#load(out.simple.model)
+
+out <- out.simple.model
+beta0 <- combine.mcmc(out.simple.model$mcmc) # dim: 6000x1237
+trace <- out.simple.model$trace
+
+xxxx <- coda.samples(model=out.simple.model, variable.names = c("beta0", "betax"), n.iter = 3000)
+beta0.1 <- (beta0[,2])
+
+
+plot(density(beta0.1))
+mean(beta0.1)
+densplot(beta0.1)
+
+out
+out$summary
+out$summaries
+summary(out)
+
+outcoda6=as.mcmc.list(mod_sim2)
+
+plot(outcoda6)
+
+autocorr.plot(beta0.1, lag.max = 3000) 
+traceplot(beta0.1)
+
+coda::traceplot((beta0.1))
+
+
+gelman.plot(out)
+
+```
+
