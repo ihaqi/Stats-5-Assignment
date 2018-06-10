@@ -1,0 +1,23 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r}
+
+library(lme4)
+
+head(data.norm)
+
+```
+
+```{r}
+
+ls.model21 <- lmer(norm.ls ~ 1 + norm.h + norm.a + (1|pp) ,data=data.norm, REML=FALSE)
+
+
+ls.model23 <- lmer(norm.ls ~ 1+ norm.h*norm.a + (1|pp) ,data=data.norm, REML=FALSE)
+
+anova(ls.model21,ls.model23)
+
+```

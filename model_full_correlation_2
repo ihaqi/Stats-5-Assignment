@@ -1,0 +1,31 @@
+
+model {
+for ( i in 1:Ntotal ) {
+	y[i,1] ~ dnorm( beta[pp[i],1] + beta[pp[i],2]*x[i, 2]+beta3[pp[i]]*x[i,3]+ sum( betax[1:Nx0] * x[i,(Nx-Nx0+1):Nx]), 1/sigma^2 )
+} 
+ # Don't forget to set your between subjects to the end of X! Dont forget that the first beta is beta0
+
+#Betas
+for(j in 1:Nsubjects){
+beta[j, 1:2] ~ dmnorm( betamu , M )
+beta3[j] ~ dnorm( 0 , 1/(10)^5)
+}
+ #Priors vague:
+for (q in 1:Nx0){
+  betax[q] ~ dnorm( 0 , 1/(10)^5)
+}
+
+  betamu[1:2] ~ dmnorm(mean, prec)
+
+  M[1 : 2, 1 : 2] ~ dwish(omega, df)
+  MA <- inverse(M)
+  
+  for (z in 1:2){ #variance to sd
+  ss[z] <- sqrt(MA[z,z])
+  }
+  cor12 <- MA[1,2]/ss[1]*ss[2]
+
+  sigma ~ dunif( 1.0E-3 , 1.0E+3 )  
+
+}
+
