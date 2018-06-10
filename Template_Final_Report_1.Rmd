@@ -34,7 +34,7 @@ data.recoded$emplStat55[data.raw.tmp$emplStat55!=1] <- 0
 
 pp <- data.recoded$pp
 norm.ls <- my.normalize(data.recoded$lifeSat) # ls: life satisfaction
-norm.a <- my.normalize(data.recoded$age) #  age
+norm.a <- my.normalize(data.recoded$age-55) #  age
 norm.e <- data.recoded$emplStat55 # e: is he full-time employed?
 norm.h <- my.normalize(data.recoded$healthSat) #  h: health
 norm.p <- data.recoded$livtog # p: partneered?
@@ -71,7 +71,7 @@ Nx0 = dim(x)[2]-3 #Change for between subject madness
 nchains = 2
 nadapt = 1000 #many uninformative dispersion parameters
 nburn = 1000
-niter = 5000
+niter = 1000#5000
 myinits <- NULL
 ```
 
@@ -84,7 +84,10 @@ AgeXEmploy = data.norm[, "norm.a"]*data.norm[, "norm.e"]
 HealthXEmploy = data.norm[, "norm.h"]*data.norm[, "norm.e"]
 
 x = cbind(x, AgeXHealth, AgeXPartner, AgeXEmploy, HealthXEmploy)
- 
+
+Nx = dim(x)[2]
+Nx0 = dim(x)[2]-3 #Change for between subject madness
+
 #List
 
 dataList.allI.noCOR = list(
@@ -140,7 +143,7 @@ writeLines(modelString , con="model_full_no_correlation" )
 
 ```{r model all interactions:, Jags Cache = T}
 
-out.model.allI.noCOR <- run.jags(model = "model_full_no_correlation", monitor = c("beta0mu", "beta1mu", "beta2mu","beta3mu", "betax"), data = dataList.allI.noCOR, inits = myinits, n.chains = nchains, adapt = nadapt, burnin = nburn, sample = niter, thin = 1)
+out.model.allI.noCOR <- run.jags(model = "model_full_no_correlation", monitor = c("beta0mu", "beta1mu", "beta2mu","beta3mu", "betax", "dic"), data = dataList.allI.noCOR, inits = myinits, n.chains = nchains, adapt = nadapt, burnin = nburn, sample = niter, thin = 1)
 
 summary(out.model.allI.noCOR)
 #save(out.simple.model, file = "simple.model.Rdata")
@@ -243,11 +246,11 @@ summary(out.model.I.noCOR2)
 ```{r Model with correlations and refined interactions2}
 #Preperation
 
-x = as.matrix(data.norm[3:6],ncol=length(xName))
-x = cbind(x, HealthXEmploy)
+#x = as.matrix(data.norm[3:6],ncol=length(xName))
+#x = cbind(x, HealthXEmploy)
 
-Nx = dim(x)[2]
-Nx0 = dim(x)[2]-3 #Change for between subject madness
+#Nx = dim(x)[2]
+#Nx0 = dim(x)[2]-3 #Change for between subject madness
 
 dataList.I.COR = list(
     x = x ,
@@ -306,10 +309,10 @@ writeLines(modelString , con="model_full_correlation" )
 ```{r Running Jags correlation}
 parameters.C.I <- c("ss", "cor12","cor13","cor23","betamu", "betax")
 
-out.model.COR <- run.jags(model = "model_full_correlation", monitor = parameters.C.I, data = dataList.I.COR, inits = myinits, n.chains = nchains, adapt = nadapt, burnin = nburn, sample = niter)
+out.model.COR <- run.jags(model = "model_full_correlation", monitor = parameters.C.I, data = dataList.I.COR, inits = myinits, n.chains = nchains, adapt = nadapt, burnin = nburn, sample = niter, thin = 180)
 
 summary(out.model.COR)
-
+save(out.model.COR,file = "out.model.COR.thin.rdata")
 ```
 
 ```{r Model with refined correlations and interactions}

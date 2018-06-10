@@ -34,7 +34,7 @@ data.recoded$emplStat55[data.raw.tmp$emplStat55!=1] <- 0
 
 pp <- data.recoded$pp
 norm.ls <- my.normalize(data.recoded$lifeSat) # ls: life satisfaction
-norm.a <- my.normalize(data.recoded$age) #  age
+norm.a <- my.normalize(data.recoded$age-55) #  age
 norm.e <- data.recoded$emplStat55 # e: is he full-time employed?
 norm.h <- my.normalize(data.recoded$healthSat) #  h: health
 norm.p <- data.recoded$livtog # p: partneered?
@@ -140,7 +140,7 @@ writeLines(modelString , con="model_full_no_correlation" )
 
 ```{r model all interactions:, Jags Cache = T}
 
-out.model.allI.noCOR <- run.jags(model = "model_full_no_correlation", monitor = c("beta0mu", "beta1mu", "beta2mu","beta3mu", "betax"), data = dataList.allI.noCOR, inits = myinits, n.chains = nchains, adapt = nadapt, burnin = nburn, sample = niter, thin = 1)
+out.model.allI.noCOR <- run.jags(model = "model_full_no_correlation", monitor = c("beta0mu", "beta1mu", "beta2mu","beta3mu", "betax", "dic"), data = dataList.allI.noCOR, inits = myinits, n.chains = nchains, adapt = nadapt, burnin = nburn, sample = niter, thin = 1)
 
 summary(out.model.allI.noCOR)
 #save(out.simple.model, file = "simple.model.Rdata")
