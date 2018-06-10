@@ -70,7 +70,7 @@ Nx0 = dim(x)[2]-3 #Change for between subject madness
 ```{r JAGS specifics}
 nchains = 2
 nadapt = 1000 #many uninformative dispersion parameters
-nburn = 1000
+nburn = 2500
 niter = 2000
 myinits <- NULL
 ```
@@ -399,10 +399,11 @@ writeLines(modelString , con="model_full_correlation_2" )
 ```
 
 ```{r Running Jags correlation final}
-parameters.C.I.2 <- c("ss", "cor12","betamu", "betax")
+parameters.C.I.2 <- c("ss", "cor12","betamu", "betax", "sigma")
 
-out.model.COR2 <- run.jags(model = "model_full_correlation_2", monitor = parameters.C.I.2, data = dataList.I.COR2, inits = myinits, n.chains = nchains, adapt = nadapt, burnin = nburn, sample = niter, thin = 1)
+out.model.COR2 <- run.jags(model = "model_full_correlation_2", monitor = parameters.C.I.2, data = dataList.I.COR2, inits = myinits, n.chains = nchains, adapt = nadapt, burnin = nburn, sample = niter, thin = 200)
 
 summary(out.model.COR2)
+save(out.model.COR2,file = "out.model.COR2.thin.rdata")
 
 ```
