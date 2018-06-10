@@ -86,10 +86,17 @@ dataList = list(
 
 
 ```{r JAGS specifics}
+<<<<<<< HEAD
 nchains = 2
 nadapt = 1000 #many uninformative dispersion parameters
 nburn = 1000
 niter = 5000
+=======
+nchains = 3
+nadapt = 500 #many uninformative dispersion parameters
+nburn = 1000
+niter = 6000
+>>>>>>> S
 myinits <- NULL
 ```
 
@@ -177,7 +184,11 @@ writeLines(modelString , con="model_full_no_correlation" )
 # beta <- c(1:4)
 
 
+<<<<<<< HEAD
 out.simple.model <- run.jags(model = "model_full_no_correlation", monitor = c("beta0mu", "beta1mu", "beta2mu","beta3mu","beta4mu", "betax"),thin = 10, data = dataList, inits = myinits, n.chains = nchains, adapt = nadapt, burnin = nburn, sample = niter)
+=======
+out.simple.model <- run.jags(model = "model_full_no_correlation", monitor = c("beta0mu", "beta1mu", "beta2mu","beta3mu", "betax"), data = dataList, inits = myinits, n.chains = nchains, adapt = nadapt, burnin = nburn, sample = niter, thin = 1)
+>>>>>>> S
 
 summary(out.simple.model)
 #save(out.simple.model, file = "simple.model.Rdata")
@@ -188,8 +199,12 @@ summary(out.simple.model)
 
 
 #assume interaction between age and health
-```{r AgeXhealth}
+```{r resting convergence and stuff}
 
+beta1mu <- as.matrix(combine.mcmc(out.simple.model$mcmc)[,"beta1mu"])
+traceplot(out.simple.model$mcmc[,"beta1mu"])
+
+autocorr.plot(out.simple.model$mcmc[,"beta1mu"])
 ```
 
 
@@ -282,6 +297,10 @@ parameters.C.I <- c("ss", "cor1","cor2","cor3","betamu", "betax")
 out.simple.model.correlations <- run.jags(model = "model_full_correlation", monitor = parameters.C.I, data = dataList2, inits = myinits, n.chains = nchains, adapt = nadapt, burnin = nburn, sample = niter)
 
 summary(out.simple.model.correlations)
+
+```
+
+```{r}
 
 ```
 

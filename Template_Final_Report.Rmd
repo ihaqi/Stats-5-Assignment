@@ -1,0 +1,382 @@
+---
+title: "Untitled"
+author: "Sigert"
+date: "5 June 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+rm(list=ls())
+knitr::opts_chunk$set(echo = FALSE, cache = TRUE)
+list.of.packages <- c("knitr","rjags","runjags", "haven","psych","car","magicfor","lattice")
+new.packages <- list.of.packages[!(list.of.packages %in%installed.packages()[,"Package"])]
+if(length(new.packages)){install.packages(new.packages,repos = "http://cran.us.r-project.org")}
+lapply(list.of.packages, require, character.only = TRUE)
+
+set.seed(777)
+Mywd<- getwd()
+setwd(Mywd)
+```
+
+```{r datapreparation, include=FALSE}
+## Unique ID's
+my.normalize <- function(x) {
+  return ((x - mean(x, na.rm = TRUE)) / (sd(x, na.rm = TRUE)))
+  }
+
+set.seed(777)
+# rm(list=ls())
+
+data.raw <- read.csv("soep_statV.csv", header = TRUE, sep = ",", dec = ".")
+data.raw.tmp <- transform(data.raw, pp=match(id,unique(id)))
+data.recoded <- data.raw.tmp
+data.recoded$emplStat55[data.raw.tmp$emplStat55!=1] <- 0
+
+pp <- data.recoded$pp
+norm.ls <- my.normalize(data.recoded$lifeSat) # ls: life satisfaction
+norm.a <- my.normalize(data.recoded$age) #  age
+norm.e <- data.recoded$emplStat55 # e: is he full-time employed?
+norm.h <- my.normalize(data.recoded$healthSat) #  h: health
+norm.p <- data.recoded$livtog # p: partneered?
+
+data.norm <- as.data.frame(cbind(pp,norm.ls,norm.a,norm.h,norm.p,norm.e))
+
+
+save(data.norm, file = "data.norm.Rdata")
+
+
+Nsubjects <- length(unique(data.norm[,1]))
+Ntotal <- length(data.norm[,1])
+
+yName = "norm.LS" 
+xName = c("norm.Age", "norm.Health", "norm.Partner","norm.Empl")
+y1 <- data.norm[2]
+y <- as.matrix(y1)
+x = as.matrix(data.norm[3:6],ncol=length(xName))
+
+Empl = x[,4]
+Age = x[,1] 
+Health = x[,2]
+Partner = x[,3]
+
+Nx = dim(x)[2]
+Nx0 = dim(x)[2]-3 #Change for between subject madness
+
+
+
+```
+
+
+```{r JAGS specifics}
+nchains = 2
+nadapt = 1000 #many uninformative dispersion parameters
+nburn = 1000
+niter = 5000
+myinits <- NULL
+```
+
+
+```{r Jags preparation for model with all interactions and no correlations, include=FALSE}
+#Adding interactions, based on LMER model
+AgeXHealth = data.norm[, "norm.a"]*data.norm[, "norm.h"]
+AgeXPartner = data.norm[, "norm.a"]*data.norm[, "norm.p"]
+AgeXEmploy = data.norm[, "norm.a"]*data.norm[, "norm.e"]
+HealthXEmploy = data.norm[, "norm.h"]*data.norm[, "norm.e"]
+
+x = cbind(x, AgeXHealth, AgeXPartner, AgeXEmploy, HealthXEmploy)
+ 
+#List
+
+dataList.allI.noCOR = list(
+    x = x ,
+    y = y ,
+    pp = pp ,
+    Ntotal = Ntotal ,
+    Nx = Nx ,
+    Nx0 = Nx0, #employment is measured at the individual level
+    Nsubjects = Nsubjects 
+  )
+
+```
+
+
+```{r model no correlations}
+modelString = "
+model {
+for ( i in 1:Ntotal ) {
+	y[i,1] ~ dnorm( beta0[pp[i]] + beta1[pp[i]]*x[i, 1] +beta2[pp[i]]*x[i, 2]+beta3[pp[i]]*x[i,3] + sum( betax[1:Nx0] * x[i,(Nx-Nx0+1):Nx] ), 1/sigma^2 )
+} 
+## Don't forget to set your between subjects to the end of X! #age, health, partner,, between subjects is betax1, interaction is beta1+i
+
+#Betas
+for (j in 1:Nsubjects) {
+beta0[j] ~ dnorm( beta0mu , 1/beta0sigma^2 )
+beta1[j] ~ dnorm( beta1mu , 1/beta1sigma^2 )
+beta2[j] ~ dnorm( beta2mu , 1/beta2sigma^2 )
+beta3[j] ~ dnorm( beta3mu , 1/beta3sigma^2 )
+
+}
+
+
+ # Priors vague :
+    for ( q in (1: Nx0 )) {
+      betax[q] ~ dnorm( 0 , 1/(2^10) )
+    }
+    beta0mu ~ dnorm( 0 , 1/(10)^3 ) 
+    beta1mu ~ dnorm( 0 , 1/(10)^3 )
+    beta0sigma ~ dunif( 1.0E-3 , 1.0E+3 )  
+    beta1sigma ~ dunif( 1.0E-3 , 1.0E+3 )
+    beta2mu ~ dnorm( 0 , 1/(10)^3 ) 
+    beta3mu ~ dnorm( 0 , 1/(10)^3 )
+    beta2sigma ~ dunif( 1.0E-3 , 1.0E+3 )  
+    beta3sigma ~ dunif( 1.0E-3 , 1.0E+3 )
+
+    sigma ~ dunif( 1.0E-3 , 1.0E+3 )
+}
+"
+
+writeLines(modelString , con="model_full_no_correlation" )
+```
+
+```{r model all interactions:, Jags Cache = T}
+
+out.model.allI.noCOR <- run.jags(model = "model_full_no_correlation", monitor = c("beta0mu", "beta1mu", "beta2mu","beta3mu", "betax"), data = dataList.allI.noCOR, inits = myinits, n.chains = nchains, adapt = nadapt, burnin = nburn, sample = niter, thin = 1)
+
+summary(out.model.allI.noCOR)
+#save(out.simple.model, file = "simple.model.Rdata")
+
+```
+
+```{r model no correlations, refined interactions}
+modelString = "
+model {
+for ( i in 1:Ntotal ) {
+	y[i,1] ~ dnorm( beta0[pp[i]] + beta2[pp[i]]*x[i, 2]+beta3[pp[i]]*x[i,3] + sum( betax[1:Nx0] * x[i,(Nx-Nx0+1):Nx] ), 1/sigma^2 )
+} 
+## Don't forget to set your between subjects to the end of X! #age, health, partner,, between subjects is betax1, interaction is beta1+i
+
+#Betas
+for (j in 1:Nsubjects) {
+beta0[j] ~ dnorm( beta0mu , 1/beta0sigma^2 )
+beta2[j] ~ dnorm( beta2mu , 1/beta2sigma^2 )
+beta3[j] ~ dnorm( beta3mu , 1/beta3sigma^2 )
+
+}
+
+
+ # Priors vague :
+    for ( q in (1: Nx0 )) {
+      betax[q] ~ dnorm( 0 , 1/(2^10) )
+    }
+    beta0mu ~ dnorm( 0 , 1/(10)^3 ) 
+    beta1mu ~ dnorm( 0 , 1/(10)^3 )
+    beta0sigma ~ dunif( 1.0E-3 , 1.0E+3 )  
+    beta1sigma ~ dunif( 1.0E-3 , 1.0E+3 )
+    beta2mu ~ dnorm( 0 , 1/(10)^3 ) 
+    beta3mu ~ dnorm( 0 , 1/(10)^3 )
+    beta2sigma ~ dunif( 1.0E-3 , 1.0E+3 )  
+    beta3sigma ~ dunif( 1.0E-3 , 1.0E+3 )
+ 
+    sigma ~ dunif( 1.0E-3 , 1.0E+3 )
+}
+"
+
+writeLines(modelString , con="model_full_no_correlation_refinedI" )
+```
+
+```{r Model with refined interactions, age taken out as within subject variable}
+#Preperation
+x = as.matrix(data.norm[3:6],ncol=length(xName))
+x = cbind(x, AgeXPartner, AgeXEmploy, HealthXEmploy)
+
+Nx = dim(x)[2]
+Nx0 = dim(x)[2]-3 #Change for between subject madness
+dataList.I.noCOR. = list(
+    x = x ,
+    y = y ,
+    pp = pp ,
+    Ntotal = Ntotal ,
+    Nx = Nx ,
+    Nx0 = Nx0, #employment is measured at the individual level
+    Nsubjects = Nsubjects 
+  )
+```
+
+
+```{r running the next model}
+out.model.I.noCOR <- run.jags(model = "model_full_no_correlation_refinedI", monitor = c("beta0mu", "beta2mu","beta3mu", "betax"), data = dataList.I.noCOR., inits = myinits, n.chains = nchains, adapt = nadapt, burnin = nburn, sample = niter, thin = 1)
+
+summary(out.model.I.noCOR)
+```
+
+```{r BIC for refined interactions 1}
+BIC1 <- BIC(out.model.I.noCOR)
+```
+
+
+```{r Model with refined interactions2, age taken out as within subject variable}
+#Preperation
+x = as.matrix(data.norm[3:6],ncol=length(xName))
+x = cbind(x, HealthXEmploy)
+
+Nx = dim(x)[2]
+Nx0 = dim(x)[2]-3 #Change for between subject madness
+dataList.I.noCOR. = list(
+    x = x ,
+    y = y ,
+    pp = pp ,
+    Ntotal = Ntotal ,
+    Nx = Nx ,
+    Nx0 = Nx0, #employment is measured at the individual level
+    Nsubjects = Nsubjects 
+  )
+```
+
+```{r running the next model, only one interaction}
+out.model.I.noCOR2 <- run.jags(model = "model_full_no_correlation_refinedI", monitor = c("beta0mu", "beta2mu","beta3mu", "betax"), data = dataList.I.noCOR., inits = myinits, n.chains = nchains, adapt = nadapt, burnin = nburn, sample = niter, thin = 1)
+
+summary(out.model.I.noCOR2)
+```
+
+
+
+```{r Model with correlations and refined interactions2}
+#Preperation
+
+x = as.matrix(data.norm[3:6],ncol=length(xName))
+x = cbind(x, HealthXEmploy)
+
+Nx = dim(x)[2]
+Nx0 = dim(x)[2]-3 #Change for between subject madness
+
+dataList.I.COR = list(
+    x = x ,
+    y = y ,
+    pp = pp ,
+    Ntotal = Ntotal ,
+    Nsubjects = Nsubjects,
+    Nx0 = Nx0,
+    Nx= Nx,
+    omega = diag(c(1,1,1)),
+    mean = c(0,0,0),
+    df = 2+1,
+    prec = diag(c(1.0E-6,1.0E-6,1.0E-6))
+  )
+```
+
+
+```{r Models With all Correlation and refined interactions}
+modelString = "
+model {
+for ( i in 1:Ntotal ) {
+	y[i,1] ~ dnorm( beta[pp[i],1] + beta[pp[i],2]*x[i, 2]+beta[pp[i],3]*x[i,3]+ sum( betax[1:Nx0] * x[i,(Nx-Nx0+1):Nx]), 1/sigma^2 )
+} 
+ # Don't forget to set your between subjects to the end of X! Dont forget that the first beta is beta0
+
+#Betas
+for(j in 1:Nsubjects){
+beta[j, 1:3] ~ dmnorm( betamu , M ) 
+}
+ #Priors vague:
+for (q in 1:Nx0){
+  betax[q] ~ dnorm( 0 , 1/(10)^5)
+}
+
+  betamu[1:3] ~ dmnorm(mean, prec)
+
+  M[1 : 3, 1 : 3] ~ dwish(omega, df)
+  MA <- inverse(M)
+  
+  for (z in 1:3){ #variance to sd
+  ss[z] <- sqrt(MA[z,z])
+  }
+  cor12 <- MA[1,2]/ss[1]*ss[2]
+  cor13 <- MA[1,3]/ss[1]*ss[3]
+  cor23 <- MA[2,3]/ss[2]*ss[3]
+
+  sigma ~ dunif( 1.0E-3 , 1.0E+3 )  
+
+}
+"
+
+writeLines(modelString , con="model_full_correlation" )
+```
+
+
+```{r Running Jags correlation}
+parameters.C.I <- c("ss", "cor12","cor13","cor23","betamu", "betax")
+
+out.model.COR <- run.jags(model = "model_full_correlation", monitor = parameters.C.I, data = dataList.I.COR, inits = myinits, n.chains = nchains, adapt = nadapt, burnin = nburn, sample = niter)
+
+summary(out.model.COR)
+
+```
+
+```{r Model with refined correlations and interactions}
+#Preperation
+
+x = as.matrix(data.norm[3:6],ncol=length(xName))
+x = cbind(x, HealthXEmploy)
+
+Nx = dim(x)[2]
+Nx0 = dim(x)[2]-3 #Change for between subject madness
+
+dataList.I.COR2 = list(
+    x = x ,
+    y = y ,
+    pp = pp ,
+    Ntotal = Ntotal ,
+    Nsubjects = Nsubjects,
+    Nx0 = Nx0,
+    Nx= Nx,
+    omega = diag(c(1,1)),
+    mean = c(0,0),
+    df = 2,
+    prec = diag(c(1.0E-6,1.0E-6))
+  )
+```
+
+```{r Models With refined Correlation and refined interactions}
+modelString = "
+model {
+for ( i in 1:Ntotal ) {
+	y[i,1] ~ dnorm( beta[pp[i],1] + beta[pp[i],2]*x[i, 2]+beta3[pp[i]]*x[i,3]+ sum( betax[1:Nx0] * x[i,(Nx-Nx0+1):Nx]), 1/sigma^2 )
+} 
+ # Don't forget to set your between subjects to the end of X! Dont forget that the first beta is beta0
+
+#Betas
+for(j in 1:Nsubjects){
+beta[j, 1:2] ~ dmnorm( betamu , M )
+beta3[j] ~ dnorm( 0 , 1/(10)^5)
+}
+ #Priors vague:
+for (q in 1:Nx0){
+  betax[q] ~ dnorm( 0 , 1/(10)^5)
+}
+
+  betamu[1:2] ~ dmnorm(mean, prec)
+
+  M[1 : 2, 1 : 2] ~ dwish(omega, df)
+  MA <- inverse(M)
+  
+  for (z in 1:2){ #variance to sd
+  ss[z] <- sqrt(MA[z,z])
+  }
+  cor12 <- MA[1,2]/ss[1]*ss[2]
+
+  sigma ~ dunif( 1.0E-3 , 1.0E+3 )  
+
+}
+"
+
+writeLines(modelString , con="model_full_correlation_2" )
+```
+
+```{r Running Jags correlation final}
+parameters.C.I.2 <- c("ss", "cor12","betamu", "betax")
+
+out.model.COR2 <- run.jags(model = "model_full_correlation_2", monitor = parameters.C.I.2, data = dataList.I.COR2, inits = myinits, n.chains = nchains, adapt = nadapt, burnin = nburn, sample = niter, thin = 1)
+
+summary(out.model.COR2)
+
+```

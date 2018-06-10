@@ -1,14 +1,13 @@
 
 model {
 for ( i in 1:Ntotal ) {
-	y[i,1] ~ dnorm( beta0[pp[i]] + beta1[pp[i]]*x[i, 1] +beta2[pp[i]]*x[i, 2]+beta3[pp[i]]*x[i,3] + sum( betax[1:Nx0] * x[i,(Nx-Nx0+1):Nx] ), 1/sigma^2 )
+	y[i,1] ~ dnorm( beta0[pp[i]] + beta2[pp[i]]*x[i, 2]+beta3[pp[i]]*x[i,3] + sum( betax[1:Nx0] * x[i,(Nx-Nx0+1):Nx] ), 1/sigma^2 )
 } 
 ## Don't forget to set your between subjects to the end of X! #age, health, partner,, between subjects is betax1, interaction is beta1+i
 
 #Betas
 for (j in 1:Nsubjects) {
 beta0[j] ~ dnorm( beta0mu , 1/beta0sigma^2 )
-beta1[j] ~ dnorm( beta1mu , 1/beta1sigma^2 )
 beta2[j] ~ dnorm( beta2mu , 1/beta2sigma^2 )
 beta3[j] ~ dnorm( beta3mu , 1/beta3sigma^2 )
 
@@ -19,16 +18,14 @@ beta3[j] ~ dnorm( beta3mu , 1/beta3sigma^2 )
     for ( q in (1: Nx0 )) {
       betax[q] ~ dnorm( 0 , 1/(2^10) )
     }
-    beta0mu ~ dnorm( 0 , varprior ) 
-    beta1mu ~ dnorm( 0 , varprior )
+    beta0mu ~ dnorm( 0 , 1/(10)^3 ) 
+    beta1mu ~ dnorm( 0 , 1/(10)^3 )
     beta0sigma ~ dunif( 1.0E-3 , 1.0E+3 )  
     beta1sigma ~ dunif( 1.0E-3 , 1.0E+3 )
-    beta2mu ~ dnorm( 0 , varprior ) 
-    beta3mu ~ dnorm( 0 , varprior )
+    beta2mu ~ dnorm( 0 , 1/(10)^3 ) 
+    beta3mu ~ dnorm( 0 , 1/(10)^3 )
     beta2sigma ~ dunif( 1.0E-3 , 1.0E+3 )  
     beta3sigma ~ dunif( 1.0E-3 , 1.0E+3 )
-
-    varprior <- dgamma(0.00001, 0.00001)
  
     sigma ~ dunif( 1.0E-3 , 1.0E+3 )
 }
