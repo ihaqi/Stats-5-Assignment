@@ -19,17 +19,15 @@ beta3[j] ~ dnorm( beta3mu , 1/beta3sigma^2 )
     for ( q in (1: Nx0 )) {
       betax[q] ~ dnorm( 0 , 1/(2^10) )
     }
-    beta0mu ~ dnorm( 0 , varprior ) 
-    beta1mu ~ dnorm( 0 , varprior )
+    beta0mu ~ dnorm( 0 , 1/(10)^3 ) 
+    beta1mu ~ dnorm( 0 , 1/(10)^3 )
     beta0sigma ~ dunif( 1.0E-3 , 1.0E+3 )  
     beta1sigma ~ dunif( 1.0E-3 , 1.0E+3 )
-    beta2mu ~ dnorm( 0 , varprior ) 
-    beta3mu ~ dnorm( 0 , varprior )
+    beta2mu ~ dnorm( 0 , 1/(10)^3 ) 
+    beta3mu ~ dnorm( 0 , 1/(10)^3 )
     beta2sigma ~ dunif( 1.0E-3 , 1.0E+3 )  
     beta3sigma ~ dunif( 1.0E-3 , 1.0E+3 )
 
-    varprior <- dgamma(0.00001, 0.00001)
- 
     sigma ~ dunif( 1.0E-3 , 1.0E+3 )
 }
 
