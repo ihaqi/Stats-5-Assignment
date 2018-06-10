@@ -32,6 +32,11 @@ data.raw.tmp <- transform(data.raw, pp=match(id,unique(id)))
 data.recoded <- data.raw.tmp
 data.recoded$emplStat55[data.raw.tmp$emplStat55!=1] <- 0
 
+meanAge <- mean(data.raw$age)
+sdAge <- sd(data.raw$age)
+meanls <- mean(data.raw$lifeSat)
+sdls <- mean(data.raw$lifeSat)
+
 pp <- data.recoded$pp
 norm.ls <- my.normalize(data.recoded$lifeSat) # ls: life satisfaction
 norm.a <- my.normalize(data.recoded$age) #  age
@@ -49,7 +54,7 @@ Ntotal <- length(data.norm[,1])
 
 yName = "norm.LS" 
 xName = c("norm.Age", "norm.Health", "norm.Partner","norm.Empl")
-y1 <- data.norm[1]
+y1 <- data.norm[2]
 y <- as.matrix(y1)
 x = as.matrix(data.norm[3:6],ncol=length(xName))
 
@@ -80,11 +85,16 @@ dataList = list(
 
 
 ```{r JAGS specifics}
-nchains = 2
-nadapt = 200 #many uninformative dispersion parameters
-nburn = 500
-niter = 3000
-myinits <- NULL
+#nchains = 2
+#nadapt = 200 #many uninformative dispersion parameters
+#nburn = 500
+#niter = 3000
+#myinits <- NULL
+numSavedSteps=10000
+thinSteps=1
+adaptSteps = 2000  # Number of steps to "tune" the samplers
+burnInSteps = 5000
+nChains = 3 
 ```
 
 
@@ -124,6 +134,89 @@ myinits <- NULL
 # }
 
 ```
+
+
+```{r model age}
+modelString = "
+model{ 
+for (i in 1:Ntotal){
+  y[i,1] ~ dnorm( beta0[pp[i]] + beta1[pp[i]] * x[i,1] , 1/sigma^2 )
+    }
+  for (j in 1:Nsubjects){
+      beta0[j] ~ dnorm( beta0mu , 1/(beta0sigma)^2 )  
+      beta1[j] ~ dnorm( beta1mu , 1/(beta1sigma)^2 )
+    }
+    # Priors vague on standardized scale:
+    beta0mu ~ dnorm( 0 , 1/(10)^2 )
+    beta1mu ~ dnorm( 0 , 1/(10)^2 )
+    sigma ~ dunif( 1.0E-3 , 1.0E+3 )
+    beta0sigma ~ dunif( 1.0E-3 , 1.0E+3 )
+    beta1sigma ~ dunif( 1.0E-3 , 1.0E+3 )
+  
+ # Transform to original scale:
+    for ( j in 1:Nsubjects ) {
+      Tbeta1[j] <- beta1[j] *sdls / sdAge  
+      Tbeta0[j] <- beta0[j] * sdls  + meanls - beta1[j] * meanAge * sdls / sdAge 
+    }
+    Tbeta1mu <- beta1mu * sdls / sdAge  
+    Tbeta0mu <- beta0mu * sdls  + meanls - beta1mu * meanAge * sdls / sdAge 
+    Tsigma <- sigma * sdls
+    Tbeta0sigma <- beta0sigma * sdls 
+    Tbeta1sigma <- beta1sigma * sdls/ sdAge  
+  }
+"
+writeLines( modelString , con="simplehieragenoco.txt" )
+
+```
+
+```{r normal values}
+parametersT = c( "Tbeta0mu" , "Tbeta1mu" , "Tsigma", "dic")
+
+```
+```{r list age}
+dataList = list(
+    x = x,
+    y = y ,
+    pp = pp ,
+    Ntotal = Ntotal ,
+    Nsubjects = Nsubjects ,
+    meanAge = meanAge,
+    meanls = meanls,
+    sdAge = sdAge,
+    sdls = sdls
+  )
+```
+
+```{r}
+outsimple = run.jags(     model="simplehieragenoco.txt" , 
+                          monitor=parametersT , 
+                          data=dataList ,  
+                          #inits=initsList , 
+                          n.chains=nChains ,
+                          adapt=adaptSteps ,
+                          burnin=burnInSteps , 
+                          sample=ceiling(numSavedSteps/nChains), #*100 ,
+                          thin=thinSteps ,
+                          summarise=FALSE ,
+                          plots=FALSE )
+#outsimple.ugm = as.mcmc.list( outsimple )
+#outsimple.ugm
+#summary(outsimple)
+summary(outsimple$dic)
+```
+```{r}
+Tbeta0mu=as.matrix(combine.mcmc(outsimple$mcmc)[,"Tbeta0mu"])
+Tbeta1mu=as.matrix(combine.mcmc(outsimple$mcmc)[,"Tbeta1mu"])
+Tsigma=as.matrix(combine.mcmc(outsimple$mcmc)[,"Tsigma"])
+traceplot(outsimple$mcmc[,"Tbeta0mu"])
+traceplot(outsimple$mcmc[,"Tbeta1mu"])
+traceplot(outsimple$mcmc[,"Tsigma"])
+autocorr.plot(outsimple$mcmc[,"Tbeta0mu"])
+autocorr.plot(outsimple$mcmc[,"Tbeta1mu"])
+autocorr.plot(outsimple$mcmc[,"Tsigma"])
+```
+
+
 
 ```{r model without interactions: model}
 modelString = "
