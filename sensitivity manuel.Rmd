@@ -71,7 +71,7 @@ Nx0 = dim(x)[2]-3 #Change for between subject madness
 nchains = 2
 nadapt = 1000 #many uninformative dispersion parameters
 nburn = 2500
-niter = 2000
+niter = 1000
 myinits <- NULL
 ```
 
@@ -399,8 +399,8 @@ for (q in 1:Nx0){
   betax[q] ~ dnorm( rand , 1/(10)^2)
 }
 
-rand ~ runif(1, -10, 10)
-rand2 ~ runif(1, -10, 10) 
+rand ~ dunif(-10, 10)
+rand2 ~ dunif(-10, 10) 
   betamu[1:2] ~ dmnorm(mean, prec)
   betamu2 ~ dnorm(rand2, 1/(10)^2)
 
@@ -423,13 +423,28 @@ writeLines(modelString.sens , con="model_full_correlation_2.sens" )
 ```{r Running Jags correlation final}
 parameters.C.I.2.sens <- c("ss", "cor12","betamu", "betax", "sigma", "rand", "rand2")
 
-out.model.COR2.sens <- run.jags(model = "model_full_correlation_2.sens", monitor = parameters.C.I.2.sens, data = dataList.I.COR2.sens, inits = myinits, n.chains = nchains, adapt = nadapt, burnin = nburn, sample = niter, thin = 200)
+out.model.COR2.sens <- run.jags(model = "model_full_correlation_2.sens", monitor = parameters.C.I.2.sens, data = dataList.I.COR2.sens, inits = myinits, n.chains = nchains, adapt = nadapt, burnin = nburn, sample = niter, thin = 1)
 
 summary(out.model.COR2)
-save(out.model.COR2,file = "out.model.COR2.sens.thick.rdata")
+save(out.model.COR2.sens,file = "out.model.COR2.sens.thick.rdata")
 
 ```
-```{r sebs}
+```{r sens two thin jags}
+
+parameters.C.I <- c("ss", "cor12","cor13","cor23","betamu", "betax","sigma")
+
+out.model.COR <- run.jags(model = "model_full_correlation", monitor = parameters.C.I, data = dataList.I.COR, inits = myinits, n.chains = nchains, adapt = nadapt, burnin = nburn, sample = 1000, thin = 150)
+
+sum.sens.1 <- summary(out.model.COR)
+save(out.model.COR,file = "out.model.COR.sen.thin.rdata")
+
+
+parameters.C.I.2.sens <- c("ss", "cor12","betamu", "betax", "sigma", "rand", "rand2")
+
+out.model.COR2.sens <- run.jags(model = "model_full_correlation_2.sens", monitor = parameters.C.I.2.sens, data = dataList.I.COR2.sens, inits = myinits, n.chains = nchains, adapt = nadapt, burnin = nburn, sample = 800, thin = 300)
+
+sum.sens.2 <- summary(out.model.COR2)
+save(out.model.COR2.sens,file = "out.model.COR2.sens.thick.rdata")
 
 ```
 
