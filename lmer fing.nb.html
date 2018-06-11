@@ -1696,21 +1696,48 @@ $(document).ready(function () {
 
 
 <!-- rnb-text-begin -->
-<p>This is an <a href="http://rmarkdown.rstudio.com">R Markdown</a> Notebook. When you execute code within the notebook, the results appear beneath the code.</p>
-<p>Try executing this chunk by clicking the <em>Run</em> button within the chunk or by placing your cursor inside it and pressing <em>Ctrl+Shift+Enter</em>.</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxucGxvdChjYXJzKVxuYGBgIn0= -->
-<pre class="r"><code>plot(cars)</code></pre>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubGlicmFyeShsbWU0KVxuXG5gYGAifQ== -->
+<pre class="r"><code>library(lme4)
+</code></pre>
 <!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiTG9hZGluZyByZXF1aXJlZCBwYWNrYWdlOiBNYXRyaXhcbiJ9 -->
+<pre><code>Loading required package: Matrix</code></pre>
+<!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
-<p>Add a new chunk by clicking the <em>Insert Chunk</em> button on the toolbar or by pressing <em>Ctrl+Alt+I</em>.</p>
-<p>When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the <em>Preview</em> button or press <em>Ctrl+Shift+K</em> to preview the HTML file).</p>
-<p>The preview shows you a rendered HTML copy of the contents of the editor. Consequently, unlike <em>Knit</em>, <em>Preview</em> does not run any R code chunks. Instead, the output of the chunk when it was last run in the editor is displayed.</p>
 <!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubW9kZWwuY29yMlxuXG5gYGAifQ== -->
+<pre class="r"><code>model.cor2
+</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiTGluZWFyIG1peGVkIG1vZGVsIGZpdCBieSBSRU1MIFsnbG1lck1vZCddXG5Gb3JtdWxhOiBub3JtLmxzIH4gMSArIG5vcm0uYSAqIG5vcm0uZSAqIG5vcm0uaCArIG5vcm0ucCArICgxIHwgcHApICsgIFxuICAgICgwICsgbm9ybS5hICsgbm9ybS5oICsgbm9ybS5wIHwgcHApXG4gICBEYXRhOiBkYXRhLm5vcm1cblJFTUwgY3JpdGVyaW9uIGF0IGNvbnZlcmdlbmNlOiAxMzMxNC40XG5SYW5kb20gZWZmZWN0czpcbiBHcm91cHMgICBOYW1lICAgICAgICBTdGQuRGV2LiBDb3JyICAgICAgIFxuIHBwICAgICAgIChJbnRlcmNlcHQpIDAuNDg0NSAgICAgICAgICAgICAgXG4gcHAuMSAgICAgbm9ybS5hICAgICAgMC4xMDAxICAgICAgICAgICAgICBcbiAgICAgICAgICBub3JtLmggICAgICAwLjI3NTMgICAgMC4yNiAgICAgIFxuICAgICAgICAgIG5vcm0ucCAgICAgIDAuMjA2MCAgIC0wLjc2IC0wLjgyXG4gUmVzaWR1YWwgICAgICAgICAgICAgMC41OTc2ICAgICAgICAgICAgICBcbk51bWJlciBvZiBvYnM6IDYwMjQsIGdyb3VwczogIHBwLCAxMjM2XG5GaXhlZCBFZmZlY3RzOlxuICAgICAgICAgKEludGVyY2VwdCkgICAgICAgICAgICAgICAgbm9ybS5hICAgICAgICAgICAgICAgIG5vcm0uZSAgXG4gICAgICAgICAgICAtMC4yODg4NSAgICAgICAgICAgICAgIDAuMDY2ODQgICAgICAgICAgICAgICAwLjIxNzUxICBcbiAgICAgICAgICAgICAgbm9ybS5oICAgICAgICAgICAgICAgbm9ybS5wICAgICAgICBub3JtLmE6bm9ybS5lIFxuICAgICAgICAgICAgIDAuMzU5MTAgICAgICAgICAgICAgIDAuMTYyNDEgICAgICAgICAgICAgLTAuMDUxNzMgXG4gICAgICAgbm9ybS5hOm5vcm0uaCAgICAgICAgbm9ybS5lOm5vcm0uaCBub3JtLmE6bm9ybS5lOm5vcm0uaCBcbiAgICAgICAgICAgICAwLjAxNTk2ICAgICAgICAgICAgICAwLjA2MDk4ICAgICAgICAgICAgIC0wLjAzNTAwIFxuIn0= -->
+<pre><code>Linear mixed model fit by REML ['lmerMod']
+Formula: norm.ls ~ 1 + norm.a * norm.e * norm.h + norm.p + (1 | pp) +  
+    (0 + norm.a + norm.h + norm.p | pp)
+   Data: data.norm
+REML criterion at convergence: 13314.4
+Random effects:
+ Groups   Name        Std.Dev. Corr       
+ pp       (Intercept) 0.4845              
+ pp.1     norm.a      0.1001              
+          norm.h      0.2753    0.26      
+          norm.p      0.2060   -0.76 -0.82
+ Residual             0.5976              
+Number of obs: 6024, groups:  pp, 1236
+Fixed Effects:
+         (Intercept)                norm.a                norm.e  
+            -0.28885               0.06684               0.21751  
+              norm.h               norm.p        norm.a:norm.e 
+             0.35910              0.16241             -0.05173 
+       norm.a:norm.h        norm.e:norm.h norm.a:norm.e:norm.h 
+             0.01596              0.06098             -0.03500 </code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-chunk-end -->
 
-<div id="rmd-source-code">LS0tDQp0aXRsZTogIlIgTm90ZWJvb2siDQpvdXRwdXQ6IGh0bWxfbm90ZWJvb2sNCi0tLQ0KDQpUaGlzIGlzIGFuIFtSIE1hcmtkb3duXShodHRwOi8vcm1hcmtkb3duLnJzdHVkaW8uY29tKSBOb3RlYm9vay4gV2hlbiB5b3UgZXhlY3V0ZSBjb2RlIHdpdGhpbiB0aGUgbm90ZWJvb2ssIHRoZSByZXN1bHRzIGFwcGVhciBiZW5lYXRoIHRoZSBjb2RlLiANCg0KVHJ5IGV4ZWN1dGluZyB0aGlzIGNodW5rIGJ5IGNsaWNraW5nIHRoZSAqUnVuKiBidXR0b24gd2l0aGluIHRoZSBjaHVuayBvciBieSBwbGFjaW5nIHlvdXIgY3Vyc29yIGluc2lkZSBpdCBhbmQgcHJlc3NpbmcgKkN0cmwrU2hpZnQrRW50ZXIqLiANCg0KYGBge3J9DQpwbG90KGNhcnMpDQpgYGANCg0KQWRkIGEgbmV3IGNodW5rIGJ5IGNsaWNraW5nIHRoZSAqSW5zZXJ0IENodW5rKiBidXR0b24gb24gdGhlIHRvb2xiYXIgb3IgYnkgcHJlc3NpbmcgKkN0cmwrQWx0K0kqLg0KDQpXaGVuIHlvdSBzYXZlIHRoZSBub3RlYm9vaywgYW4gSFRNTCBmaWxlIGNvbnRhaW5pbmcgdGhlIGNvZGUgYW5kIG91dHB1dCB3aWxsIGJlIHNhdmVkIGFsb25nc2lkZSBpdCAoY2xpY2sgdGhlICpQcmV2aWV3KiBidXR0b24gb3IgcHJlc3MgKkN0cmwrU2hpZnQrSyogdG8gcHJldmlldyB0aGUgSFRNTCBmaWxlKS4NCg0KVGhlIHByZXZpZXcgc2hvd3MgeW91IGEgcmVuZGVyZWQgSFRNTCBjb3B5IG9mIHRoZSBjb250ZW50cyBvZiB0aGUgZWRpdG9yLiBDb25zZXF1ZW50bHksIHVubGlrZSAqS25pdCosICpQcmV2aWV3KiBkb2VzIG5vdCBydW4gYW55IFIgY29kZSBjaHVua3MuIEluc3RlYWQsIHRoZSBvdXRwdXQgb2YgdGhlIGNodW5rIHdoZW4gaXQgd2FzIGxhc3QgcnVuIGluIHRoZSBlZGl0b3IgaXMgZGlzcGxheWVkLg0K</div>
+<div id="rmd-source-code">LS0tDQp0aXRsZTogIlIgTm90ZWJvb2siDQpvdXRwdXQ6IGh0bWxfbm90ZWJvb2sNCi0tLQ0KDQpgYGB7cn0NCmxpYnJhcnkobG1lNCkNCmBgYA0KDQoNCmBgYHtyfQ0KDQptb2RlbC5jb3IyIDwtbG1lcihub3JtLmxzIH4gMSArIG5vcm0uYSpub3JtLmUqbm9ybS5oICsgbm9ybS5wICsgKDF8cHApICsgKDAgKyBub3JtLmEgKyBub3JtLmggKyBub3JtLnB8cHApICwgZGF0YS5ub3JtICkNCg0KbW9kZWwuY29yMg0KDQpgYGANCg==</div>
 
 
 
