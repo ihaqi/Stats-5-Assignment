@@ -389,10 +389,10 @@ load("summary.COR.sensitivity.rdata")
 load("summary.COR2.original.rdata")
 load("summary.COR2.sensitivity.rdata")
 
-apa_table(x = sum.1, caption = "The first model", note = "This table contains statistics pertaining to our replication of the original adjusted models.", landscape = TRUE, small = TRUE)
-apa_table(x = sum.2, caption = "The Second model", note = "This table contains statistics pertaining to our replication of the original adjusted models.", landscape = TRUE, small = TRUE)
-apa_table(x = sum.sens.1, caption = "The first model", note = "This table contains statistics pertaining to our replication of the original adjusted models.", landscape = TRUE, small = TRUE)
-apa_table(x = sum.sens.2, caption = "The first model", note = "This table contains statistics pertaining to our replication of the original adjusted models.", landscape = TRUE, small = TRUE)
+apa_table(x = sum.1, caption = "The first model", note = "Full model", landscape = TRUE, small = TRUE)
+apa_table(x = sum.2, caption = "The Second model", note = "Reduced model", landscape = TRUE, small = TRUE)
+apa_table(x = sum.sens.1, caption = "Sensitivity 1", note = "Sensitivity analysis 1.", landscape = TRUE, small = TRUE)
+apa_table(x = sum.sens.2, caption = "Sensitivity 2", note = "Sensitivity analysis 2", landscape = TRUE, small = TRUE)
 
 ```
 
