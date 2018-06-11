@@ -316,6 +316,8 @@ Partner = x[,3]
 writeLines(modelString , con="model_full_correlation_2" )
 ```
 
+
+
 ```{r main model 2 Running Jags correlation final}
 if(!load.rather.than.run){
   parameters.C.I.2 <- c("ss", "cor12","betamu", "betax")
@@ -330,6 +332,7 @@ if(!load.rather.than.run){
 if(load.rather.than.run){load("model.2.main.rdata")}
 
 ```
+
 
 
 
@@ -411,6 +414,90 @@ rand2 ~ dunif(-10, 10)
 writeLines(modelString.sens , con="model_full_correlation_2.sens" )
 ```
 
+```{r sens model 1 Model with correlations and refined interactions2}
+#Preperation
+AgeXHealth = data.norm[, "norm.a"]*data.norm[, "norm.h"]
+AgeXPartner = data.norm[, "norm.a"]*data.norm[, "norm.p"]
+AgeXEmploy = data.norm[, "norm.a"]*data.norm[, "norm.e"]
+HealthXEmploy = data.norm[, "norm.h"]*data.norm[, "norm.e"]
+AgeXHealthXEmploy = data.norm[,"norm.a"]*data.norm[,"norm.h"]*data.norm[,"norm.h"]
+x = as.matrix(data.norm[3:6],ncol=length(xName))
+x = cbind(x, HealthXEmploy,AgeXPartner,AgeXHealth, AgeXEmploy,AgeXHealthXEmploy)
+
+Nx = dim(x)[2]
+Nx0 = dim(x)[2]-3 #Change for between subject madness
+
+
+rand <- c()
+
+mean1 <- runif(1,-5,5)
+mean2 <- runif(1,-5,5)
+mean3 <- runif(1,-5,5)
+for (b in 1:Nx0){
+  rand[b] <- runif(1,-5,5)
+}
+
+dataList.I.COR = list(
+    x = x ,
+    y = y ,
+    pp = pp ,
+    Ntotal = Ntotal ,
+    Nsubjects = Nsubjects,
+    Nx0 = Nx0,
+    Nx= Nx,
+    omega = diag(c(1,1,1)),
+    mean = c(mean1,mean2,mean3),
+    df = 2+1,
+    prec = diag(c(1.0E-6,1.0E-6,1.0E-6)),
+    rand = rand
+  )
+```
+
+
+```{r sens model 2 Model with correlations and refined interactions2}
+#Preperation
+AgeXHealth = data.norm[, "norm.a"]*data.norm[, "norm.h"]
+AgeXPartner = data.norm[, "norm.a"]*data.norm[, "norm.p"]
+AgeXEmploy = data.norm[, "norm.a"]*data.norm[, "norm.e"]
+HealthXEmploy = data.norm[, "norm.h"]*data.norm[, "norm.e"]
+AgeXHealthXEmploy = data.norm[,"norm.a"]*data.norm[,"norm.h"]*data.norm[,"norm.h"]
+x = as.matrix(data.norm[3:6],ncol=length(xName))
+x = cbind(x, HealthXEmploy,AgeXPartner,AgeXHealth, AgeXEmploy,AgeXHealthXEmploy)
+
+Nx = dim(x)[2]
+Nx0 = dim(x)[2]-3 #Change for between subject madness
+
+
+rand <- c()
+
+mean1 <- runif(1,-5,5)
+#Preperation
+
+x = as.matrix(data.norm[3:6],ncol=length(xName))
+x = cbind(x, AgeXHealthXEmploy)
+
+
+Nx = dim(x)[2]
+Nx0 = dim(x)[2]-3 #Change for between subject madness
+meana <- runif(1, min=-10, max=10)
+meanb <- runif(1, min=-10, max=10)
+
+dataList.I.COR2 = list(
+    x = x ,
+    y = y ,
+    pp = pp ,
+    Ntotal = Ntotal ,
+    Nsubjects = Nsubjects,
+    Nx0 = Nx0,
+    Nx= Nx,
+    omega = diag(c(1,1)),
+    mean = c(0,0),
+    df = 2,
+    prec = diag(c(1.0E-6,1.0E-6))
+  )
+```
+
+
 ```{r sens two thin jags}
 
 if(!load.rather.than.run){ 
@@ -424,7 +511,7 @@ if(!load.rather.than.run){
 
   parameters.C.I.2.sens <- c("ss", "cor12","betamu", "betax", "sigma")
  
-  out.model.COR2.sens <- run.jags(model = "model_full_correlation_2.sens", monitor = parameters.C.I.2.sens, data = dataList.I.COR2.sens, inits = myinits, n.chains = nchains, adapt = nadapt, burnin = nburn, sample = 800, thin = 300)
+  out.model.COR2.sens <- run.jags(model = "model_full_correlation_2.sens", monitor = parameters.C.I.2.sens, data = dataList.I.COR2, inits = myinits, n.chains = nchains, adapt = nadapt, burnin = nburn, sample = 800, thin = 300)
 
   model.1.sens <- out.model.COR
 }
