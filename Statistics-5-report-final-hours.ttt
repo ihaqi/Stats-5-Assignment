@@ -1,0 +1,116 @@
+\begin{lltable}
+\begin{TableNotes}[para]
+\textit{Note.} This table contains statistics pertaining to our replication of the original adjusted models.
+\end{TableNotes}
+\small{
+\begin{longtable}{llllllllllll}\noalign{\getlongtablewidth\global\LTcapwidth=\longtablewidth}
+\caption{\label{tab:tables of summaries}The first model}\\
+\toprule
+ & \multicolumn{1}{c}{Lower95} & \multicolumn{1}{c}{Median} & \multicolumn{1}{c}{Upper95} & \multicolumn{1}{c}{Mean} & \multicolumn{1}{c}{SD} & \multicolumn{1}{c}{Mode} & \multicolumn{1}{c}{MCerr} & \multicolumn{1}{c}{MC\%ofSD} & \multicolumn{1}{c}{SSeff} & \multicolumn{1}{c}{AC.1800} & \multicolumn{1}{c}{psrf}\\
+\midrule
+ss[1] & 0.54 & 0.60 & 0.66 & 0.60 & 0.03 & 0.60 & 0.00 & 2.20 & 2,000.00 & -0.01 & 1.00\\
+ss[2] & 0.26 & 0.29 & 0.32 & 0.29 & 0.02 & 0.29 & 0.00 & 2.20 & 2,000.00 & 0.02 & 1.00\\
+ss[3] & 0.42 & 0.57 & 0.72 & 0.57 & 0.08 & 0.56 & 0.00 & 2.20 & 2,000.00 & -0.02 & 1.00\\
+cor12 & -0.02 & -0.01 & 0.01 & -0.01 & 0.01 & -0.01 & 0.00 & 2.10 & 2,363.00 & -0.01 & 1.00\\
+cor13 & -0.36 & -0.21 & -0.08 & -0.22 & 0.08 & -0.20 & 0.00 & 2.20 & 2,000.00 & -0.02 & 1.00\\
+cor23 & -0.15 & -0.07 & 0.00 & -0.07 & 0.04 & -0.06 & 0.00 & 2.20 & 2,000.00 & -0.03 & 1.00\\
+betamu[1] & -0.39 & -0.30 & -0.21 & -0.30 & 0.05 & -0.29 & 0.00 & 2.00 & 2,551.00 & 0.00 & 1.00\\
+betamu[2] & 0.30 & 0.35 & 0.40 & 0.35 & 0.03 & 0.35 & 0.00 & 2.20 & 2,106.00 & -0.02 & 1.00\\
+betamu[3] & 0.11 & 0.19 & 0.27 & 0.19 & 0.04 & 0.19 & 0.00 & 2.20 & 2,060.00 & 0.01 & 1.00\\
+betax[1] & 0.13 & 0.21 & 0.29 & 0.21 & 0.04 & 0.21 & 0.00 & 2.30 & 1,880.00 & -0.02 & 1.00\\
+betax[2] & -0.03 & -0.02 & 0.00 & -0.02 & 0.01 & -0.02 & 0.00 & 2.20 & 2,000.00 & 0.04 & 1.00\\
+betax[3] & -0.04 & -0.01 & 0.03 & -0.01 & 0.02 & -0.01 & 0.00 & 2.20 & 2,098.00 & 0.00 & 1.00\\
+betax[4] & -0.02 & 0.02 & 0.05 & 0.02 & 0.02 & 0.02 & 0.00 & 2.30 & 1,903.00 & 0.02 & 1.00\\
+betax[5] & 0.01 & 0.07 & 0.14 & 0.08 & 0.03 & 0.08 & 0.00 & 2.20 & 2,000.00 & -0.01 & 1.00\\
+\bottomrule
+\addlinespace
+\insertTableNotes
+\end{longtable}
+}
+\end{lltable}
+\efloatseparator
+ 
+\begin{lltable}
+\begin{TableNotes}[para]
+\textit{Note.} This table contains statistics pertaining to our replication of the original adjusted models.
+\end{TableNotes}
+\small{
+\begin{longtable}{llllllllllll}\noalign{\getlongtablewidth\global\LTcapwidth=\longtablewidth}
+\caption{\label{tab:tables of summaries}The Second model}\\
+\toprule
+ & \multicolumn{1}{c}{Lower95} & \multicolumn{1}{c}{Median} & \multicolumn{1}{c}{Upper95} & \multicolumn{1}{c}{Mean} & \multicolumn{1}{c}{SD} & \multicolumn{1}{c}{Mode} & \multicolumn{1}{c}{MCerr} & \multicolumn{1}{c}{MC\%ofSD} & \multicolumn{1}{c}{SSeff} & \multicolumn{1}{c}{AC.2000} & \multicolumn{1}{c}{psrf}\\
+\midrule
+ss[1] & 0.58 & 0.65 & 0.74 & 0.66 & 0.04 & 0.65 & 0.00 & 1.70 & 3,650.00 & 0.01 & 1.00\\
+ss[2] & 0.42 & 0.61 & 0.78 & 0.61 & 0.09 & 0.60 & 0.00 & 1.70 & 3,452.00 & 0.01 & 1.00\\
+cor12 & -0.46 & -0.24 & -0.09 & -0.25 & 0.10 & -0.23 & 0.00 & 1.70 & 3,421.00 & 0.01 & 1.00\\
+betamu[1] & -0.35 & -0.24 & -0.13 & -0.24 & 0.06 & -0.24 & 0.00 & 1.60 & 4,000.00 & -0.04 & 1.00\\
+betamu[2] & 0.07 & 0.18 & 0.28 & 0.18 & 0.05 & 0.18 & 0.00 & 1.60 & 3,787.00 & -0.01 & 1.00\\
+betax[1] & 0.08 & 0.19 & 0.29 & 0.19 & 0.05 & 0.20 & 0.00 & 1.60 & 4,000.00 & -0.03 & 1.00\\
+betax[2] & -0.01 & 0.01 & 0.02 & 0.01 & 0.01 & 0.01 & 0.00 & 1.70 & 3,441.00 & -0.01 & 1.00\\
+sigma & 0.59 & 0.61 & 0.62 & 0.61 & 0.01 & 0.61 & 0.00 & 1.60 & 4,000.00 & 0.00 & 1.00\\
+\bottomrule
+\addlinespace
+\insertTableNotes
+\end{longtable}
+}
+\end{lltable}
+\efloatseparator
+ 
+\begin{lltable}
+\begin{TableNotes}[para]
+\textit{Note.} This table contains statistics pertaining to our replication of the original adjusted models.
+\end{TableNotes}
+\small{
+\begin{longtable}{llllllllllll}\noalign{\getlongtablewidth\global\LTcapwidth=\longtablewidth}
+\caption{\label{tab:tables of summaries}The first model}\\
+\toprule
+ & \multicolumn{1}{c}{Lower95} & \multicolumn{1}{c}{Median} & \multicolumn{1}{c}{Upper95} & \multicolumn{1}{c}{Mean} & \multicolumn{1}{c}{SD} & \multicolumn{1}{c}{Mode} & \multicolumn{1}{c}{MCerr} & \multicolumn{1}{c}{MC\%ofSD} & \multicolumn{1}{c}{SSeff} & \multicolumn{1}{c}{AC.1500} & \multicolumn{1}{c}{psrf}\\
+\midrule
+ss[1] & 0.54 & 0.60 & 0.66 & 0.60 & 0.03 & 0.60 & 0.00 & 2.30 & 1,879.00 & -0.04 & 1.00\\
+ss[2] & 0.26 & 0.29 & 0.32 & 0.29 & 0.02 & 0.28 & 0.00 & 2.30 & 1,905.00 & 0.00 & 1.00\\
+ss[3] & 0.42 & 0.57 & 0.73 & 0.57 & 0.08 & 0.58 & 0.00 & 2.20 & 2,116.00 & 0.00 & 1.00\\
+cor12 & -0.02 & -0.01 & 0.01 & -0.01 & 0.01 & -0.01 & 0.00 & 2.20 & 2,000.00 & 0.01 & 1.00\\
+cor13 & -0.36 & -0.21 & -0.08 & -0.22 & 0.08 & -0.20 & 0.00 & 2.20 & 2,070.00 & 0.00 & 1.00\\
+cor23 & -0.16 & -0.07 & 0.00 & -0.07 & 0.04 & -0.07 & 0.00 & 2.10 & 2,309.00 & -0.01 & 1.00\\
+betamu[1] & -0.39 & -0.30 & -0.22 & -0.30 & 0.05 & -0.30 & 0.00 & 2.30 & 1,875.00 & -0.02 & 1.00\\
+betamu[2] & 0.29 & 0.35 & 0.40 & 0.35 & 0.03 & 0.35 & 0.00 & 2.10 & 2,178.00 & -0.02 & 1.00\\
+betamu[3] & 0.10 & 0.18 & 0.27 & 0.18 & 0.04 & 0.18 & 0.00 & 2.20 & 2,000.00 & 0.02 & 1.00\\
+betax[1] & 0.13 & 0.21 & 0.29 & 0.21 & 0.04 & 0.22 & 0.00 & 2.20 & 2,150.00 & 0.02 & 1.00\\
+betax[2] & 0.01 & 0.08 & 0.14 & 0.07 & 0.03 & 0.07 & 0.00 & 2.10 & 2,271.00 & 0.00 & 1.00\\
+betax[3] & -0.04 & -0.01 & 0.03 & -0.01 & 0.02 & -0.01 & 0.00 & 2.20 & 2,000.00 & 0.01 & 1.00\\
+betax[4] & -0.03 & -0.02 & 0.00 & -0.02 & 0.01 & -0.02 & 0.00 & 2.20 & 2,000.00 & 0.01 & 1.00\\
+betax[5] & -0.01 & 0.02 & 0.06 & 0.02 & 0.02 & 0.02 & 0.00 & 2.20 & 2,000.00 & 0.00 & 1.00\\
+betax[6] & -0.01 & 0.00 & 0.01 & 0.00 & 0.01 & 0.00 & 0.00 & 2.30 & 1,945.00 & 0.00 & 1.00\\
+sigma & 0.59 & 0.60 & 0.62 & 0.60 & 0.01 & 0.60 & 0.00 & 2.20 & 2,000.00 & 0.01 & 1.00\\
+\bottomrule
+\addlinespace
+\insertTableNotes
+\end{longtable}
+}
+\end{lltable}
+\efloatseparator
+ 
+\begin{lltable}
+\begin{TableNotes}[para]
+\textit{Note.} This table contains statistics pertaining to our replication of the original adjusted models.
+\end{TableNotes}
+\small{
+\begin{longtable}{llllllllllll}\noalign{\getlongtablewidth\global\LTcapwidth=\longtablewidth}
+\caption{\label{tab:tables of summaries}The first model}\\
+\toprule
+ & \multicolumn{1}{c}{Lower95} & \multicolumn{1}{c}{Median} & \multicolumn{1}{c}{Upper95} & \multicolumn{1}{c}{Mean} & \multicolumn{1}{c}{SD} & \multicolumn{1}{c}{Mode} & \multicolumn{1}{c}{MCerr} & \multicolumn{1}{c}{MC\%ofSD} & \multicolumn{1}{c}{SSeff} & \multicolumn{1}{c}{AC.2000} & \multicolumn{1}{c}{psrf}\\
+\midrule
+ss[1] & 0.58 & 0.65 & 0.74 & 0.66 & 0.04 & 0.65 & 0.00 & 1.70 & 3,650.00 & 0.01 & 1.00\\
+ss[2] & 0.42 & 0.61 & 0.78 & 0.61 & 0.09 & 0.60 & 0.00 & 1.70 & 3,452.00 & 0.01 & 1.00\\
+cor12 & -0.46 & -0.24 & -0.09 & -0.25 & 0.10 & -0.23 & 0.00 & 1.70 & 3,421.00 & 0.01 & 1.00\\
+betamu[1] & -0.35 & -0.24 & -0.13 & -0.24 & 0.06 & -0.24 & 0.00 & 1.60 & 4,000.00 & -0.04 & 1.00\\
+betamu[2] & 0.07 & 0.18 & 0.28 & 0.18 & 0.05 & 0.18 & 0.00 & 1.60 & 3,787.00 & -0.01 & 1.00\\
+betax[1] & 0.08 & 0.19 & 0.29 & 0.19 & 0.05 & 0.20 & 0.00 & 1.60 & 4,000.00 & -0.03 & 1.00\\
+betax[2] & -0.01 & 0.01 & 0.02 & 0.01 & 0.01 & 0.01 & 0.00 & 1.70 & 3,441.00 & -0.01 & 1.00\\
+sigma & 0.59 & 0.61 & 0.62 & 0.61 & 0.01 & 0.61 & 0.00 & 1.60 & 4,000.00 & 0.00 & 1.00\\
+\bottomrule
+\addlinespace
+\insertTableNotes
+\end{longtable}
+}
+\end{lltable}

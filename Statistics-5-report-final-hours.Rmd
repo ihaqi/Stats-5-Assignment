@@ -48,16 +48,10 @@ class             : "man"
 output            : papaja::apa6_pdf
 ---
 
-
-```{r}
-library(papaja)
-
-```
-
 ```{r setup, include=FALSE}
-rm(list=ls())
+#rm(list=ls())
 knitr::opts_chunk$set(echo = FALSE, cache = TRUE)
-list.of.packages <- c("knitr","rjags","runjags", "haven","psych","car","magicfor","lattice")
+list.of.packages <- c("knitr","rjags","runjags", "haven","psych","car","magicfor","lattice", "papaja")
 new.packages <- list.of.packages[!(list.of.packages %in%installed.packages()[,"Package"])]
 if(length(new.packages)){install.packages(new.packages,repos = "http://cran.us.r-project.org")}
 lapply(list.of.packages, require, character.only = TRUE)
@@ -67,14 +61,14 @@ Mywd<- getwd()
 setwd(Mywd)
 ```
 
-```{r datapreparation, include=FALSE}
+```{r datapreparation, include=FALSE, cache=TRUE}
 ## Unique ID's
 my.normalize <- function(x) {
   return ((x - mean(x, na.rm = TRUE)) / (sd(x, na.rm = TRUE)))
   }
 
 set.seed(777)
-# rm(list=ls())
+#rm(list=ls())
 
 data.raw <- read.csv("soep_statV.csv", header = TRUE, sep = ",", dec = ".")
 data.raw.tmp <- transform(data.raw, pp=match(id,unique(id)))
@@ -118,6 +112,53 @@ AgeXHealthXEmploy = data.norm[,"norm.a"]*data.norm[,"norm.h"]*data.norm[,"norm.h
 ```
 
 
+```{r exploratory plots, cache=TRUE}
+clean.data <- transform(data.raw, pp=match(id,unique(id)))
+
+##centering
+clean.data$age <-data.raw$age-55
+
+##recoding some variables
+clean.data$emplStat55[clean.data$emplStat55 == 2] <- 0
+clean.data$emplStat55[clean.data$emplStat55 == 3] <- 0
+
+variable.names <- list("id","ls", "age", "employ","health","partner","pp")
+colnames(clean.data) <- variable.names
+
+
+mean.table1=tapply(clean.data$ls,list(clean.data$age, clean.data$partner),mean)
+mean.table3=tapply(clean.data$ls,list(clean.data$age, clean.data$employ),mean)
+mean.table4=tapply(clean.data$ls,list(clean.data$age, clean.data$health),mean)
+
+# life satisfaction as a function of Living together and age
+colors=c("black","red")
+plot(unique(clean.data$age),mean.table1[,1],type="b",xlim=c(0,5),ylim=c(0,10),xlab="Age (in years)",ylab="Life Satisfaction",axes=F,main="Life satisfaction as a function of Living together and age")
+axis(side=1,at=c(0,1,2,3,4,5),labels=c(55,56,57,58,59,60))
+axis(side=2,at=seq(0,10,1))
+box()
+points(unique(clean.data$age),mean.table1[,2],type="b",col="red")
+# life satisfaction as a function of employement and age
+
+colors=c("black","red")
+plot(unique(clean.data$age),mean.table3[,1],type="b",xlim=c(0,5),ylim=c(0,10),xlab="Age (in years)",ylab="Life Satisfaction",axes=F,main="Life satisfaction as a function of employement and age")
+axis(side=1,at=c(0,1,2,3,4,5),labels=c(55,56,57,58,59,60))
+axis(side=2,at=seq(0,10,1))
+box()
+points(unique(clean.data$age),mean.table3[,2],type="b",col="red")
+# life satisfaction as a function of health status and age
+
+par(xpd=TRUE)
+colors=rainbow(10)
+plot(unique(clean.data$age),mean.table4[,1],type="n",xlim=c(0,5),ylim=c(0,10),xlab="Age (in years)",ylab="Life satisfaction",axes=F,main="life satisfaction as a function of health status and age")
+axis(side=1,at=c(0,1,2,3,4,5),labels=c(55,56,57,58,59,60))
+axis(side=2,at=seq(0,10,1))
+box()
+for(i in 1:length(colors)){
+  points(unique(clean.data$age),mean.table4[,1+i],type="b",col=colors[i])
+  legend(-0.180, 2, x.intersp = 0.12, legend = colnames(mean.table4), fill = colors, horiz=TRUE)
+}
+```
+
 ```{r JAGS specifics}
 nchains = 2
 nadapt = 1000 #many uninformative dispersion parameters
@@ -127,8 +168,7 @@ myinits <- NULL
 ```
 
 
-
-```{r Model with correlations and refined interactions2}
+```{r Model with correlations and relevant}
 #Preperation
 
 x = as.matrix(data.norm[3:6],ncol=length(xName))
@@ -193,12 +233,12 @@ writeLines(modelString , con="model_full_correlation" )
 
 
 ```{r Running Jags correlation}
-parameters.C.I <- c("ss", "cor12","cor13","cor23","betamu", "betax")
-
-out.model.COR <- run.jags(model = "model_full_correlation", monitor = parameters.C.I, data = dataList.I.COR, inits = myinits, n.chains = nchains, adapt = nadapt, burnin = nburn, sample = niter, thin = 180)
-
-summary(out.model.COR)
-save(out.model.COR,file = "out.model.COR.thin.rdata")
+# parameters.C.I <- c("ss", "cor12","cor13","cor23","betamu", "betax")
+# 
+# out.model.COR <- run.jags(model = "model_full_correlation", monitor = parameters.C.I, data = dataList.I.COR, inits = myinits, n.chains = nchains, adapt = nadapt, burnin = nburn, sample = niter, thin = 180)
+# 
+# summary(out.model.COR)
+# save(out.model.COR,file = "out.model.COR.thin.rdata")
 ```
 
 ```{r Model with refined correlations and interactions}
@@ -228,7 +268,7 @@ dataList.I.COR2 = list(
   )
 ```
 
-```{r Models With refined Correlation and refined interactions}
+```{r orig Models With refined Correlation and refined interactions}
 modelString = "
 model {
 for ( i in 1:Ntotal ) {
@@ -269,15 +309,17 @@ writeLines(modelString , con="model_full_correlation_2" )
 ```
 
 ```{r Running Jags correlation final}
-parameters.C.I.2 <- c("ss", "cor12","betamu", "betax")
-
-out.model.COR2 <- run.jags(model = "model_full_correlation_2", monitor = parameters.C.I.2, data = dataList.I.COR2, inits = myinits, n.chains = nchains, adapt = nadapt, burnin = nburn, sample = niter, thin = 1)
-
-summary(out.model.COR2)
+# parameters.C.I.2 <- c("ss", "cor12","betamu", "betax")
+# 
+# out.model.COR2 <- run.jags(model = "model_full_correlation_2", monitor = parameters.C.I.2, data = dataList.I.COR2, inits = myinits, n.chains = nchains, adapt = nadapt, burnin = nburn, sample = niter, thin = 1)
+# 
+# summary(out.model.COR2)
 
 ```
 
-```{r Models With refined Correlation and refined interactions}
+
+
+```{r sens Models With refined Correlation and refined interactions}
 modelString.sens = "
 model {
 for ( i in 1:Ntotal ) {
@@ -317,29 +359,42 @@ writeLines(modelString.sens , con="model_full_correlation_2.sens" )
 ```
 
 ```{r sens two thin jags}
-
-timer1.s <- tictoc::tic()
-parameters.C.I <- c("ss", "cor12","cor13","cor23","betamu", "betax","sigma")
-
-out.model.COR <- run.jags(model = "model_full_correlation", monitor = parameters.C.I, data = dataList.I.COR, inits = myinits, n.chains = nchains, adapt = nadapt, burnin = nburn, sample = 1000, thin = 150)
-timer1.e <- tictoc::toc()
-out.model.COR.sen <- out.model.COR
-sum.sens.1 <- summary(out.model.COR)
-save(out.model.COR.sen,file = "out.model.COR.sen.thin.rdata")
-
-
-timer2.s <- tictoc::tic()
-parameters.C.I.2.sens <- c("ss", "cor12","betamu", "betax", "sigma")
-
-out.model.COR2.sens <- run.jags(model = "model_full_correlation_2.sens", monitor = parameters.C.I.2.sens, data = dataList.I.COR2.sens, inits = myinits, n.chains = nchains, adapt = nadapt, burnin = nburn, sample = 800, thin = 300)
-
-timer2.e <- tictoc::toc()
-
-sum.sens.2 <- summary(out.model.COR2)
-save(out.model.COR2.sens,file = "out.model.COR2.sens.thick.rdata")
+# 
+# timer1.s <- tictoc::tic()
+# parameters.C.I <- c("ss", "cor12","cor13","cor23","betamu", "betax","sigma")
+# 
+# out.model.COR <- run.jags(model = "model_full_correlation", monitor = parameters.C.I, data = dataList.I.COR, inits = myinits, n.chains = nchains, adapt = nadapt, burnin = nburn, sample = 1000, thin = 150)
+# timer1.e <- tictoc::toc()
+# out.model.COR.sen <- out.model.COR
+# sum.sens.1 <- summary(out.model.COR)
+# save(out.model.COR.sen,file = "out.model.COR.sen.thin.rdata")
+# 
+# 
+# timer2.s <- tictoc::tic()
+# parameters.C.I.2.sens <- c("ss", "cor12","betamu", "betax", "sigma")
+# 
+# out.model.COR2.sens <- run.jags(model = "model_full_correlation_2.sens", monitor = parameters.C.I.2.sens, data = dataList.I.COR2.sens, inits = myinits, n.chains = nchains, adapt = nadapt, burnin = nburn, sample = 800, thin = 300)
+# 
+# timer2.e <- tictoc::toc()
+# 
+# sum.sens.2 <- summary(out.model.COR2)
+# save(out.model.COR2.sens,file = "out.model.COR2.sens.thick.rdata")
 
 ```
 
+
+```{r tables of summaries, results = "asis"}
+load("summary.COR.original.rdata")
+load("summary.COR.sensitivity.rdata")
+load("summary.COR2.original.rdata")
+load("summary.COR2.sensitivity.rdata")
+
+apa_table(x = sum.1, caption = "The first model", note = "This table contains statistics pertaining to our replication of the original adjusted models.", landscape = TRUE, small = TRUE)
+apa_table(x = sum.2, caption = "The Second model", note = "This table contains statistics pertaining to our replication of the original adjusted models.", landscape = TRUE, small = TRUE)
+apa_table(x = sum.sens.1, caption = "The first model", note = "This table contains statistics pertaining to our replication of the original adjusted models.", landscape = TRUE, small = TRUE)
+apa_table(x = sum.sens.2, caption = "The first model", note = "This table contains statistics pertaining to our replication of the original adjusted models.", landscape = TRUE, small = TRUE)
+
+```
 
 \newpage
 

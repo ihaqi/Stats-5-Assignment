@@ -8,17 +8,15 @@ for ( i in 1:Ntotal ) {
 #Betas
 for(j in 1:Nsubjects){
 beta[j, 1:2] ~ dmnorm( betamu , M )
-beta2[j] ~ dnorm( betamu2 , 1/(10)^2)
+beta2[j] ~ dnorm( betamu2 , 1/(10)^5)
 }
  #Priors vague:
 for (q in 1:Nx0){
-  betax[q] ~ dnorm( rand , 1/(10)^2)
+  betax[q] ~ dnorm( 0 , 1/(10)^5)
 }
 
-rand ~ runif(1, -10, 10)
-rand2 ~ runif(1, -10, 10) 
   betamu[1:2] ~ dmnorm(mean, prec)
-  betamu2 ~ dnorm(rand2, 1/(10)^2)
+  betamu2 ~ dnorm(0, 1/(10)^5)
 
   M[1 : 2, 1 : 2] ~ dwish(omega, df)
   MA <- inverse(M)
@@ -28,7 +26,10 @@ rand2 ~ runif(1, -10, 10)
   }
   cor12 <- MA[1,2]/ss[1]*ss[2]
 
-  sigma ~ dunif( 1.0E-1 , 1.0E+1 )  
-
+  sigma ~ dunif( 1.0E-3 , 1.0E+3 )  
+Empl = x[,4]
+Age = x[,1] 
+Health = x[,2]
+Partner = x[,3]
 }
 
