@@ -68,6 +68,7 @@ AgeXHealthXEmploy = data.norm[,"norm.a"]*data.norm[,"norm.h"]*data.norm[,"norm.h
 
 ```
 
+
 ```{r exploratory plots}
 clean.data <- transform(data.raw, pp=match(id,unique(id)))
 
@@ -114,7 +115,28 @@ for(i in 1:length(colors)){
   legend(-0.180, 2, x.intersp = 0.12, legend = colnames(mean.table4), fill = colors, horiz=TRUE)
 }
 ```
+#Research question
 
+We explored the question of which factors are associated with life satisfaction in the german sample of $n=$`\r Nsubjects`😊 using bayesian regression techniques. Preceding the analysis, we omitted all missing values, and standardized all non-binary variables. We centered age for MCMC considerations.  
+
+#Method
+
+We constructed a complex bayesian hierarchical regression model, with life satisfaction as dependent variable, henceforth termed $y_{ij}$ and then proceeded to construct a more simple model based on the exploratory conclusions from the first. Our first model took into account the variables of age, health satisfaction, living together, and employment status as a between subjects factor, henceforth termed {x1}. We included... interactions between age and health satisfaction, age and partner, age and employment, and health and employment. The choices of these interactions were motivated by the fact that the ‘age’ variable changes equally for each individual, and interactions between this variable and the others seemed most likely to influence life satisfaction. Our final interaction was motivated by the idea that the association of these variables could manifest its self in concrete outcomes pertaining to work and health combinations. Mathematically, the model can be formalized as:
+
+Model in math
+
+Results
+
+We then refined this model to a simpler one in order to isolate the most important variables and assess their contributions. This model ommitted . ; . , and can be formalized as:
+
+
+
+Results
+
+In conclusion, ..
+if Beta Age is the effect of aging it’s self, if it decreass, life satisfaction decreases with age
+
+We conducted a sensitivity analysis,
 ```{r JAGS specifics}
 nchains = 2
 nadapt = 1000 #many uninformative dispersion parameters
@@ -336,4 +358,8 @@ save(out.model.COR2.sens,file = "out.model.COR2.sens.thick.rdata")
 
 ```
 
+${y_{i} = \beta_{0i} + \beta_{2i}x_{2} + \beta_{3i}x_{3} +\beta_{4}x_{4} + \beta_{5}x_{1}x_{2} + \beta_{6}x_{1}x_{3} + \beta_{6}x_{1}x_{4}+\beta_{7}x_{2}x_{4} }$
+
+
+ AgeXHealth, AgeXPartner, AgeXEmploy, HealthXEmploy)
 
