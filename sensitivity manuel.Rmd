@@ -436,9 +436,9 @@ parameters.C.I <- c("ss", "cor12","cor13","cor23","betamu", "betax","sigma")
 
 out.model.COR <- run.jags(model = "model_full_correlation", monitor = parameters.C.I, data = dataList.I.COR, inits = myinits, n.chains = nchains, adapt = nadapt, burnin = nburn, sample = 1000, thin = 150)
 timer1.e <- tictoc::toc()
-
+out.model.COR.sen <- out.model.COR
 sum.sens.1 <- summary(out.model.COR)
-save(out.model.COR,file = "out.model.COR.sen.thin.rdata")
+save(out.model.COR.sen,file = "out.model.COR.sen.thin.rdata")
 
 
 timer2.s <- tictoc::tic()
