@@ -15,8 +15,8 @@ for (q in 1:Nx0){
   betax[q] ~ dnorm( rand , 1/(10)^2)
 }
 
-rand ~ runif(1, -10, 10)
-rand2 ~ runif(1, -10, 10) 
+rand ~ dunif(-10, 10)
+rand2 ~ dunif(-10, 10) 
   betamu[1:2] ~ dmnorm(mean, prec)
   betamu2 ~ dnorm(rand2, 1/(10)^2)
 
