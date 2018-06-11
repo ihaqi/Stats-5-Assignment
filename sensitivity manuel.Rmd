@@ -431,17 +431,22 @@ save(out.model.COR2.sens,file = "out.model.COR2.sens.thick.rdata")
 ```
 ```{r sens two thin jags}
 
+timer1.s <- tictoc::tic()
 parameters.C.I <- c("ss", "cor12","cor13","cor23","betamu", "betax","sigma")
 
 out.model.COR <- run.jags(model = "model_full_correlation", monitor = parameters.C.I, data = dataList.I.COR, inits = myinits, n.chains = nchains, adapt = nadapt, burnin = nburn, sample = 1000, thin = 150)
+timer1.e <- tictoc::toc()
 
 sum.sens.1 <- summary(out.model.COR)
 save(out.model.COR,file = "out.model.COR.sen.thin.rdata")
 
 
+timer2.s <- tictoc::tic()
 parameters.C.I.2.sens <- c("ss", "cor12","betamu", "betax", "sigma", "rand", "rand2")
 
 out.model.COR2.sens <- run.jags(model = "model_full_correlation_2.sens", monitor = parameters.C.I.2.sens, data = dataList.I.COR2.sens, inits = myinits, n.chains = nchains, adapt = nadapt, burnin = nburn, sample = 800, thin = 300)
+
+timer2.e <- tictoc::toc()
 
 sum.sens.2 <- summary(out.model.COR2)
 save(out.model.COR2.sens,file = "out.model.COR2.sens.thick.rdata")
