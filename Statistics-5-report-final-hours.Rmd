@@ -1,6 +1,6 @@
 ---
 title             : "Assignment Statistics 5"
-shorttitle        : "Bbayesian hierarchical modeling "
+shorttitle        : "Bayesian hierarchical modeling "
 
 author: 
   - name          : "Gustavo Villca Ponce"
@@ -14,8 +14,8 @@ author:
   - name          : "Sigert Ariens"
     affiliation   : "3"
     corresponding : no
-    email         : "sigert.ariens@studen.kuleuven.be"
-  - name          : "Bavo Kempens"
+    email         : "sigert.ariens@student.kuleuven.be"
+  - name          : "Bavo Kempen"
     affiliation   : "4"
     corresponding : no
     email         : "bavo.kempen@student.kuleuven.be"
@@ -63,7 +63,23 @@ setwd(Mywd)
 load.rather.than.run <- TRUE
 
 ```
+```{r writing bib file, echo=FALSE,message=FALSE,warning=FALSE}
+ references = "
+@article{lucas2003reexamining,
+  title={Reexamining adaptation and the set point model of happiness: reactions to changes in marital status.},
+  author={Lucas, Richard E and Clark, Andrew E and Georgellis, Yannis and Diener, Ed},
+  journal={Journal of personality and social psychology},
+  volume={84},
+  number={3},
+  pages={527},
+  year={2003},
+  publisher={US: American Psychological Association}
+}
 
+  " 
+  # Write out modelString to a text file
+  writeLines( references , con="r-references.bib" )
+```
 ```{r datapreparation, include=FALSE, cache=TRUE}
 ## Unique ID's
 my.normalize <- function(x) {
@@ -115,7 +131,7 @@ AgeXHealthXEmploy = data.norm[,"norm.a"]*data.norm[,"norm.h"]*data.norm[,"norm.h
 ```
 
 
-```{r exploratory plots, cache=TRUE}
+```{r exploratory plots}
 clean.data <- transform(data.raw, pp=match(id,unique(id)))
 
 ##centering
@@ -140,6 +156,7 @@ axis(side=1,at=c(0,1,2,3,4,5),labels=c(55,56,57,58,59,60))
 axis(side=2,at=seq(0,10,1))
 box()
 points(unique(clean.data$age),mean.table1[,2],type="b",col="red")
+legend(-0.180, 2, x.intersp = 0.12, legend = colnames(mean.table1), fill = colors, horiz = TRUE)
 # life satisfaction as a function of employement and age
 
 colors=c("black","red")
@@ -148,6 +165,7 @@ axis(side=1,at=c(0,1,2,3,4,5),labels=c(55,56,57,58,59,60))
 axis(side=2,at=seq(0,10,1))
 box()
 points(unique(clean.data$age),mean.table3[,2],type="b",col="red")
+legend(-0.180, 2, x.intersp = 0.12, legend = colnames(mean.table3), fill = colors, horiz = TRUE)
 # life satisfaction as a function of health status and age
 
 par(xpd=TRUE)
@@ -161,6 +179,7 @@ for(i in 1:length(colors)){
   legend(-0.180, 2, x.intersp = 0.12, legend = colnames(mean.table4), fill = colors, horiz=TRUE)
 }
 ```
+
 
 ```{r JAGS specifics}
 nchains = 2
@@ -551,18 +570,74 @@ dic.2.sens <- 2.4493027
 
 ```{r tables of summaries, results = "asis"}
 
+if(load.rather.than.run){
+ load("summary.1.main.rdata")
+ load("summary.2.main.rdata")
+ load("summary.1.sens.rdata")
+ load("summary.2.sens.rdata")
+}
 
-# load("summary.1.main.rdata")
-# load("summary.2.main.rdata")
-# load("summary.1.sens.rdata")
-# load("summary.2.sens.rdata")
-
-apa_table(x = sum.1, caption = "The first model", note = "Full model", landscape = TRUE, small = TRUE)
-apa_table(x = sum.2, caption = "The Second model", note = "Reduced model", landscape = TRUE, small = TRUE)
-apa_table(x = sum.sens.1, caption = "Sensitivity 1", note = "Sensitivity analysis 1.", landscape = TRUE, small = TRUE)
-apa_table(x = sum.sens.2, caption = "Sensitivity 2", note = "Sensitivity analysis 2", landscape = TRUE, small = TRUE)
+apa_table(x = summary.1.main, caption = "The first model", note = "Full model.", landscape = TRUE, small = TRUE)
+apa_table(x = summary.2.main, caption = "The Second model", note = "Reduced model.", landscape = TRUE, small = TRUE)
+apa_table(x = summary.1.sens, caption = "Sensitivity 1", note = "Sensitivity analysis 1.", landscape = TRUE, small = TRUE)
+apa_table(x = summary.2.sens, caption = "Sensitivity 2", note = "Sensitivity analysis 2.", landscape = TRUE, small = TRUE)
 
 ```
+# Research question
+
+We explored the question of which factors are associated with life satisfaction in the german sample of $n=$`r Nsubjects` using bayesian regression techniques. Preceding the analysis, we omitted all missing values, and standardized all non-binary variables. We centered age for MCMC considerations. We also aimed to investigate whether we could construct a model that could examine whether living together has an effect on life satisfaction, when taking into account individual differences, as posited by @lucas2003reexamining. To this extent, we assured that this variable could interact with other variables of intrest, and correlated with baseline individual differences.  
+
+# Method
+
+We constructed a complex bayesian hierarchical regression model, with life satisfaction as dependent variable, henceforth termed $y_{i}$ and then proceeded to construct a more simple model based on the exploratory conclusions from the first. Our first model took into account the variables of health satisfaction, living together, and employment status as a between subjects factor, henceforth termed $x_{2i}$, $x_{3i}$, and $x_{4i}$ respectively. Age was included as $x_{1i}$. We included interactions between age and health satisfaction, age and partner, age and employment, and health and employment. The choices of these interactions were motivated by the fact that the ‘age’ variable changes equally for each individual, and interactions between this variable and the others seemed most likely to influence life satisfaction. Our final interaction was motivated by the idea that the association of these variables could manifest its self in concrete outcomes pertaining to work and health combinations. We used JAGS to provide us with samples from the posterior.
+
+In all our models, we assumed ${y_{i}}$~${N(µ_{yi},\sigma)}$
+
+with $\sigma$ ~ ${U(0.1, 1)}$
+
+## model 1
+
+${µ_{yi} = \beta_{0i} + \beta_{2i}x_{2i} + \beta_{3i}x_{3i} +\beta_{4}x_{4i} + \beta_{5}x_{1i}x_{2i} + \beta_{6}x_{1i}x_{3i} + \beta_{6}x_{1i}x_{4i}+\beta_{7}x_{2i}x_{4i} }$
+
+${\beta_{0i}}$ to ${\beta_{3i}}$ ~ ${ N(\beta_{µ} , M ) }$
+
+and ${\beta_{µ}}$ ~ ${N(0, 0.0001)}$
+
+and ${M}$ ~ ${wish(1,4)}$
+
+With the between subjects and interactions $\beta$'s distributed as ${N(0, \frac {1}{10^5})}$
+
+## model 2
+
+${µ_{yi} = \beta_{0i} + \beta_{2i}x_{2i} + \beta_{3i}x_{3i} +\beta_{4}x_{4i} + \beta_{5}x_{1i}x_{2i}x_{4i}}$
+
+with ${\beta_{0i}}$ and ${\beta_{3i}}$ ~ ${ N(\beta_{µ} , M ) }$
+
+and ${\beta_{µ}}$ ~ ${N(0, 0.0001)}$.
+
+our non-correlating $\beta_{2}$ and the between subjects and interactions $\beta$'s ~ ${N(0, \frac {1}{10^5})}$.
+
+${y_{i} = \beta_{0i} + \beta_{2i}x_{2} + \beta_{3i}x_{3} +\beta_{4}x_{4} + \beta_{5}x_{1}x_{2} + \beta_{6}x_{1}x_{3} + \beta_{7}x_{1}x_{4}+\beta_{8}x_{2}x_{4} }$
+
+# Exploring the data
+
+We found that age could best be conceptualised as a factor interacting with our other variables. Therefore, We plotted life satisfaction as a function of living together and age, with living together is 1 and not living together 0 (see Figure 1), life satisfaction as a function of employment and age, with full time employed as 1 and partially -or, not employed as 0 (see Figure 2) and life satisfaction as a function health status and age with perceived health status ranging from 0-10 (see Figure 3). 
+
+# JAGS specifics
+
+In order to assure convergence, we used a burn-in of 1000. We used 2000 iterations of the MCMC to assess the key models. For the first model, we set a thinning value of 180 to assure no autocorrelation in the sampling. For the second model, a thinning value of 200 was used. These values were based on autocorrelation plots of exploratory runs of both models. 
+
+# Comparing the models using the Deviance Information Criterion (DIC)
+To compare the trade off between complexity and data description of our models, we used the deviance information criterion (DIC). From the analysis we obtained DIC values of ‘r dic.1.main´  and ´r dic.2.main´ for the first and second model respectively. We can interprete this as following" the model with the lowest DIC value is the model with the smallest trade-off which in this case is our first model. 
+
+
+# Sensitivity analysis of the models
+To assess whether our models were robust against choices of our pirors, we fully randomised the means of the priors of the distributions from which our parameters were sampled, using random uniform distributions between -5 and 5. We also reduced the broadness of our precision and variance parameters, from $\frac {1}{10^5}$ to $\frac {1}{10^2}$. We found that these adaptations caused no interesting differences in our models posterior. The results of these analyses can be found in table 3 and table 4. The difference in DIC criterium between the first model and it's sensitiviy analysis was neligable(`r dic.1.main`and `r dic.1.sens`). For our second, less complex model, the DICs were also comparable (`r dic.2.main`  and `r dic.2.sens`).Furthermore, the trend in which our first model obtained the lowest DIC can also be found in the sensitivity analysis models (`r dic.1.sens` and `r dic.2.sens`).
+
+# Discussion
+
+Since our DIC test suggested the more complex model to provide a better trade-off between model complexity and data description, we decided to use this model to interpret how life satisfaction changes according to changes in other variables over time for different individuals. Since the SSEFF of the components are quite similar, it is easy to interpret the findings shown in Table 1. We found that our main effect variable of $\beta_{2i}$ pertaining to health satisfaction was indeed important in describing differences in life satisfaction. Interestingly, the $\beta_{4i}$ pertaining to employment status demosntrated a positive relationship between being employed at this age, and life satisfaction. This too was in accordance with our exploratory analysis of the data. An interaction plot between age, employment, and life satisfaction given our models prediction can be found in Figure 4. While Lucas, Clark, Georgellis, & Diener (2003) reported that on average, living together did not seem to have an effect on life satisfaction, we did find that our $\beta_{3i}$ value had a mean ($M_{\beta_{3i}} = 0.19$) and a standard deviation ($SD_{\beta_{3i}} = .04$), indicating an influence. However, the authors also noted that there were large individual differences in this group. By allowing individual differences in this variable, we may have captured it's effect more accurately. Furthermore, The only relatively large correlation we found between our within-subject variables was between $\beta_{0i}$ and $\beta_{3i}$, indicting that living together is correlated with other baseline individual differnces in the data. This does to some extent confirm the conclusions of @lucas2003reexamining, although we did not test this assumption directly.
+
 
 \newpage
 
