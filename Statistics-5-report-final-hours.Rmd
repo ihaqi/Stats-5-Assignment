@@ -382,6 +382,27 @@ writeLines(modelString.sens , con="model_full_correlation_2.sens" )
 
 ```
 
+```{r dic calculation}
+
+get.dic <- function(model){
+  library(runjags)
+  q<-extract.runjags(model,"dic")
+  
+  return(mean(q$deviance)+2*mean(q$penalty))
+  
+}
+
+
+
+dic.1 <- get.dic(out.model.COR)
+dic.2 <- get.dic(out.model.COR2)
+dic.1.sens <- get.dic(out.model.COR.sen)
+dic.2.sens <- get.dic(out.model.COR2.sens)
+
+
+```
+
+
 
 ```{r tables of summaries, results = "asis"}
 load("summary.COR.original.rdata")
