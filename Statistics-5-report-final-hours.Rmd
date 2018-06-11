@@ -394,11 +394,15 @@ get.dic <- function(model){
 
 
 
-dic.1 <- get.dic(out.model.COR)
-dic.2 <- get.dic(out.model.COR2)
-dic.1.sens <- get.dic(out.model.COR.sen)
-dic.2.sens <- get.dic(out.model.COR2.sens)
+dic.1.main <- get.dic(model.1.main)
+dic.2.main <- get.dic(model.2.main)
+dic.1.sens <- get.dic(model.1.sens)
+dic.2.sens <- get.dic(model.2.sens)
 
+save(summary.1.main,file = "summary.1.main.rdata")
+save(summary.2.main,file = "summary.2.main.rdata")
+save(summary.1.sens,file = "summary.1.sens.rdata")
+save(summary.2.sens,file = "summary.2.sens.rdata")
 
 ```
 
