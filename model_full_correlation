@@ -11,9 +11,8 @@ beta[j, 1:3] ~ dmnorm( betamu , M )
 }
  #Priors vague:
 for (q in 1:Nx0){
-  betax[q] ~ dnorm( rand[q] , 1/(10)^2)
+  betax[q] ~ dnorm( 0 , 1/(10)^5)
 }
-
 
   betamu[1:3] ~ dmnorm(mean, prec)
 
@@ -27,7 +26,7 @@ for (q in 1:Nx0){
   cor13 <- MA[1,3]/ss[1]*ss[3]
   cor23 <- MA[2,3]/ss[2]*ss[3]
 
-  sigma ~ dunif( 1.0E-1 , 1.0E+1 )  
+  sigma ~ dunif( 1.0E-3 , 1.0E+3 )  
 
 }
 

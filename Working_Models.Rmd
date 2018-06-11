@@ -87,39 +87,39 @@ myinits <- NULL
 
 
 ```{r Exploratory Statistics}
-# # Life satisfaction by age
-# 
-# mean.table1=tapply(clean.data$ls,list(clean.data$age, clean.data$partner),mean)
-# mean.table3=tapply(clean.data$ls,list(clean.data$age, clean.data$employ),mean)
-# mean.table4=tapply(clean.data$ls,list(clean.data$age, clean.data$health),mean)
-# 
-# # life satisfaction as a function of Living together and age
-# colors=c("black","red")
-# plot(unique(clean.data$age),mean.table1[,1],type="b",xlim=c(0,5),ylim=c(0,10),xlab="Age (in years)",ylab="Life Satisfaction",axes=F,main="Life satisfaction as a function of Living together and age")
-# axis(side=1,at=c(0,1,2,3,4,5),labels=c(55,56,57,58,59,60))
-# axis(side=2,at=seq(0,10,1))
-# box()
-# points(unique(clean.data$age),mean.table1[,2],type="b",col="red")
-# # life satisfaction as a function of employement and age
-# 
-# colors=c("black","red")
-# plot(unique(clean.data$age),mean.table3[,1],type="b",xlim=c(0,5),ylim=c(0,10),xlab="Age (in years)",ylab="Life Satisfaction",axes=F,main="Life satisfaction as a function of employement and age")
-# axis(side=1,at=c(0,1,2,3,4,5),labels=c(55,56,57,58,59,60))
-# axis(side=2,at=seq(0,10,1))
-# box()
-# points(unique(clean.data$age),mean.table3[,2],type="b",col="red")
-# # life satisfaction as a function of health status and age
-# 
-# par(xpd=TRUE)
-# colors=rainbow(10)
-# plot(unique(clean.data$age),mean.table4[,1],type="n",xlim=c(0,5),ylim=c(0,10),xlab="Age (in years)",ylab="Life satisfaction",axes=F,main="life satisfaction as a function of health status and age")
-# axis(side=1,at=c(0,1,2,3,4,5),labels=c(55,56,57,58,59,60))
-# axis(side=2,at=seq(0,10,1))
-# box()
-# for(i in 1:length(colors)){
-#   points(unique(clean.data$age),mean.table4[,1+i],type="b",col=colors[i])
-#   legend(-0.180, 2, x.intersp = 0.12, legend = colnames(mean.table4), fill = colors, horiz=TRUE)
-# }
+
+ 
+ mean.table1=tapply(data.recoded$lifeSat,c(data.recoded$age, data.recoded$livetogether),mean)
+ mean.table3=tapply(data.recoded$lifeSat,list(data.recoded$age, data.recoded$emplStat55),mean)
+ mean.table4=tapply(data.recoded$lifeSat,list(data.recoded$age, data.recoded$healthSat),mean)
+ 
+ #life satisfaction as a function of Living together and age
+ colors=c("black","red")
+ plot(unique(data.recoded$age),mean.table1[,1],type="b",xlim=c(0,5),ylim=c(0,10),xlab="Age (in years)",ylab="Life Satisfaction",axes=F,main="Life satisfaction as a function of Living together and age")
+ axis(side=1,at=c(0,1,2,3,4,5),labels=c(55,56,57,58,59,60))
+ axis(side=2,at=seq(0,10,1))
+ box()
+ points(unique(clean.data$age),mean.table1[,2],type="b",col="red")
+ # life satisfaction as a function of employement and age
+ 
+ colors=c("black","red")
+ plot(unique(data.recoded$age),mean.table3[,1],type="b",xlim=c(0,5),ylim=c(0,10),xlab="Age (in years)",ylab="Life Satisfaction",axes=F,main="Life satisfaction as a function of employement and age")
+ axis(side=1,at=c(0,1,2,3,4,5),labels=c(55,56,57,58,59,60))
+ axis(side=2,at=seq(0,10,1))
+ box()
+ points(unique(data.recoded$age),mean.table3[,2],type="b",col="red")
+ # life satisfaction as a function of health status and age
+ 
+ par(xpd=TRUE)
+ colors=rainbow(10)
+ plot(unique(data.norm$age),mean.table4[,1],type="n",xlim=c(0,5),ylim=c(0,10),xlab="Age (in years)",ylab="Life satisfaction",axes=F,main="life satisfaction as a function of health status and age")
+ axis(side=1,at=c(0,1,2,3,4,5),labels=c(55,56,57,58,59,60))
+ axis(side=2,at=seq(0,10,1))
+ box()
+ for(i in 1:length(colors)){
+   points(unique(data.norm$age),mean.table4[,1+i],type="l",col=colors[i])
+   legend(-0.180, 2, x.intersp = 0.12, legend = colnames(mean.table4), fill = colors, horiz=TRUE)
+ }
 
 ```
 
