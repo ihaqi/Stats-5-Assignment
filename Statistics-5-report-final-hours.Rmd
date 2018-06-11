@@ -59,6 +59,9 @@ lapply(list.of.packages, require, character.only = TRUE)
 set.seed(777)
 Mywd<- getwd()
 setwd(Mywd)
+
+load.rather.than.run <- TRUE
+
 ```
 
 ```{r datapreparation, include=FALSE, cache=TRUE}
@@ -168,7 +171,7 @@ myinits <- NULL
 ```
 
 
-```{r Model with correlations and relevant}
+```{r main model 1 Model with correlations and relevant}
 #Preperation
 
 x = as.matrix(data.norm[3:6],ncol=length(xName))
@@ -194,7 +197,7 @@ dataList.I.COR = list(
 ```
 
 
-```{r Models With all Correlation and relevant interactions}
+```{r main model 1 Models With all Correlation and relevant interactions}
 modelString = "
 model {
 for ( i in 1:Ntotal ) {
@@ -232,16 +235,21 @@ writeLines(modelString , con="model_full_correlation" )
 ```
 
 
-```{r Running Jags correlation}
-# parameters.C.I <- c("ss", "cor12","cor13","cor23","betamu", "betax")
-# 
-# out.model.COR <- run.jags(model = "model_full_correlation", monitor = parameters.C.I, data = dataList.I.COR, inits = myinits, n.chains = nchains, adapt = nadapt, burnin = nburn, sample = niter, thin = 180)
-# 
-# summary(out.model.COR)
-# save(out.model.COR,file = "out.model.COR.thin.rdata")
+```{r main model 1 Running Jags correlation}
+
+if(!load.rather.than.run){
+  
+  parameters.C.I <- c("ss", "cor12","cor13","cor23","betamu", "betax")
+
+  out.model.COR <- run.jags(model = "model_full_correlation", monitor = parameters.C.I, data = dataList.I.COR, inits = myinits, n.chains = nchains, adapt = nadapt, burnin = nburn, sample = niter, thin = 180)
+
+  model.1.main <- out.model.COR
+}
+
+if(load.rather.than.run){load("model.1.main.rdata")}
 ```
 
-```{r Model with refined correlations and interactions}
+```{r main model 2 Model with refined correlations and interactions}
 #Preperation
 
 x = as.matrix(data.norm[3:6],ncol=length(xName))
@@ -268,7 +276,7 @@ dataList.I.COR2 = list(
   )
 ```
 
-```{r orig Models With refined Correlation and refined interactions}
+```{r main model 2 Models With refined Correlation and refined interactions}
 modelString = "
 model {
 for ( i in 1:Ntotal ) {
@@ -308,18 +316,63 @@ Partner = x[,3]
 writeLines(modelString , con="model_full_correlation_2" )
 ```
 
-```{r Running Jags correlation final}
-# parameters.C.I.2 <- c("ss", "cor12","betamu", "betax")
-# 
-# out.model.COR2 <- run.jags(model = "model_full_correlation_2", monitor = parameters.C.I.2, data = dataList.I.COR2, inits = myinits, n.chains = nchains, adapt = nadapt, burnin = nburn, sample = niter, thin = 1)
-# 
-# summary(out.model.COR2)
+```{r main model 2 Running Jags correlation final}
+if(!load.rather.than.run){
+  parameters.C.I.2 <- c("ss", "cor12","betamu", "betax")
+
+  out.model.COR2 <- run.jags(model = "model_full_correlation_2", monitor = parameters.C.I.2, data = dataList.I.COR2, inits = myinits, n.chains = nchains, adapt = nadapt, burnin = nburn, sample = niter, thin = 1)
+  
+  summary(out.model.COR2)
+
+  model.1.main <- out.model.COR2
+}
+
+if(load.rather.than.run){load("model.2.main.rdata")}
 
 ```
 
 
 
-```{r sens Models With refined Correlation and refined interactions}
+```{r sens model 1  Models With refined Correlation and refined interactions}
+modelString = "
+model {
+for ( i in 1:Ntotal ) {
+	y[i,1] ~ dnorm( beta[pp[i],1] + beta[pp[i],2]*x[i, 2]+beta[pp[i],3]*x[i,3]+ sum( betax[1:Nx0] * x[i,(Nx-Nx0+1):Nx]), 1/sigma^2 )
+} 
+ # Don't forget to set your between subjects to the end of X! Dont forget that the first beta is beta0
+
+#Betas
+for(j in 1:Nsubjects){
+beta[j, 1:3] ~ dmnorm( betamu , M ) 
+}
+ #Priors vague:
+for (q in 1:Nx0){
+  betax[q] ~ dnorm( rand[q] , 1/(10)^2)
+}
+
+
+  betamu[1:3] ~ dmnorm(mean, prec)
+
+  M[1 : 3, 1 : 3] ~ dwish(omega, df)
+  MA <- inverse(M)
+  
+  for (z in 1:3){ #variance to sd
+  ss[z] <- sqrt(MA[z,z])
+  }
+  cor12 <- MA[1,2]/ss[1]*ss[2]
+  cor13 <- MA[1,3]/ss[1]*ss[3]
+  cor23 <- MA[2,3]/ss[2]*ss[3]
+
+  sigma ~ dunif( 1.0E-1 , 1.0E+1 )  
+
+}
+"
+
+writeLines(modelString , con="model_full_correlation" )
+```
+
+
+```{r sens model 2  Models With refined Correlation and refined interactions}
 modelString.sens = "
 model {
 for ( i in 1:Ntotal ) {
@@ -359,27 +412,27 @@ writeLines(modelString.sens , con="model_full_correlation_2.sens" )
 ```
 
 ```{r sens two thin jags}
-# 
-# timer1.s <- tictoc::tic()
-# parameters.C.I <- c("ss", "cor12","cor13","cor23","betamu", "betax","sigma")
-# 
-# out.model.COR <- run.jags(model = "model_full_correlation", monitor = parameters.C.I, data = dataList.I.COR, inits = myinits, n.chains = nchains, adapt = nadapt, burnin = nburn, sample = 1000, thin = 150)
-# timer1.e <- tictoc::toc()
-# out.model.COR.sen <- out.model.COR
-# sum.sens.1 <- summary(out.model.COR)
-# save(out.model.COR.sen,file = "out.model.COR.sen.thin.rdata")
-# 
-# 
-# timer2.s <- tictoc::tic()
-# parameters.C.I.2.sens <- c("ss", "cor12","betamu", "betax", "sigma")
-# 
-# out.model.COR2.sens <- run.jags(model = "model_full_correlation_2.sens", monitor = parameters.C.I.2.sens, data = dataList.I.COR2.sens, inits = myinits, n.chains = nchains, adapt = nadapt, burnin = nburn, sample = 800, thin = 300)
-# 
-# timer2.e <- tictoc::toc()
-# 
-# sum.sens.2 <- summary(out.model.COR2)
-# save(out.model.COR2.sens,file = "out.model.COR2.sens.thick.rdata")
 
+if(!load.rather.than.run){ 
+  
+  parameters.C.I <- c("ss", "cor12","cor13","cor23","betamu", "betax","sigma")
+  
+  out.model.COR <- run.jags(model = "model_full_correlation", monitor = parameters.C.I, data = dataList.I.COR, inits = myinits, n.chains = nchains, adapt = nadapt, burnin = nburn, sample = 1000, thin = 150)
+
+  model.1.sens <- out.model.COR 
+
+
+  parameters.C.I.2.sens <- c("ss", "cor12","betamu", "betax", "sigma")
+ 
+  out.model.COR2.sens <- run.jags(model = "model_full_correlation_2.sens", monitor = parameters.C.I.2.sens, data = dataList.I.COR2.sens, inits = myinits, n.chains = nchains, adapt = nadapt, burnin = nburn, sample = 800, thin = 300)
+
+  model.1.sens <- out.model.COR
+}
+ 
+if(load.rather.than.run){ 
+  load("model.1.sens.rdata")
+  load("model.2.sens.rdata")
+}
 ```
 
 ```{r dic calculation}
@@ -392,27 +445,30 @@ get.dic <- function(model){
   
 }
 
-
-
+if(!load.rather.than.run){
 dic.1.main <- get.dic(model.1.main)
 dic.2.main <- get.dic(model.2.main)
 dic.1.sens <- get.dic(model.1.sens)
 dic.2.sens <- get.dic(model.2.sens)
+}
 
-save(summary.1.main,file = "summary.1.main.rdata")
-save(summary.2.main,file = "summary.2.main.rdata")
-save(summary.1.sens,file = "summary.1.sens.rdata")
-save(summary.2.sens,file = "summary.2.sens.rdata")
-
+if(load.rather.than.run){
+dic.1.main <- 2.2280099
+dic.2.main <- 2.4545561
+dic.1.sens <- 2.2277275
+dic.2.sens <- 2.4493027
+}
 ```
 
 
 
 ```{r tables of summaries, results = "asis"}
-load("summary.COR.original.rdata")
-load("summary.COR.sensitivity.rdata")
-load("summary.COR2.original.rdata")
-load("summary.COR2.sensitivity.rdata")
+
+
+# load("summary.1.main.rdata")
+# load("summary.2.main.rdata")
+# load("summary.1.sens.rdata")
+# load("summary.2.sens.rdata")
 
 apa_table(x = sum.1, caption = "The first model", note = "Full model", landscape = TRUE, small = TRUE)
 apa_table(x = sum.2, caption = "The Second model", note = "Reduced model", landscape = TRUE, small = TRUE)
